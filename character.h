@@ -22,6 +22,12 @@ typedef enum {
 } CharacterState;
 
 
+extern const char *CharacterStateNames[];
+
+
+
+
+
 extern const Vector2 BASE_SPEED;
 extern const float SPRINT_FACTOR;
 
