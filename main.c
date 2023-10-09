@@ -5,11 +5,33 @@
 #include "stdio.h"
 
 
-// separate into ui.c
+
+
+// INSPECTOR MODULES
 #include "stdlib.h"
 #define CHARACTER_INSPECTOR_TEXT_SIZE 20
+
+void DrawCharacterPositionInspector(Character character) {
+    int xOffset = 10;  // Offset from the left where text starts
+    int yOffset = 10;  // Offset from the top where text starts
+
+    // Position for the character's position text
+    Vector2 positionTextPos = { SCREEN_WIDTH - 150 + xOffset, SCREEN_HEIGHT - 150 + yOffset };
+
+    // Creating strings for the character's x and y positions
+    char xPosStr[20], yPosStr[20];
+    snprintf(xPosStr, sizeof(xPosStr), "x: %d", (int) character.position.x);
+    snprintf(yPosStr, sizeof(yPosStr), "y: %d", (int) character.position.y);
+
+    // Drawing the character's x and y positions
+    DrawText(xPosStr, positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED);  // x position in red
+    DrawText(yPosStr, positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);  // y position in blue, slightly below x position
+}
+
+
 void DrawCharacterInspector(Character character, Texture2D sprite, int frameCounter) {
-    Vector2 bigSpritePosition = { SCREEN_WIDTH - 150, SCREEN_HEIGHT - 150 };
+    DrawCharacterPositionInspector(character);
+    Vector2 bigSpritePosition = { SCREEN_WIDTH - 100, SCREEN_HEIGHT - 180 };
     Rectangle bigSpriteRec = GetCharacterSourceRec(frameCounter, character.state);
 
     // If the character is moving left, we'll use the right sprite but flip it horizontally.
@@ -23,68 +45,16 @@ void DrawCharacterInspector(Character character, Texture2D sprite, int frameCoun
     // Draw the character's state as text above the character inspector
     const char *stateText = CharacterStateNames[character.state];
     Vector2 textSize = MeasureTextEx(GetFontDefault(), stateText, CHARACTER_INSPECTOR_TEXT_SIZE, 1);
-    Vector2 textPosition = { bigSpritePosition.x + (abs(bigSpriteRec.width) * 4 - textSize.x) / 2, bigSpritePosition.y - textSize.y - 10 };
+    Vector2 textPosition = { bigSpritePosition.x + (abs(bigSpriteRec.width) * 1 - textSize.x) / 2, bigSpritePosition.y + 10 };  // Adjusted here
     DrawText(stateText, textPosition.x, textPosition.y, CHARACTER_INSPECTOR_TEXT_SIZE, WHITE);
 }
+
+
 
 
 // LOG
 // only editor log work
 #include "string.h"
-
-/* #define LOG_MAX_LINES 1000 */
-/* #define LOG_FONT_SIZE 10 */
-/* #define LOG_LINE_HEIGHT 20 */
-
-/* typedef struct { */
-/*     char lines[LOG_MAX_LINES][256];  // Assuming max log line length is 256 */
-/*     int count; */
-/*     int scrollOffset; */
-/* } EditorLog; */
-
-/* EditorLog editorLog; */
-/* int logPaddingX = 10; */
-/* int logPaddingY = 10; */
-
-/* void log_add(const char *format, ...) { */
-/*     va_list args; */
-/*     va_start(args, format); */
-/*     if (editorLog.count < LOG_MAX_LINES) { */
-/*         vsnprintf(editorLog.lines[editorLog.count], 256, format, args); */
-/*         editorLog.count++; */
-/*     } else { */
-/*         for (int i = 1; i < LOG_MAX_LINES; i++) { */
-/*             strcpy(editorLog.lines[i-1], editorLog.lines[i]); */
-/*         } */
-/*         vsnprintf(editorLog.lines[LOG_MAX_LINES - 1], 256, format, args); */
-/*     } */
-/*     va_end(args); */
-/*     vprintf(format, args);  // Also write log message to stdout */
-/*     printf("\n");  // New line for stdout */
-/* } */
-
-/* void log_clear() { */
-/*     memset(editorLog.lines, 0, sizeof(editorLog.lines)); */
-/*     editorLog.count = 0; */
-/* } */
-
-/* void DrawEditorLog(int bottomHeight) { */
-/*     int startY = GetScreenHeight() - bottomHeight + editorLog.scrollOffset + logPaddingY; */
-/*     BeginScissorMode(0, GetScreenHeight() - bottomHeight, GetScreenWidth(), bottomHeight); */
-/*     for (int i = 0; i < editorLog.count; i++) { */
-/*         DrawText(editorLog.lines[i], logPaddingX, startY + i * LOG_LINE_HEIGHT, LOG_FONT_SIZE, WHITE); */
-/*     } */
-/*     EndScissorMode(); */
-/* } */
-
-/* void UpdateEditorLogScroll() { */
-/*     if (IsKeyDown(KEY_UP)) editorLog.scrollOffset -= LOG_LINE_HEIGHT; */
-/*     if (IsKeyDown(KEY_DOWN)) editorLog.scrollOffset += LOG_LINE_HEIGHT; */
-/* } */
-
-
-
-
 
 #define LOG_MAX_LINES 1000
 #define LOG_FONT_SIZE 10
@@ -99,26 +69,6 @@ typedef struct {
 EditorLog editorLog;
 int logPaddingX = 10;
 int logPaddingY = 10;
-
-void update_log_from_file() {
-    FILE *file = fopen("stdout.txt", "r");
-    if (file != NULL) {
-        char line[256];
-        while (fgets(line, sizeof(line), file) != NULL) {
-            if (editorLog.count < LOG_MAX_LINES) {
-                strncpy(editorLog.lines[editorLog.count], line, 256);
-                editorLog.count++;
-            } else {
-                for (int i = 1; i < LOG_MAX_LINES; i++) {
-                    strcpy(editorLog.lines[i-1], editorLog.lines[i]);
-                }
-                strncpy(editorLog.lines[LOG_MAX_LINES - 1], line, 256);
-            }
-        }
-        fclose(file);
-    }
-}
-
 
 void log_add(const char *format, ...) {
     va_list args;
@@ -135,6 +85,11 @@ void log_add(const char *format, ...) {
     va_end(args);
     vprintf(format, args);  // Also write log message to stdout
     printf("\n");  // New line for stdout
+}
+
+void log_clear() {
+    memset(editorLog.lines, 0, sizeof(editorLog.lines));
+    editorLog.count = 0;
 }
 
 void DrawEditorLog(int bottomHeight) {
@@ -160,18 +115,11 @@ void UpdateEditorLogScroll() {
 
 
 
-
-
-
-
-
-
-
 // inspector or panels better
 // the inspector will be only on the panel on the right
 #define PANEL_CORNER_RADIUS 20.0f
 #define INNER_CORNER_RADIUS 30.0f
-#define INITIAL_BOTTOM_HEIGHT 100
+#define INITIAL_BOTTOM_HEIGHT 80
 #define INITIAL_LEFT_WIDTH 150
 #define INITIAL_RIGHT_WIDTH 280
 #define INITIAL_TOP_HEIGHT 40
@@ -252,13 +200,6 @@ void UpdatePanelDimensions() {
 
 
 
-
-
-
-
-
-
-
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Sprite Slicer");
     Texture2D sprite = LoadTexture("./sprite.png");
@@ -269,13 +210,13 @@ int main(void) {
     SetTargetFPS(144);
 
     while (!WindowShouldClose()) {
-        log_add("ciao");
 
         UpdatePanelDimensions();
         UpdateEditorLogScroll();
         UpdateCharacterState(&character);
 
-        if (IsKeyDown(KEY_R) && IsKeyDown(KEY_LEFT_CONTROL)) {
+        if (IsKeyPressed(KEY_R) && IsKeyDown(KEY_LEFT_CONTROL)) {
+            log_add("UI resetted");
             panel = (Panel){
                 INITIAL_TOP_HEIGHT,
                 INITIAL_BOTTOM_HEIGHT,
@@ -283,6 +224,7 @@ int main(void) {
                 INITIAL_RIGHT_WIDTH
             };
         }
+
 
 
         BeginDrawing();
