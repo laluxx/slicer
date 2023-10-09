@@ -1,7 +1,7 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-
+#include "raylib.h"
 
 typedef enum {
     IDLE_DOWN,
@@ -21,12 +21,18 @@ typedef enum {
     RUN_LEFT
 } CharacterState;
 
+typedef struct {
+    Vector2 position;
+    CharacterState state;
+    CharacterState lastState;
+} Character;
+
+// Function prototypes
+void UpdateCharacterState(Character* character);
+void DrawCharacter(Character character, Texture2D sprite, int frameCounter);
+void DrawCharacterInspector(Character character, Texture2D sprite, int frameCounter);
 
 extern const char *CharacterStateNames[];
-
-
-
-
 
 extern const Vector2 BASE_SPEED;
 extern const float SPRINT_FACTOR;
