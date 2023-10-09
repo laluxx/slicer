@@ -1,10 +1,11 @@
 #include "slicer.h"
 
 // Sprite slicing parameters
-const int SLICE_HORIZONTAL = 4;
-const int SLICE_VERTICAL = 12;
-const int SLICE_SIZE_X = 32;
-const int SLICE_SIZE_Y = 32;
+int SLICE_HORIZONTAL = 4;
+int SLICE_VERTICAL = 12;
+int SLICE_SIZE_X = 32;
+int SLICE_SIZE_Y = 32;
+
 int animation_rate = 15;
 
 Rectangle GetCharacterSourceRec(int frameCounter, CharacterState state) {
