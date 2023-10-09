@@ -7,82 +7,11 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-// UI.c
-
-// BUTTONS
-int BUTTON_FONT_SIZE = 20;
-int buttonWidth = 220;
-int buttonHeight = 30;
-int buttonSpacing = 10;
-int buttonYStart;  // Declaration without initialization
-/* int buttonYStart = SCREEN_HEIGHT - (buttonHeight + buttonSpacing) * 6; */ // need to be in main for some reason
-
-
-bool DrawButton(const char *text, Rectangle btnBounds, Color baseColor) {
-    bool clicked = false;
-
-    // Define shadow colors based on the base color
-    Color shadowDark = (Color){ baseColor.r/1.5, baseColor.g/1.5, baseColor.b/1.5, baseColor.a };
-    Color shadowLight = (Color){ baseColor.r*1.5 > 255 ? 255 : baseColor.r*1.5, baseColor.g*1.5 > 255 ? 255 : baseColor.g*1.5, baseColor.b*1.5 > 255 ? 255 : baseColor.b*1.5, baseColor.a };
-
-    if (CheckCollisionPointRec(GetMousePosition(), btnBounds)) {
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-            // Draw shadows for pressed state
-            DrawRectangle(btnBounds.x, btnBounds.y + 3, btnBounds.width, btnBounds.height, shadowDark);
-            DrawRectangleRec(btnBounds, baseColor);
-        } else {
-            // Draw shadows for hover state
-            DrawRectangle(btnBounds.x, btnBounds.y + 1, btnBounds.width, btnBounds.height, shadowLight);
-            DrawRectangleRec(btnBounds, baseColor);
-
-            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-                clicked = true;
-            }
-        }
-    } else {
-        // Draw shadows for default state
-        DrawRectangle(btnBounds.x, btnBounds.y + 2, btnBounds.width, btnBounds.height, shadowDark);
-        DrawRectangleRec(btnBounds, baseColor);
-    }
-
-    DrawText(text, btnBounds.x + (btnBounds.width - MeasureText(text, BUTTON_FONT_SIZE)) / 2,
-             btnBounds.y + btnBounds.height / 2 - BUTTON_FONT_SIZE / 2, BUTTON_FONT_SIZE, BLACK);
-
-    return clicked;
-}
-
-
-void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y) {
-    int buttonWidth = 20;
-    int buttonHeight = 20;
-    int valueRectWidth = 30;
-    int typeRectWidth = 25;  // Set width for type rectangle
-
-    // Determine color based on type
-    Color typeColor = RED;  // Default to red for int
-    if (strcmp(type, "float") == 0) typeColor = BLUE;
-    else if (strcmp(type, "char") == 0) typeColor = GREEN;
-
-    // Draw type rectangle with type text
-    DrawRectangle(x, y, typeRectWidth, buttonHeight - 4, typeColor);  // Adjusted position to align with name text
-    DrawText(type, x + 5, y + 5, 10, BLACK);  // Moved text slightly to the right for centering
-
-    // Draw name text below type rectangle
-    DrawText(name, x, y + buttonWidth + 5, 3, BLACK);  // Moved text down below type rectangle
-
-    // Draw buttons and value rectangle
-    int buttonsXOffset = x + typeRectWidth + 5;  // Start buttons to the right of type rectangle
-    if (DrawButton("-", (Rectangle){ buttonsXOffset, y, buttonWidth, buttonHeight }, RED) && (*value > 1)) (*value)--;
-    DrawRectangle(buttonsXOffset + buttonWidth, y, valueRectWidth, buttonHeight, WHITE);
-    DrawText(TextFormat("%d", *value), buttonsXOffset + buttonWidth + 5, y + 5, 6, BLACK);
-    if (DrawButton("+", (Rectangle){ buttonsXOffset + buttonWidth + valueRectWidth, y, buttonWidth, buttonHeight }, GREEN)) (*value)++;
-}
 
 
 
 
-
-
+#include "ui.h"
 // INSPECTORS
 #define CHARACTER_INSPECTOR_TEXT_SIZE 20
 void DrawCharacterPositionInspector(Character character) {
@@ -190,7 +119,6 @@ void EditorPreviousMode() {
 
 
 
-// requires buttons
 void RenderSlicerMode(Texture2D sprite) {
     // Draw sprite at the center, scaled up for better visibility
     float scale = 2.0f;
@@ -232,6 +160,7 @@ void RenderSlicerMode(Texture2D sprite) {
 
 
 
+
 // PIXEL EDITOR MODE
 typedef struct {
     Color color;
@@ -243,12 +172,14 @@ typedef struct {
     ColorPicker colorPicker[5];
     Color currentColor;
     bool eraserActive;
+    int gridSize;
+    Color backgroundColor;
 } PixelEditorData;
 
-PixelEditorData pixelEditor;
-
-#define GRID_SIZE 10  // Define the size of each grid cell, adjust as needed
-#define BACKGROUND_COLOR (Color){11, 11, 11, 255}  // Background color #0B0B0B
+PixelEditorData pixelEditor = {
+    .gridSize = 10,
+    .backgroundColor = {11, 11, 11, 255}
+};
 
 void InitializePixelEditor(char* imagePath) {
     Image canvas = LoadImage(imagePath);
@@ -270,12 +201,7 @@ void InitializePixelEditor(char* imagePath) {
     pixelEditor.eraserActive = false;
 }
 
-
-
-void UpdatePixelEditor(void) {
-    // Load image from file (assuming the file path is "./sprite.png" as per your DrawSlicerMode function)
-    Image canvas = LoadImage("./sprite.png");
-
+void HandlePixelEditorInput(void) {
     Vector2 mousePosition = GetMousePosition();
 
     // Color Picker and Eraser Input Handling
@@ -293,146 +219,74 @@ void UpdatePixelEditor(void) {
     }
 
     // Pixel Editing Input Handling
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mousePosition, (Rectangle){0, 50, canvas.width, canvas.height})) {
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mousePosition, (Rectangle){0, 50, pixelEditor.canvasTexture.width, pixelEditor.canvasTexture.height})) {
         Vector2 canvasPos = { mousePosition.x, mousePosition.y - 50 };
-        int gridX = (int)canvasPos.x / GRID_SIZE;
-        int gridY = (int)canvasPos.y / GRID_SIZE;
+        int gridX = (int)canvasPos.x / pixelEditor.gridSize;
+        int gridY = (int)canvasPos.y / pixelEditor.gridSize;
+
+        // Load image from file, apply changes and update texture
+        Image canvas = LoadImage("./sprite.png");
 
         // Pixel Editing
         if (pixelEditor.eraserActive) {
-            for (int i = 0; i < GRID_SIZE; i++) {
-                for (int j = 0; j < GRID_SIZE; j++) {
-                    ImageDrawPixel(&canvas, gridX*GRID_SIZE + i, gridY*GRID_SIZE + j, BACKGROUND_COLOR);
+            for (int i = 0; i < pixelEditor.gridSize; i++) {
+                for (int j = 0; j < pixelEditor.gridSize; j++) {
+                    ImageDrawPixel(&canvas, gridX*pixelEditor.gridSize + i, gridY*pixelEditor.gridSize + j, pixelEditor.backgroundColor);
                 }
             }
         } else {
-            for (int i = 0; i < GRID_SIZE; i++) {
-                for (int j = 0; j < GRID_SIZE; j++) {
-                    ImageDrawPixel(&canvas, gridX*GRID_SIZE + i, gridY*GRID_SIZE + j, pixelEditor.currentColor);
+            for (int i = 0; i < pixelEditor.gridSize; i++) {
+                for (int j = 0; j < pixelEditor.gridSize; j++) {
+                    ImageDrawPixel(&canvas, gridX*pixelEditor.gridSize + i, gridY*pixelEditor.gridSize + j, pixelEditor.currentColor);
                 }
             }
         }
 
         // Updating Texture2D from Image
+        UnloadTexture(pixelEditor.canvasTexture);  // Unload the old texture
         pixelEditor.canvasTexture = LoadTextureFromImage(canvas);  // Load the new texture from the edited image
-    }
 
-    // Freeing the memory of the Image
-    UnloadImage(canvas);
+        // Freeing the memory of the Image
+        UnloadImage(canvas);
+    }
 }
 
 
-
-
-
-
-
-
-
-
-void RenderPixelEditorMode() {
-    BeginDrawing();
-
-    ClearBackground(BACKGROUND_COLOR);
-
-    // Draw canvas
-    DrawTexture(pixelEditor.canvasTexture, 0, 50, WHITE);
-
-    // Draw grid
-    for (int i = 0; i <= pixelEditor.canvasTexture.width; i += GRID_SIZE) {
+void DrawPixelEditorGrid(void) {
+    for (int i = 0; i <= pixelEditor.canvasTexture.width; i += pixelEditor.gridSize) {
         DrawLine(i, 50, i, 50 + pixelEditor.canvasTexture.height, DARKGRAY);
     }
-    for (int j = 0; j <= pixelEditor.canvasTexture.height; j += GRID_SIZE) {
+    for (int j = 0; j <= pixelEditor.canvasTexture.height; j += pixelEditor.gridSize) {
         DrawLine(0, 50 + j, pixelEditor.canvasTexture.width, 50 + j, DARKGRAY);
     }
+}
 
-    // Draw color picker
+void DrawColorPicker(void) {
     for (int i = 0; i < 5; i++) {
         DrawRectangleRec(pixelEditor.colorPicker[i].rect, pixelEditor.colorPicker[i].color);
     }
-
-    // Draw eraser button
-    DrawRectangle(210, 10, 30, 30, pixelEditor.eraserActive ? DARKGRAY : LIGHTGRAY);
-    DrawText("E", 220, 15, 20, pixelEditor.eraserActive ? RAYWHITE : BLACK);
-
-    EndDrawing();
 }
 
+void DrawEraserButton(void) {
+    DrawRectangle(210, 10, 30, 30, pixelEditor.eraserActive ? DARKGRAY : LIGHTGRAY);
+    DrawText("E", 220, 15, 20, pixelEditor.eraserActive ? RAYWHITE : BLACK);
+}
 
+void UpdatePixelEditor(void) {
+    HandlePixelEditorInput();
+}
 
+void RenderPixelEditorMode() {
+    BeginDrawing();
+    ClearBackground(pixelEditor.backgroundColor);
+    DrawTexture(pixelEditor.canvasTexture, 0, 50, WHITE);
+    DrawPixelEditorGrid();
+    DrawColorPicker();
+    DrawEraserButton();
+    EndDrawing();
+}
 // PIXEL EDITOR MODE END
 
-
-
-
-/* int main(void) { */
-/*     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Sprite Slicer"); */
-/*     Texture2D sprite = LoadTexture("./sprite.png"); */
-/*     Character character = { { (float)SCREEN_WIDTH/2, (float)SCREEN_HEIGHT/2 }, IDLE_DOWN, IDLE_DOWN }; */
-/*     int frameCounter = 0; */
-/*     SetTargetFPS(144); */
-
-/*     // SLICE MODE */
-/*     buttonYStart = SCREEN_HEIGHT - (buttonHeight + buttonSpacing) * 6; */
-
-
-/*     while (!WindowShouldClose()) { */
-/*         UpdatePanelDimensions(); */
-/*         UpdateEditorLogScroll(); */
-/*         UpdateCharacterState(&character); */
-
-/*         if (IsKeyPressed(KEY_R) && IsKeyDown(KEY_LEFT_CONTROL)) { */
-/*             log_add("UI resetted"); */
-/*             panel = (Panel){ */
-/*                 INITIAL_TOP_HEIGHT, */
-/*                 INITIAL_BOTTOM_HEIGHT, */
-/*                 INITIAL_LEFT_WIDTH, */
-/*                 INITIAL_RIGHT_WIDTH */
-/*             }; */
-/*         } */
-
-/*         if (IsKeyPressed(KEY_N)) { */
-/*             if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) { */
-/*                 EditorPreviousMode(); */
-/*             } else { */
-/*                 EditorNextMode(); */
-/*             } */
-/*         } */
-
-/*         BeginDrawing(); */
-/*         ClearBackground((Color){11, 11, 11, 255}); */
-
-/*         switch (currentMode) { */
-/*             case MODE_DEFAULT: */
-/*                 DrawPanels(); */
-/*                 DrawSlicerInspector(sprite);  // Call the function here */
-/*                 DrawEditorLog(panel.bottomHeight); */
-/*                 DrawCharacter(character, sprite, frameCounter); */
-/*                 DrawCharacterInspector(character, sprite, frameCounter); */
-/*                 void DrawSlicerInspector(Texture2D sprite); */
-/*                 break; */
-/*             case MODE_SLICER: */
-/*                 DrawSlicerMode(sprite); */
-/*                 break; */
-/*         case MODE_PIXEL_EDITOR: */
-/*             UpdatePixelEditorMode();  // Update the pixel editor */
-/*             DrawPixelEditorMode();    // Draw the pixel editor UI */
-/*             break; */
-/*             default: */
-/*                 break; */
-/*         } */
-/*         EndDrawing(); */
-/*         frameCounter++; */
-/*     } */
-
-/*     //freeing memory */
-/*     UnloadTexture(canvasTexture);  // Unload the canvas texture */
-/*     UnloadImage(canvas);  // Unload the canvas image */
-
-/*     UnloadTexture(sprite); */
-/*     CloseWindow(); */
-/*     return 0; */
-/* } */
 
 
 int main(void) {
@@ -483,6 +337,7 @@ int main(void) {
                 void DrawSlicerInspector(Texture2D sprite);
                 break;
             case MODE_SLICER:
+                DrawPanels();
                 RenderSlicerMode(sprite);
                 break;
             case MODE_PIXEL_EDITOR:
