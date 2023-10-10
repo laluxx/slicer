@@ -10,13 +10,9 @@
 #include "ui.h"
 
 
-
-
-
-
 // INSPECTORS
 #define CHARACTER_INSPECTOR_TEXT_SIZE 20
-void DrawCharacterPositionInspector(Character character) {
+void DrawCharacterCordinatesInspector(Character character) {
     int xOffset = 10;  // Offset from the left where text starts
     int yOffset = 10;  // Offset from the top where text starts
 
@@ -31,8 +27,7 @@ void DrawCharacterPositionInspector(Character character) {
 }
 
 void DrawCharacterInspector(Character character, Texture2D sprite, int frameCounter) {
-    /* DrawCharacterPositionInspector(character); */
-    DrawCharacterPositionInspector(character);
+    DrawCharacterCordinatesInspector(character);
 
 
     Vector2 bigSpritePosition = { SCREEN_WIDTH - 100, SCREEN_HEIGHT - 180 };
@@ -142,6 +137,141 @@ void DrawWASDInspector(void) {
     DrawTexturePro(dKey, (Rectangle){0, 0, dKey.width, dKey.height}, (Rectangle){WASD_POS_X + dKey.width*scaleFactor -buttonsProportion, WASD_POS_Y, dKey.width*scaleFactor, dKey.height*scaleFactor}, (Vector2){0, 0}, 0, dColor);
 }
 
+// MOUSE INSPECTOR
+// Define the paths to the key images
+/* #define MOUSE_LEFT_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Left_Key_Dark.png" */
+/* #define MOUSE_MIDDLE_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Middle_Key_Dark.png" */
+/* #define MOUSE_RIGHT_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Right_Key_Dark.png" */
+/* #define MOUSE_SIMPLE_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Simple_Key_Dark.png" */
+
+/* // Assume these are global or loaded before your game loop */
+/* Texture2D mouseLeftKey; */
+/* Texture2D mouseMiddleKey; */
+/* Texture2D mouseRightKey; */
+/* Texture2D mouseSimpleKey; */
+
+/* void LoadMouseTextures() { */
+/*     mouseLeftKey = LoadTexture(MOUSE_LEFT_KEY_PATH); */
+/*     mouseMiddleKey = LoadTexture(MOUSE_MIDDLE_KEY_PATH); */
+/*     mouseRightKey = LoadTexture(MOUSE_RIGHT_KEY_PATH); */
+/*     mouseSimpleKey = LoadTexture(MOUSE_SIMPLE_KEY_PATH); */
+/* } */
+
+/* void UnloadMouseTextures() { */
+/*     UnloadTexture(mouseLeftKey); */
+/*     UnloadTexture(mouseMiddleKey); */
+/*     UnloadTexture(mouseRightKey); */
+/*     UnloadTexture(mouseSimpleKey); */
+/* } */
+
+/* void DrawMouseInspector(void) { */
+/*     // Get mouse position */
+/*     Vector2 mousePosition = GetMousePosition(); */
+
+/*     // Draw horizontal red line across the screen at the Y-coordinate of the mouse */
+/*     DrawLine(0, (int)mousePosition.y, SCREEN_WIDTH, (int)mousePosition.y, RED); */
+
+/*     // Draw vertical blue line down the screen at the X-coordinate of the mouse */
+/*     DrawLine((int)mousePosition.x, 0, (int)mousePosition.x, SCREEN_HEIGHT, BLUE); */
+
+/*     // Draw white circle at the intersection point of the lines */
+/*     DrawCircle((int)mousePosition.x, (int)mousePosition.y, 10, WHITE);  // 10 is the radius of the circle */
+
+/*     // Determine the position for drawing the mouse button icons */
+/*     Vector2 iconPosition = { mousePosition.x + 20, mousePosition.y + 20 };  // Offset from the mouse position */
+
+/*     // Draw the corresponding mouse button icon when a button is pressed */
+/*     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) { */
+/*         DrawTexture(mouseLeftKey, iconPosition.x, iconPosition.y, WHITE); */
+/*     } */
+/*     if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON)) { */
+/*         DrawTexture(mouseMiddleKey, iconPosition.x, iconPosition.y, WHITE); */
+/*     } */
+/*     if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) { */
+/*         DrawTexture(mouseRightKey, iconPosition.x, iconPosition.y, WHITE); */
+/*     } */
+/* } */
+
+// Define the paths to the mouse button images
+#define MOUSE_LEFT_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Left_Key_Dark.png"
+#define MOUSE_MIDDLE_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Middle_Key_Dark.png"
+#define MOUSE_RIGHT_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Right_Key_Dark.png"
+#define MOUSE_SIMPLE_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Simple_Key_Dark.png"
+
+// Assume these are global or loaded before your game loop
+Texture2D mouseLeftKey;
+Texture2D mouseMiddleKey;
+Texture2D mouseRightKey;
+Texture2D mouseSimpleKey;
+
+void LoadMouseTextures() {
+    mouseLeftKey = LoadTexture(MOUSE_LEFT_KEY_PATH);
+    mouseMiddleKey = LoadTexture(MOUSE_MIDDLE_KEY_PATH);
+    mouseRightKey = LoadTexture(MOUSE_RIGHT_KEY_PATH);
+    mouseSimpleKey = LoadTexture(MOUSE_SIMPLE_KEY_PATH);
+}
+
+void UnloadMouseTextures() {
+    UnloadTexture(mouseLeftKey);
+    UnloadTexture(mouseMiddleKey);
+    UnloadTexture(mouseRightKey);
+    UnloadTexture(mouseSimpleKey);
+}
+
+void DrawMouseInspector(void) {
+    Vector2 mousePosition = GetMousePosition();
+
+    // Draw red horizontal line and blue vertical line
+    DrawLine(0, (int)mousePosition.y, SCREEN_WIDTH, (int)mousePosition.y, RED);
+    DrawLine((int)mousePosition.x, 0, (int)mousePosition.x, SCREEN_HEIGHT, BLUE);
+
+    // Scale factor to adjust the size of the keys
+    float scaleFactor = 0.40f;  // MOUSE SIZE
+    int iconOffsetX = 20;
+    int iconOffsetY = 20;
+
+    // Draw the corresponding mouse button icon larger and at the offset mouse position when a button is pressed
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        DrawTexturePro(mouseLeftKey, (Rectangle){0, 0, mouseLeftKey.width, mouseLeftKey.height}, (Rectangle){mousePosition.x + iconOffsetX, mousePosition.y + iconOffsetY, mouseLeftKey.width*scaleFactor, mouseLeftKey.height*scaleFactor}, (Vector2){0, 0}, 0, WHITE);
+    }
+    if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON)) {
+        DrawTexturePro(mouseMiddleKey, (Rectangle){0, 0, mouseMiddleKey.width, mouseMiddleKey.height}, (Rectangle){mousePosition.x + iconOffsetX, mousePosition.y + iconOffsetY, mouseMiddleKey.width*scaleFactor, mouseMiddleKey.height*scaleFactor}, (Vector2){0, 0}, 0, WHITE);
+    }
+    if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
+        DrawTexturePro(mouseRightKey, (Rectangle){0, 0, mouseRightKey.width, mouseRightKey.height}, (Rectangle){mousePosition.x + iconOffsetX, mousePosition.y + iconOffsetY, mouseRightKey.width*scaleFactor, mouseRightKey.height*scaleFactor}, (Vector2){0, 0}, 0, WHITE);
+    }
+}
+
+
+// Define a Cursor structure to hold the cursor's x and y position
+typedef struct Cursor {
+    int x;
+    int y;
+} Cursor;
+
+
+
+// Function to draw the cursor coordinates
+void DrawCursorCoordinatesInspector(Cursor cursor) {
+    int xOffset = 10;  // Offset from the left where text starts
+    int yOffset = 10;  // Offset from the top where text starts
+
+    Vector2 positionTextPos = { SCREEN_WIDTH - 370 + xOffset, SCREEN_HEIGHT - 1030 + yOffset };
+
+    char xPosStr[20], yPosStr[20];
+    snprintf(xPosStr, sizeof(xPosStr), "%d", cursor.x);
+    snprintf(yPosStr, sizeof(yPosStr), "%d", cursor.y);
+
+    // Drawing "x: " and "y: " in red and blue
+    DrawText("x: ", positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED);
+    DrawText(xPosStr, positionTextPos.x + MeasureText("x: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED);
+
+    DrawText("y: ", positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
+    DrawText(yPosStr, positionTextPos.x + MeasureText("y: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
+}
+
+
+
 // INSPECTORS END
 
 
@@ -201,6 +331,7 @@ int main(void) {
 
     // Load WASD textures
     LoadWASDTextures();
+    LoadMouseTextures();
 
     // SLICE MODE
     buttonYStart = SCREEN_HEIGHT - (buttonHeight + buttonSpacing) * 6;
@@ -212,6 +343,10 @@ int main(void) {
     bool cameraManagerEnabled = false;
 
     while (!WindowShouldClose()) {
+        Cursor cursor;
+        cursor.x = GetMouseX();  // Update cursor x position with current mouse x position
+        cursor.y = GetMouseY();  // Update cursor y position with current mouse y position
+
         UpdateEditorLogScroll();
         UpdateCharacterState(&character);
 
@@ -251,7 +386,9 @@ int main(void) {
         switch (currentMode) {
             case MODE_DEFAULT:
                 UpdatePanelsDimensions();
+                DrawMouseInspector();
                 DrawPanels();
+                DrawCursorCoordinatesInspector(cursor);
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
                 DrawEditorLog(panel.bottomHeight);
@@ -288,6 +425,7 @@ int main(void) {
     // Freeing memory
     UnloadTexture(pixelEditor.canvasTexture);  // Unload the canvas texture
     UnloadTexture(sprite);
+    UnloadMouseTextures();
     CloseWindow();
     return 0;
 }
