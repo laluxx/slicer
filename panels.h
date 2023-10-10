@@ -17,7 +17,6 @@
 #define LEFT_COLOR (Color){75, 38, 5, 255}
 #define RIGHT_COLOR (Color){95, 50, 12, 255}
 
-
 typedef struct {
     float topHeight;
     float bottomHeight;
@@ -26,12 +25,11 @@ typedef struct {
 } Panel;
 
 extern Panel panel;
-
-
-
-
-
 void DrawPanels();
-void UpdatePanelDimensions();
+void UpdatePanelsDimensions();
+void DrawPanel(char panelSide, float dimension);
+void ClosePanel(char panelSide);
+void UpdatePanelDimensions(char panelSide);
+void PanelsReset();
 
 #endif // PANELS_H

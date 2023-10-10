@@ -2,19 +2,35 @@
 
 EditorMode currentMode = MODE_DEFAULT;
 
+bool panelsResetOnModeChange = true;
+
+
+
 void EditorChangeMode(EditorMode mode) {
     currentMode = mode;
     log_add("Changed editor mode");
+
+    if (currentMode == MODE_DEFAULT && panelsResetOnModeChange) {
+        PanelsReset();
+    }
 }
 
 void EditorNextMode() {
     currentMode = (currentMode + 1) % MODE_MAX;
     log_add("Switched to next mode");
+
+    if (currentMode == MODE_DEFAULT && panelsResetOnModeChange) {
+        PanelsReset();
+    }
 }
 
 void EditorPreviousMode() {
     currentMode = (currentMode - 1 + MODE_MAX) % MODE_MAX;
     log_add("Switched to previous mode");
+
+    if (currentMode == MODE_DEFAULT && panelsResetOnModeChange) {
+        PanelsReset();
+    }
 }
 
 /* void RenderSlicerMode(Texture2D sprite) { */

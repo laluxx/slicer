@@ -31,7 +31,9 @@ void DrawCharacterPositionInspector(Character character) {
 }
 
 void DrawCharacterInspector(Character character, Texture2D sprite, int frameCounter) {
+    /* DrawCharacterPositionInspector(character); */
     DrawCharacterPositionInspector(character);
+
 
     Vector2 bigSpritePosition = { SCREEN_WIDTH - 100, SCREEN_HEIGHT - 180 };
     Rectangle bigSpriteRec = GetCharacterSourceRec(frameCounter, character.state);
@@ -146,6 +148,50 @@ void DrawWASDInspector(void) {
 
 
 
+#define LERP_AMOUNT 0.05f
+
+// CameraManager Struct
+typedef struct {
+    Camera2D camera;
+    float lerpAmount;
+} CameraManager;
+
+float Lerp(float start, float end, float amount) {
+    return start + amount * (end - start);
+}
+
+
+void InitializeCameraManager(CameraManager *cm, Vector2 initialPosition) {
+    cm->camera.target = initialPosition;
+    cm->camera.offset = (Vector2){SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f};
+    cm->camera.rotation = 0.0f;
+    cm->camera.zoom = 1.0f;
+    cm->lerpAmount = LERP_AMOUNT;
+}
+
+void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
+    cm->camera.target.x = Lerp(cm->camera.target.x, targetPosition.x, cm->lerpAmount);
+    cm->camera.target.y = Lerp(cm->camera.target.y, targetPosition.y, cm->lerpAmount);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+bool cameraEnabled = false;
+CameraManager cameraManager;
+
+
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Sprite Slicer");
     Texture2D sprite = LoadTexture("./sprite.png");
@@ -160,9 +206,12 @@ int main(void) {
     buttonYStart = SCREEN_HEIGHT - (buttonHeight + buttonSpacing) * 6;
 
     InitializePixelEditor("./sprite.png");  // Initialize the pixel editor
+    CameraManager cameraManager;
+    InitializeCameraManager(&cameraManager, character.position);  // Initialize the camera manager
+
+    bool cameraManagerEnabled = false;
 
     while (!WindowShouldClose()) {
-        UpdatePanelDimensions();
         UpdateEditorLogScroll();
         UpdateCharacterState(&character);
 
@@ -184,23 +233,41 @@ int main(void) {
             }
         }
 
+        if (IsKeyPressed(KEY_C)) {
+            cameraManagerEnabled = !cameraManagerEnabled;
+        }
+
+        if (cameraManagerEnabled) {
+            UpdateCameraManager(&cameraManager, character.position);
+        }
+
         BeginDrawing();
         ClearBackground((Color){11, 11, 11, 255});
 
+        if (cameraManagerEnabled) {
+            BeginMode2D(cameraManager.camera);
+        }
+
         switch (currentMode) {
             case MODE_DEFAULT:
+                UpdatePanelsDimensions();
                 DrawPanels();
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
                 DrawEditorLog(panel.bottomHeight);
                 DrawCharacter(character, sprite, frameCounter);
                 DrawCharacterInspector(character, sprite, frameCounter);
-                void DrawSlicerInspector(Texture2D sprite);
                 break;
             case MODE_SLICER:
-                DrawCharacter(character, sprite, frameCounter);
-                RenderSlicerMode(&character, sprite);
+                UpdatePanelsDimensions();
+                ClosePanel('T');  // Close top panel
+                ClosePanel('B');  // Close bottom panel
+                ClosePanel('L');  // Close left panela
 
+                DrawPanel('R', 600.0f);  // for a fixed right panel
+                DrawPanels();  // Draw all panels
+                RenderSlicerMode(&character, sprite);
+                DrawCharacter(character, sprite, frameCounter);
                 break;
             case MODE_PIXEL_EDITOR:
                 UpdatePixelEditor();  // Update the pixel editor
@@ -209,6 +276,11 @@ int main(void) {
             default:
                 break;
         }
+
+        if (cameraManagerEnabled) {
+            EndMode2D();
+        }
+
         EndDrawing();
         frameCounter++;
     }
