@@ -198,7 +198,9 @@ int main(void) {
                 void DrawSlicerInspector(Texture2D sprite);
                 break;
             case MODE_SLICER:
-                RenderSlicerMode(sprite);
+                DrawCharacter(character, sprite, frameCounter);
+                RenderSlicerMode(&character, sprite);
+
                 break;
             case MODE_PIXEL_EDITOR:
                 UpdatePixelEditor();  // Update the pixel editor

@@ -20,7 +20,8 @@ void EditorChangeMode(EditorMode mode);
 void EditorNextMode(void);
 void EditorPreviousMode(void);
 
-void RenderSlicerMode(Texture2D sprite);
+/* void RenderSlicerMode(Texture2D sprite); */
+void RenderSlicerMode(Character* character, Texture2D sprite);
 
 typedef struct {
     Color color;

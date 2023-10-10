@@ -3,6 +3,9 @@
 
 #include "raylib.h"
 
+#define MAX_FRAME_SPEED     15
+#define MIN_FRAME_SPEED      1
+
 typedef enum {
     IDLE_DOWN,
     WALK_RIGHT,
