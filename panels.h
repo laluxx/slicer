@@ -8,14 +8,23 @@
 #define INNER_CORNER_RADIUS 30.0f
 #define INITIAL_BOTTOM_HEIGHT 80
 #define INITIAL_LEFT_WIDTH 150
-#define INITIAL_RIGHT_WIDTH 280
+#define INITIAL_RIGHT_WIDTH 278
 #define INITIAL_TOP_HEIGHT 45
 
 // COLORS
-#define TOP_COLOR (Color){105, 58, 14, 255}
-#define BOTTOM_COLOR (Color){85, 48, 10, 255}
-#define LEFT_COLOR (Color){75, 38, 5, 255}
-#define RIGHT_COLOR (Color){95, 50, 12, 255}
+// TODO create a theme sruct and related
+// function to switch tame by index or by name
+// utilizing a sentile inside the struct
+
+// COMFY DARK
+#define TOP_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
+#define BOTTOM_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
+#define LEFT_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
+#define RIGHT_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
+
+
+
+
 
 typedef struct {
     float topHeight;

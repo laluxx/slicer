@@ -33,46 +33,6 @@ void EditorPreviousMode() {
     }
 }
 
-/* void RenderSlicerMode(Texture2D sprite) { */
-/*     // Draw sprite at the center, scaled up for better visibility */
-/*     float scale = 2.0f; */
-/*     Rectangle spriteDest = { SCREEN_WIDTH/2 - sprite.width*scale/2, SCREEN_HEIGHT/2 - sprite.height*scale/2 - 100, sprite.width*scale, sprite.height*scale }; */
-/*     DrawTexturePro(sprite, (Rectangle){ 0, 0, sprite.width, sprite.height }, spriteDest, (Vector2){ 0, 0 }, 0, WHITE); */
-
-/*     // Draw grid over the sprite */
-/*     for (int i = 0; i < SLICE_HORIZONTAL; i++) { */
-/*         for (int j = 0; j < SLICE_VERTICAL; j++) { */
-/*             Rectangle gridRect = { spriteDest.x + i*SLICE_SIZE_X*scale, spriteDest.y + j*SLICE_SIZE_Y*scale, SLICE_SIZE_X*scale, SLICE_SIZE_Y*scale }; */
-/*             DrawRectangleLinesEx(gridRect, 1, RAYWHITE); */
-/*         } */
-/*     } */
-
-/*     int smallButtonWidth = buttonWidth / 6;  // Adjusted the width */
-
-/*     // Vertical slices controls (Left side of the sprite) */
-/*     if (DrawButton("-", (Rectangle){spriteDest.x - smallButtonWidth - 10, spriteDest.y, smallButtonWidth, buttonHeight}, RED)) { */
-/*         if (SLICE_VERTICAL > 1) SLICE_VERTICAL--; */
-/*     } */
-/*     if (DrawButton("+", (Rectangle){spriteDest.x - smallButtonWidth - 10, spriteDest.y + buttonHeight + 10, smallButtonWidth, buttonHeight}, GREEN)) { */
-/*         SLICE_VERTICAL++; */
-/*     } */
-
-/*     // Horizontal slices controls (Top side of the sprite) */
-/*     if (DrawButton("-", (Rectangle){spriteDest.x, spriteDest.y - buttonHeight - 10, smallButtonWidth, buttonHeight}, RED)) { */
-/*         if (SLICE_HORIZONTAL > 1) SLICE_HORIZONTAL--; */
-/*     } */
-/*     if (DrawButton("+", (Rectangle){spriteDest.x + smallButtonWidth + 10, spriteDest.y - buttonHeight - 10, smallButtonWidth, buttonHeight}, GREEN)) { */
-/*         SLICE_HORIZONTAL++; */
-/*     } */
-
-/*     // Centralized "Slice!" button, adjusted position to be a bit higher */
-/*     int sliceButtonVerticalOffset = 50;  // Adjust this value to move the button up/down as needed */
-/*     if (DrawButton("Slice!", (Rectangle){SCREEN_WIDTH/2 - buttonWidth/2, SCREEN_HEIGHT - (buttonHeight + buttonSpacing) - sliceButtonVerticalOffset, buttonWidth, buttonHeight}, BLUE)) { */
-/*         // TODO: Add functionality to slice the sprite based on current settings */
-/*     } */
-/* } */
-
-// V2
 void RenderSlicerMode(Character* character, Texture2D sprite) {
     const int infoX = 20;
     const int infoY = 40;
@@ -156,11 +116,6 @@ void RenderSlicerMode(Character* character, Texture2D sprite) {
 
     EndDrawing();
 }
-
-
-
-
-
 
 
 

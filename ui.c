@@ -41,7 +41,47 @@ bool DrawButton(const char *text, Rectangle btnBounds, Color baseColor) {
 }
 
 
-void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y) {
+/* void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y) { */
+/*     const int buttonHeight = 20; */
+/*     const int buttonWidth = 30; */
+/*     const int textPadding = 5; */
+/*     const int roundness = 5;  // Controls the roundness of the corners */
+
+/*     // Determine color based on type */
+/*     Color typeColor = RED;  // Default to red for int */
+/*     if (strcmp(type, "float") == 0) typeColor = BLUE; */
+/*     else if (strcmp(type, "char") == 0) typeColor = GREEN; */
+
+/*     // Draw type, name, and value texts */
+/*     DrawText(type, x, y, 10, BLACK); */
+/*     DrawText(name, x, y + buttonHeight + textPadding, 10, BLACK); */
+
+/*     // Create rectangles for the buttons and value display */
+/*     Rectangle minusRect = { x + MeasureText(type, 10) + textPadding, y, buttonWidth, buttonHeight }; */
+/*     Rectangle plusRect = { minusRect.x + buttonWidth + textPadding, y, buttonWidth, buttonHeight }; */
+/*     Rectangle valueRect = { minusRect.x + buttonWidth, y, textPadding, buttonHeight }; */
+/*     Rectangle fill = { minusRect.x + (buttonWidth * 3 / 4), y, plusRect.x - minusRect.x - (buttonWidth / 2), buttonHeight }; */
+
+
+
+/*     // Check for mouse interactions for incrementing and decrementing */
+/*     Vector2 mousePos = GetMousePosition(); */
+/*     if (CheckCollisionPointRec(mousePos, minusRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (*value > 1)) (*value)--; */
+/*     if (CheckCollisionPointRec(mousePos, plusRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) (*value)++; */
+
+/*     // Draw the buttons and value display */
+/*     DrawRectangleRounded(minusRect, roundness, 16, (Color){50, 50, 50, 255}); */
+/*     DrawRectangleRounded(plusRect, roundness, 16, (Color){50, 50, 50, 255}); */
+/*     DrawRectangle(fill.x, fill.y, fill.width, fill.height, WHITE); */
+/*     DrawRectangle(valueRect.x, valueRect.y, valueRect.width, valueRect.height, WHITE); */
+/*     DrawText(TextFormat("%d", *value), valueRect.x + valueRect.width / 2 - MeasureText(TextFormat("%d", *value), 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, BLACK); */
+/*     DrawText("-", minusRect.x + buttonWidth / 2 - MeasureText("-", 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, WHITE); */
+/*     DrawText("+", plusRect.x + buttonWidth / 2 - MeasureText("+", 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, WHITE); */
+/* } */
+
+
+
+void DrawIncrementerButton2(int *value, const char *name, const char *type, int x, int y) {
     int buttonWidth = 20;
     int buttonHeight = 20;
     int valueRectWidth = 30;
@@ -66,6 +106,74 @@ void DrawIncrementerButton(int *value, const char *name, const char *type, int x
     DrawText(TextFormat("%d", *value), buttonsXOffset + buttonWidth + 5, y + 5, 10, BLACK);
     if (DrawButton("+", (Rectangle){ buttonsXOffset + buttonWidth + valueRectWidth, y, buttonWidth, buttonHeight }, GREEN)) (*value)++;
 }
+
+
+
+
+void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y) {
+    const int buttonHeight = 20, buttonWidth = 30, textPadding = 6, roundness = 5, nameHeight = 10;
+    const float holdThreshold = 0.5f;
+    int nameWidth = MeasureText(name, 10);
+    int typeWidth = MeasureText(type, 10);
+    Color typeColor = (strcmp(type, "float") == 0) ? BLUE : RED;  // Assume RED for other types
+
+    // Draw rectangles below texts
+    Rectangle typeRect = {
+        x - 2,
+        y + nameHeight,
+        typeWidth + 4,
+        4
+    };
+    int nameRectPadding = 2;  // Small padding for the rectangle under the name
+    Rectangle nameRect = {
+        x + (buttonWidth * 1.5 + textPadding + 26 - nameWidth) / 2 - nameRectPadding,
+        y + buttonHeight + textPadding + nameHeight - nameRectPadding * 2 -8,  // Adjusted to cover text height
+        nameWidth + 2 * nameRectPadding,
+        nameHeight + 2 * nameRectPadding  // Adjusted to cover text height
+    };
+    DrawRectangleRec(typeRect, typeColor);
+    DrawRectangleRec(nameRect, typeColor);
+
+    // Draw type and name texts
+    DrawText(type, x, y, 10, WHITE);
+    DrawText(name, x + (buttonWidth * 1.5 + textPadding + 26 - nameWidth) / 2, y + buttonHeight + textPadding, 10, WHITE);
+
+    // Draw connecting pipe
+    int pipeX = x + typeWidth / 2;
+    int pipeYStart = y + nameHeight + 4;
+    int pipeYEnd = nameRect.y;  // Adjusted to connect precisely with the nameRect
+    int pipeWidth = 2;
+    DrawRectangle(pipeX - pipeWidth / 2, pipeYStart, pipeWidth, pipeYEnd - pipeYStart, typeColor);
+
+    // Button rectangles
+    Rectangle minusRect = { x + typeWidth + textPadding, y, buttonWidth, buttonHeight };
+    Rectangle plusRect = { minusRect.x + buttonWidth + textPadding, y, buttonWidth, buttonHeight };
+    Rectangle valueRect = { minusRect.x + buttonWidth, y, textPadding, buttonHeight };
+    Rectangle fill = { minusRect.x + (buttonWidth * 3 / 4), y, plusRect.x - minusRect.x - (buttonWidth / 2), buttonHeight };
+
+    // Interaction
+    Vector2 mousePos = GetMousePosition();
+    if (CheckCollisionPointRec(mousePos, minusRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (*value > 1)) {
+        (*value)--;
+    }
+    if (CheckCollisionPointRec(mousePos, plusRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        (*value)++;
+    }
+
+    // Draw buttons and value display
+    DrawRectangleRounded(minusRect, roundness, 16, (Color){50, 50, 50, 255});
+    DrawRectangleRounded(plusRect, roundness, 16, (Color){50, 50, 50, 255});
+    DrawRectangle(fill.x, fill.y, fill.width, fill.height, WHITE);
+    DrawRectangle(valueRect.x, valueRect.y, valueRect.width, valueRect.height, WHITE);
+    DrawText(TextFormat("%d", *value), valueRect.x + valueRect.width / 2 - MeasureText(TextFormat("%d", *value), 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, BLACK);
+
+    // Draw text for + and - buttons
+    Color minusTextColor = CheckCollisionPointRec(mousePos, minusRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? RED : WHITE;
+    Color plusTextColor = CheckCollisionPointRec(mousePos, plusRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? GREEN : WHITE;
+    DrawText("-", minusRect.x + buttonWidth / 2 - MeasureText("-", 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, minusTextColor);
+    DrawText("+", plusRect.x + buttonWidth / 2 - MeasureText("+", 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, plusTextColor);
+}
+
 
 
 
@@ -97,13 +205,6 @@ void DrawIncrementerButton(int *value, const char *name, const char *type, int x
 /*     return slider->value;  // Return the current value of the slider */
 /* } */
 
-
-
-
-
-
-
-
 bool DrawToggleButton(Vector2 position, bool currentState, const char *text) {
     const int buttonHeight = 20;
     const int squareSize = 10;
@@ -124,7 +225,6 @@ bool DrawToggleButton(Vector2 position, bool currentState, const char *text) {
 
     return currentState;
 }
-
 
 
 

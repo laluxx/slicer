@@ -11,14 +11,9 @@
 
 
 
-
-
-
-
-
 // INSPECTORS
 #define CHARACTER_INSPECTOR_TEXT_SIZE 20
-void DrawCharacterCordinatesInspector(Character character) {
+void DrawCharacterCoordinatesInspector(Character character) {
     int xOffset = 10;  // Offset from the left where text starts
     int yOffset = 10;  // Offset from the top where text starts
 
@@ -33,7 +28,7 @@ void DrawCharacterCordinatesInspector(Character character) {
 }
 
 void DrawCharacterInspector(Character character, Texture2D sprite, int frameCounter) {
-    DrawCharacterCordinatesInspector(character);
+    DrawCharacterCoordinatesInspector(character);
 
 
     Vector2 bigSpritePosition = { SCREEN_WIDTH - 100, SCREEN_HEIGHT - 180 };
@@ -88,12 +83,6 @@ void DrawSlicerInspector(Texture2D sprite) {
         }
     }
 }
-
-
-
-
-
-
 
 
 // Define the paths to the key images
@@ -153,7 +142,7 @@ typedef struct Cursor {
 } Cursor;
 
 bool cameraManagerEnabled = false;
-bool coordinateLinesEnabled = false;
+bool coordinateLinesEnabled = true;
 
 // Define the paths to the mouse button images
 #define MOUSE_LEFT_KEY_PATH "./icons/input-prompts/KeyboardandMouse/Dark/Mouse_Left_Key_Dark.png"
@@ -211,31 +200,6 @@ void DrawMouseInspector(void) {
     }
 }
 
-
-// Function to draw the cursor coordinates
-/* void DrawCursorCoordinatesInspector(Cursor cursor) { */
-/*     int xOffset = 10;  // Offset from the left where text starts */
-/*     int yOffset = 10;  // Offset from the top where text starts */
-
-/*     Vector2 positionTextPos = { SCREEN_WIDTH - 370 + xOffset, SCREEN_HEIGHT - 1030 + yOffset }; */
-
-/*     char xPosStr[20], yPosStr[20]; */
-/*     snprintf(xPosStr, sizeof(xPosStr), "%d", cursor.x); */
-/*     snprintf(yPosStr, sizeof(yPosStr), "%d", cursor.y); */
-
-/*     // Drawing "x: " and "y: " in red and blue */
-/*     DrawText("x: ", positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED); */
-/*     DrawText(xPosStr, positionTextPos.x + MeasureText("x: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED); */
-
-/*     DrawText("y: ", positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE); */
-/*     DrawText(yPosStr, positionTextPos.x + MeasureText("y: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE); */
-/* } */
-
-
-
-
-
-
 // Function to draw the cursor coordinates and toggle buttons
 void DrawCursorCoordinatesInspector(Cursor cursor) {
     int xOffset = 10;  // Offset from the left where text starts
@@ -269,25 +233,20 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
     }
 
 }
-
-
-
-
 // INSPECTORS END
-
-
-
 
 
 
 // CAMERA MANAGER
 #define LERP_AMOUNT 0.05f
 
-// CameraManager Struct
+// CameraManager START
 typedef struct {
     Camera2D camera;
     float lerpAmount;
 } CameraManager;
+
+CameraManager cameraManager;
 
 float Lerp(float start, float end, float amount) {
     return start + amount * (end - start);
@@ -306,16 +265,156 @@ void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
     cm->camera.target.x = Lerp(cm->camera.target.x, targetPosition.x, cm->lerpAmount);
     cm->camera.target.y = Lerp(cm->camera.target.y, targetPosition.y, cm->lerpAmount);
 }
+// CameraManager END
 
 
 
 
 
-CameraManager cameraManager;
+
+
+
+
+/* // TODO refactor the window section */
+/* // Window Struct Definition */
+/* typedef struct Window { */
+/*     Vector2 position; */
+/*     Vector2 size; */
+/*     const char *title; */
+/*     bool isMovable; */
+/*     bool isResizable; */
+/*     bool isClosed; */
+/* } Window; */
+
+/* // Function to Initialize a Window */
+/* Window CreateWindow(Vector2 position, Vector2 size, const char *title) { */
+/*     Window window = { position, size, title, true, true, false }; */
+/*     return window; */
+/* } */
+
+/* // Function to Draw the Window */
+/* void DrawWindow(Window *window) { */
+/*     if (window->isClosed) return; */
+
+/*     // Draw the window frame */
+/*     DrawRectangle(window->position.x, window->position.y, window->size.x, window->size.y, DARKGRAY); */
+
+/*     // Draw the title bar */
+/*     Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 };  // Assuming a 20 pixel high title bar */
+/*     DrawRectangleRec(titleBarRect, GRAY); */
+/*     DrawText(window->title, window->position.x + 5, window->position.y + 5, 10, BLACK); */
+
+/*     // Draw close button */
+/*     Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 };  // Assuming a 20x10 close button */
+/*     DrawRectangleRec(closeButtonRect, RED); */
+/*     DrawText("X", closeButtonRect.x + 7, closeButtonRect.y + 1, 10, BLACK); */
+/* } */
+
+/* // TODO this variable should */
+/* // be in the window struct */
+/* bool windowEnabled = false; */
+
+/* // Function to Update the Window */
+/* void UpdateWindow(Window *window) { */
+/*     if (window->isClosed) return; */
+
+/*     // Movable logic */
+/*     if (window->isMovable) { */
+/*         Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 }; */
+/*         if (CheckCollisionPointRec(GetMousePosition(), titleBarRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) { */
+/*             window->position.x += GetMouseDelta().x; */
+/*             window->position.y += GetMouseDelta().y; */
+/*         } */
+/*     } */
+
+/*     // Close button logic */
+/*     Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 }; */
+/*     if (CheckCollisionPointRec(GetMousePosition(), closeButtonRect) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) { */
+/*         /\* window->isClosed = true; *\/ */
+/*         windowEnabled = false; */
+/*     } */
+
+/*     // Resizable logic */
+/*     // ... (if needed) */
+/* } */
+
+
+// Window Struct Definition
+typedef struct Window {
+    Vector2 position;
+    Vector2 size;
+    const char *title;
+    bool isMovable;
+    bool isResizable;
+    bool isClosed;
+    bool isEnabled;  // Moved windowEnabled here
+} Window;
+
+// Function to Initialize a Window
+Window CreateWindow(Vector2 position, Vector2 size, const char *title) {
+    Window window = { position, size, title, true, true, false, false };  // Initialize isEnabled to false
+    return window;
+}
+
+// Function to Draw the Window
+void DrawWindow(Window *window) {
+    if (!window->isEnabled || window->isClosed) return;  // Check both isClosed and isEnabled
+
+    // Draw the window frame
+    DrawRectangle(window->position.x, window->position.y, window->size.x, window->size.y, DARKGRAY);
+
+    // Draw the title bar
+    Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 };  // Assuming a 20 pixel high title bar
+    DrawRectangleRec(titleBarRect, GRAY);
+    DrawText(window->title, window->position.x + 5, window->position.y + 5, 10, BLACK);
+
+    // Draw close button
+    Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 };  // Assuming a 20x10 close button
+    DrawRectangleRec(closeButtonRect, RED);
+    DrawText("X", closeButtonRect.x + 7, closeButtonRect.y + 1, 10, BLACK);
+}
+
+// Function to Update the Window
+void UpdateWindow(Window *window) {
+    if (!window->isEnabled || window->isClosed) return;  // Check both isClosed and isEnabled
+
+    // Movable logic
+    if (window->isMovable) {
+        Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 };
+        if (CheckCollisionPointRec(GetMousePosition(), titleBarRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+            window->position.x += GetMouseDelta().x;
+            window->position.y += GetMouseDelta().y;
+        }
+    }
+
+    // Close button logic
+    Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 };
+    if (CheckCollisionPointRec(GetMousePosition(), closeButtonRect) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        /* window->isClosed = true;  // Changed to modify isClosed of the window struct */
+        window->isEnabled = !window->isEnabled;
+    }
+
+    // Resizable logic
+    // ... (if needed)
+}
+
+
+
+
+
+
+
+
+
 
 int main(void) {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Sprite Slicer");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     Texture2D sprite = LoadTexture("./sprite.png");
+
+    Window myWindow;  // Declare myWindow with type Window
+    myWindow = CreateWindow((Vector2){200, 100}, (Vector2){400, 300}, "My Window");
+
+
     Character character = { { (float)SCREEN_WIDTH/2, (float)SCREEN_HEIGHT/2 }, IDLE_DOWN, IDLE_DOWN };
     int frameCounter = 0;
     SetTargetFPS(144);
@@ -379,13 +478,32 @@ int main(void) {
                 DrawMouseInspector();
                 DrawCursorCoordinatesLines(cursor);
                 DrawPanels();
+
+
+
+
                 DrawCursorCoordinatesInspector(cursor);
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
                 DrawEditorLog(panel.bottomHeight);
                 DrawCharacter(character, sprite, frameCounter);
                 DrawCharacterInspector(character, sprite, frameCounter);
+
+
+                /* bool windowState = DrawToggleButton((Vector2){100, 100}, myWindow.isEnabled, myWindow.isEnabled ? "Hide Window" : "Show Window"); */
+                bool windowState = DrawToggleButton((Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 600}, myWindow.isEnabled, myWindow.isEnabled ? "Hide Window" : "Show Window");
+
+                if (windowState != myWindow.isEnabled) {
+                    myWindow.isEnabled = windowState;  // Toggle window visibility based on the button
+                }
+
+                if (myWindow.isEnabled) {  // Check myWindow.isEnabled instead of windowEnabled
+                    UpdateWindow(&myWindow);
+                    DrawWindow(&myWindow);
+                }
                 break;
+
+
             case MODE_SLICER:
                 UpdatePanelsDimensions();
                 ClosePanel('T');  // Close top panel
