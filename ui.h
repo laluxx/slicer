@@ -12,5 +12,5 @@ extern int buttonYStart;
 
 bool DrawButton(const char *text, Rectangle btnBounds, Color baseColor);
 void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y);
-
+bool DrawToggleButton(Vector2 position, bool currentState, const char *text);
 #endif  // UI_H
