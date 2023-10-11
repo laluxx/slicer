@@ -4,6 +4,8 @@
 #include "raylib.h"  // Include this if raylib is used for graphical elements
 #include <stdbool.h>  // Include this for the bool type
 #include <string.h>
+
+
 extern int BUTTON_FONT_SIZE;
 extern int buttonWidth;
 extern int buttonHeight;

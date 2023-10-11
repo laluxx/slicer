@@ -8,6 +8,7 @@
 #include "stdlib.h"
 #include "modes.h"
 #include "ui.h"
+#include "window.h"
 
 
 
@@ -219,7 +220,6 @@ void DrawCursorCoordinatesInspector(Cursor cursor) {
     DrawText(yPosStr, positionTextPos.x + MeasureText("y: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
 
     // Draw toggle buttons
-    cameraManagerEnabled = DrawToggleButton((Vector2){ SCREEN_WIDTH - 390, SCREEN_HEIGHT - 950 }, cameraManagerEnabled, "Camera Manager");
     coordinateLinesEnabled = DrawToggleButton2((Vector2){ SCREEN_WIDTH - 390, SCREEN_HEIGHT - 910 }, coordinateLinesEnabled, "Coordinate Lines");
 
 }
@@ -233,12 +233,18 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
     }
 
 }
+
+
+
+void DrawCameraInspector(){
+    cameraManagerEnabled = DrawToggleButton((Vector2){ SCREEN_WIDTH - 295, SCREEN_HEIGHT - 350 }, cameraManagerEnabled, "Camera Manager");
+}
+
+
 // INSPECTORS END
 
-
-
 // CAMERA MANAGER
-#define LERP_AMOUNT 0.05f
+#define LERP_AMOUNT 0.030f
 
 // CameraManager START
 typedef struct {
@@ -268,145 +274,6 @@ void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
 // CameraManager END
 
 
-
-
-
-
-
-
-
-/* // TODO refactor the window section */
-/* // Window Struct Definition */
-/* typedef struct Window { */
-/*     Vector2 position; */
-/*     Vector2 size; */
-/*     const char *title; */
-/*     bool isMovable; */
-/*     bool isResizable; */
-/*     bool isClosed; */
-/* } Window; */
-
-/* // Function to Initialize a Window */
-/* Window CreateWindow(Vector2 position, Vector2 size, const char *title) { */
-/*     Window window = { position, size, title, true, true, false }; */
-/*     return window; */
-/* } */
-
-/* // Function to Draw the Window */
-/* void DrawWindow(Window *window) { */
-/*     if (window->isClosed) return; */
-
-/*     // Draw the window frame */
-/*     DrawRectangle(window->position.x, window->position.y, window->size.x, window->size.y, DARKGRAY); */
-
-/*     // Draw the title bar */
-/*     Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 };  // Assuming a 20 pixel high title bar */
-/*     DrawRectangleRec(titleBarRect, GRAY); */
-/*     DrawText(window->title, window->position.x + 5, window->position.y + 5, 10, BLACK); */
-
-/*     // Draw close button */
-/*     Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 };  // Assuming a 20x10 close button */
-/*     DrawRectangleRec(closeButtonRect, RED); */
-/*     DrawText("X", closeButtonRect.x + 7, closeButtonRect.y + 1, 10, BLACK); */
-/* } */
-
-/* // TODO this variable should */
-/* // be in the window struct */
-/* bool windowEnabled = false; */
-
-/* // Function to Update the Window */
-/* void UpdateWindow(Window *window) { */
-/*     if (window->isClosed) return; */
-
-/*     // Movable logic */
-/*     if (window->isMovable) { */
-/*         Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 }; */
-/*         if (CheckCollisionPointRec(GetMousePosition(), titleBarRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) { */
-/*             window->position.x += GetMouseDelta().x; */
-/*             window->position.y += GetMouseDelta().y; */
-/*         } */
-/*     } */
-
-/*     // Close button logic */
-/*     Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 }; */
-/*     if (CheckCollisionPointRec(GetMousePosition(), closeButtonRect) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) { */
-/*         /\* window->isClosed = true; *\/ */
-/*         windowEnabled = false; */
-/*     } */
-
-/*     // Resizable logic */
-/*     // ... (if needed) */
-/* } */
-
-
-// Window Struct Definition
-typedef struct Window {
-    Vector2 position;
-    Vector2 size;
-    const char *title;
-    bool isMovable;
-    bool isResizable;
-    bool isClosed;
-    bool isEnabled;  // Moved windowEnabled here
-} Window;
-
-// Function to Initialize a Window
-Window CreateWindow(Vector2 position, Vector2 size, const char *title) {
-    Window window = { position, size, title, true, true, false, false };  // Initialize isEnabled to false
-    return window;
-}
-
-// Function to Draw the Window
-void DrawWindow(Window *window) {
-    if (!window->isEnabled || window->isClosed) return;  // Check both isClosed and isEnabled
-
-    // Draw the window frame
-    DrawRectangle(window->position.x, window->position.y, window->size.x, window->size.y, DARKGRAY);
-
-    // Draw the title bar
-    Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 };  // Assuming a 20 pixel high title bar
-    DrawRectangleRec(titleBarRect, GRAY);
-    DrawText(window->title, window->position.x + 5, window->position.y + 5, 10, BLACK);
-
-    // Draw close button
-    Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 };  // Assuming a 20x10 close button
-    DrawRectangleRec(closeButtonRect, RED);
-    DrawText("X", closeButtonRect.x + 7, closeButtonRect.y + 1, 10, BLACK);
-}
-
-// Function to Update the Window
-void UpdateWindow(Window *window) {
-    if (!window->isEnabled || window->isClosed) return;  // Check both isClosed and isEnabled
-
-    // Movable logic
-    if (window->isMovable) {
-        Rectangle titleBarRect = { window->position.x, window->position.y, window->size.x, 20 };
-        if (CheckCollisionPointRec(GetMousePosition(), titleBarRect) && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-            window->position.x += GetMouseDelta().x;
-            window->position.y += GetMouseDelta().y;
-        }
-    }
-
-    // Close button logic
-    Rectangle closeButtonRect = { window->position.x + window->size.x - 25, window->position.y + 5, 20, 10 };
-    if (CheckCollisionPointRec(GetMousePosition(), closeButtonRect) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        /* window->isClosed = true;  // Changed to modify isClosed of the window struct */
-        window->isEnabled = !window->isEnabled;
-    }
-
-    // Resizable logic
-    // ... (if needed)
-}
-
-
-
-
-
-
-
-
-
-
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     Texture2D sprite = LoadTexture("./sprite.png");
@@ -426,7 +293,6 @@ int main(void) {
     // SLICE MODE
     buttonYStart = SCREEN_HEIGHT - (buttonHeight + buttonSpacing) * 6;
 
-    InitializePixelEditor("./sprite.png");  // Initialize the pixel edit
 
     // CAMERA MANAGER
     InitializeCameraManager(&cameraManager, character.position);  // Initialize the camera manager
@@ -478,9 +344,9 @@ int main(void) {
                 DrawMouseInspector();
                 DrawCursorCoordinatesLines(cursor);
                 DrawPanels();
+                DrawFPS(10, 10);
 
-
-
+                DrawCameraInspector();
 
                 DrawCursorCoordinatesInspector(cursor);
                 DrawWASDInspector();
@@ -505,6 +371,7 @@ int main(void) {
 
 
             case MODE_SLICER:
+                DrawFPS(10, 10);
                 UpdatePanelsDimensions();
                 ClosePanel('T');  // Close top panel
                 ClosePanel('B');  // Close bottom panel
@@ -514,10 +381,6 @@ int main(void) {
                 DrawPanels();  // Draw all panels
                 RenderSlicerMode(&character, sprite);
                 DrawCharacter(character, sprite, frameCounter);
-                break;
-            case MODE_PIXEL_EDITOR:
-                UpdatePixelEditor();  // Update the pixel editor
-                RenderPixelEditorMode();    // Draw the pixel editor UI
                 break;
             default:
                 break;
@@ -532,7 +395,6 @@ int main(void) {
     }
 
     // Freeing memory
-    UnloadTexture(pixelEditor.canvasTexture);  // Unload the canvas texture
     UnloadTexture(sprite);
     UnloadMouseTextures();
     CloseWindow();
