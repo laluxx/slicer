@@ -127,9 +127,9 @@ void DrawIncrementerButton(int *value, const char *name, const char *type, int x
     int nameRectPadding = 2;  // Small padding for the rectangle under the name
     Rectangle nameRect = {
         x + (buttonWidth * 1.5 + textPadding + 26 - nameWidth) / 2 - nameRectPadding,
-        y + buttonHeight + textPadding + nameHeight - nameRectPadding * 2 -8,  // Adjusted to cover text height
+        y + buttonHeight + textPadding + nameHeight - nameRectPadding * 2 -0,  // Adjusted to cover text height
         nameWidth + 2 * nameRectPadding,
-        nameHeight + 2 * nameRectPadding  // Adjusted to cover text height
+        nameHeight + 2 /* * nameRectPadding */  // Adjusted to cover text height
     };
     DrawRectangleRec(typeRect, typeColor);
     DrawRectangleRec(nameRect, typeColor);
@@ -227,8 +227,6 @@ bool DrawToggleButton(Vector2 position, bool currentState, const char *text) {
 }
 
 
-
-
 // FAKE GLOW TOGGLE
 bool DrawToggleButton2(Vector2 position, bool currentState, const char *text) {
     const int buttonHeight = 20;
@@ -258,6 +256,5 @@ bool DrawToggleButton2(Vector2 position, bool currentState, const char *text) {
 
     return currentState;
 }
-
 
 

@@ -10,6 +10,9 @@
 #include "ui.h"
 #include "window.h"
 
+#include <unistd.h>
+
+
 
 
 // INSPECTORS
@@ -240,8 +243,11 @@ void DrawCameraInspector(){
     cameraManagerEnabled = DrawToggleButton((Vector2){ SCREEN_WIDTH - 295, SCREEN_HEIGHT - 350 }, cameraManagerEnabled, "Camera Manager");
 }
 
-
 // INSPECTORS END
+
+
+
+
 
 // CAMERA MANAGER
 #define LERP_AMOUNT 0.030f
@@ -271,12 +277,34 @@ void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
     cm->camera.target.x = Lerp(cm->camera.target.x, targetPosition.x, cm->lerpAmount);
     cm->camera.target.y = Lerp(cm->camera.target.y, targetPosition.y, cm->lerpAmount);
 }
+
+
+
+
+
+
+
+
 // CameraManager END
+
+
+
+
+
+
+
+
+
+
+
+// blur
+RenderTexture2D target;
 
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     Texture2D sprite = LoadTexture("./sprite.png");
+    target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()); // blur
 
     Window myWindow;  // Declare myWindow with type Window
     myWindow = CreateWindow((Vector2){200, 100}, (Vector2){400, 300}, "My Window");
@@ -315,6 +343,22 @@ int main(void) {
             };
         }
 
+        // Check for F5 key press
+        if (IsKeyPressed(KEY_F5)) {
+            // Save any necessary game state here
+
+            // Run the make command
+            system("make");
+
+            // Restart the game engine
+            char *args[] = { "./slicer", NULL };  // Assuming the binary name is "slicer"
+            execv(args[0], args);
+
+            // If execv fails, you can handle the error here
+            perror("Failed to reload the game engine");
+            exit(1);
+        }
+
         if (IsKeyPressed(KEY_N)) {
             if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
                 EditorPreviousMode();
@@ -344,10 +388,10 @@ int main(void) {
                 DrawMouseInspector();
                 DrawCursorCoordinatesLines(cursor);
                 DrawPanels();
-                DrawFPS(10, 10);
+                /* DrawFPS(10, 10); */
+                DrawModeBar();
 
                 DrawCameraInspector();
-
                 DrawCursorCoordinatesInspector(cursor);
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
@@ -366,12 +410,13 @@ int main(void) {
                 if (myWindow.isEnabled) {  // Check myWindow.isEnabled instead of windowEnabled
                     UpdateWindow(&myWindow);
                     DrawWindow(&myWindow);
+
                 }
                 break;
 
 
             case MODE_SLICER:
-                DrawFPS(10, 10);
+                DrawModeBar();
                 UpdatePanelsDimensions();
                 ClosePanel('T');  // Close top panel
                 ClosePanel('B');  // Close bottom panel

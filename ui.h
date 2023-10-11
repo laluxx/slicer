@@ -4,6 +4,16 @@
 #include "raylib.h"  // Include this if raylib is used for graphical elements
 #include <stdbool.h>  // Include this for the bool type
 #include <string.h>
+#include <math.h>
+
+typedef struct {
+    Rectangle bounds;
+    bool active;
+    char value[32];
+    int cursorPosition;
+    double cursorBlinkTime;
+} ValueEditor;
+
 
 
 extern int BUTTON_FONT_SIZE;
@@ -16,4 +26,5 @@ bool DrawButton(const char *text, Rectangle btnBounds, Color baseColor);
 void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y);
 bool DrawToggleButton(Vector2 position, bool currentState, const char *text);
 bool DrawToggleButton2(Vector2 position, bool currentState, const char *text);
+
 #endif  // UI_H
