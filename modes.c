@@ -209,3 +209,118 @@ void RenderSlicerMode(Character* character, Texture2D sprite) {
 
     EndDrawing();
 }
+
+
+
+// UI EDITOR
+UIButton availableButtons[BUTTON_COUNT] = {
+    {"Button 1", {0, 0, 100, 50}, RED},
+    {"Incrementer", {0, 0, 150, 50}, BLUE}
+};
+
+UIButton placedButtons[MAX_PLACED_BUTTONS];
+int placedButtonCount = 0;
+UIButton *selectedForPlacement = NULL;
+UIButton *selectedPlacedButton = NULL;
+
+/* void RenderUIEditorMode() { */
+/*     // Draw available buttons at the bottom for selection */
+/*     int startX = 10; */
+/*     int previewHeight = 60; */
+/*     int startY = GetScreenHeight() - previewHeight; */
+
+/*     for (int i = 0; i < BUTTON_COUNT; i++) { */
+/*         Rectangle btnBounds = availableButtons[i].bounds; */
+/*         btnBounds.y = startY; */
+/*         btnBounds.x = startX; */
+
+/*         if (DrawButton(availableButtons[i].text, btnBounds, availableButtons[i].color)) { */
+/*             selectedForPlacement = &availableButtons[i]; */
+/*             selectedPlacedButton = NULL; */
+/*         } */
+
+/*         startX += btnBounds.width + 10; */
+/*     } */
+
+/*     Vector2 mousePos = GetMousePosition(); */
+
+/*     // Place a new button if one is selected for placement */
+/*     if (selectedForPlacement && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mousePos.y < startY) { */
+/*         UIButton newButton = *selectedForPlacement; */
+/*         newButton.bounds.x = mousePos.x - newButton.bounds.width / 2;   // Centered placement */
+/*         newButton.bounds.y = mousePos.y - newButton.bounds.height / 2; */
+/*         placedButtons[placedButtonCount++] = newButton; */
+/*         selectedPlacedButton = &placedButtons[placedButtonCount - 1]; */
+/*         selectedForPlacement = NULL; */
+/*     } */
+
+/*     // Render placed buttons and handle their selection */
+/*     for (int i = 0; i < placedButtonCount; i++) { */
+/*         if (DrawButton(placedButtons[i].text, placedButtons[i].bounds, placedButtons[i].color)) { */
+/*             selectedPlacedButton = &placedButtons[i]; */
+/*         } */
+
+/*         // Draw the 2D gizmo if this button is selected */
+/*         if (selectedPlacedButton == &placedButtons[i]) { */
+/*             DrawRectangleLinesEx((Rectangle) { placedButtons[i].bounds.x + placedButtons[i].bounds.width, placedButtons[i].bounds.y, 20, placedButtons[i].bounds.height }, 2, RED); */
+/*             DrawRectangleLinesEx((Rectangle) { placedButtons[i].bounds.x, placedButtons[i].bounds.y - 20, placedButtons[i].bounds.width, 20 }, 2, BLUE); */
+/*         } */
+/*     } */
+
+/*     // Deselect the placed button if we click outside */
+/*     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedPlacedButton && !CheckCollisionPointRec(mousePos, selectedPlacedButton->bounds)) { */
+/*         selectedPlacedButton = NULL; */
+/*     } */
+/* } */
+
+
+
+void RenderUIEditorMode() {
+    // Draw available buttons at the bottom for selection
+    int startX = 10;
+    int previewHeight = 60;
+    int startY = GetScreenHeight() - previewHeight;
+
+    for (int i = 0; i < BUTTON_COUNT; i++) {
+        Rectangle btnBounds = availableButtons[i].bounds;
+        btnBounds.y = startY;
+        btnBounds.x = startX;
+
+        if (DrawButton(availableButtons[i].text, btnBounds, availableButtons[i].color)) {
+            selectedForPlacement = &availableButtons[i];
+            selectedPlacedButton = NULL;
+        }
+
+        startX += btnBounds.width + 10;
+    }
+
+    Vector2 mousePos = GetMousePosition();
+
+    // Place a new button if one is selected for placement
+    if (selectedForPlacement && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mousePos.y < startY) {
+        UIButton newButton = *selectedForPlacement;
+        newButton.bounds.x = mousePos.x - newButton.bounds.width / 2;   // Centered placement
+        newButton.bounds.y = mousePos.y - newButton.bounds.height / 2;
+        placedButtons[placedButtonCount++] = newButton;
+        selectedPlacedButton = &placedButtons[placedButtonCount - 1];
+        selectedForPlacement = NULL;
+    }
+
+    // Render placed buttons and handle their selection
+    for (int i = 0; i < placedButtonCount; i++) {
+        if (DrawButton(placedButtons[i].text, placedButtons[i].bounds, placedButtons[i].color)) {
+            selectedPlacedButton = &placedButtons[i];
+        }
+
+        // Draw the 2D gizmo if this button is selected
+        if (selectedPlacedButton == &placedButtons[i]) {
+            DrawRectangleLinesEx((Rectangle) { placedButtons[i].bounds.x + placedButtons[i].bounds.width, placedButtons[i].bounds.y, 20, placedButtons[i].bounds.height }, 2, RED);
+            DrawRectangleLinesEx((Rectangle) { placedButtons[i].bounds.x, placedButtons[i].bounds.y - 20, placedButtons[i].bounds.width, 20 }, 2, BLUE);
+        }
+    }
+
+    // Deselect the placed button if we click outside
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedPlacedButton && !CheckCollisionPointRec(mousePos, selectedPlacedButton->bounds)) {
+        selectedPlacedButton = NULL;
+    }
+}

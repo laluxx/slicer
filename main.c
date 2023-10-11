@@ -427,6 +427,16 @@ int main(void) {
                 RenderSlicerMode(&character, sprite);
                 DrawCharacter(character, sprite, frameCounter);
                 break;
+            case MODE_UI_EDITOR:
+                DrawModeBar();
+                UpdatePanelsDimensions();
+                ClosePanel('T');  // Close top panel
+                ClosePanel('R');  // Close right panel
+                ClosePanel('L');  // Close left panela
+
+                DrawPanel('B', 70.0f);  // for a fixed bottom panel
+                DrawPanels();  // Draw all panels
+                RenderUIEditorMode();
             default:
                 break;
         }

@@ -11,6 +11,7 @@
 typedef enum {
     MODE_DEFAULT,
     MODE_SLICER,
+    MODE_UI_EDITOR,
     MODE_MAX
 } EditorMode;
 
@@ -25,6 +26,25 @@ void DrawModeBar(void);
 
 /* void RenderSlicerMode(Texture2D sprite); */
 void RenderSlicerMode(Character* character, Texture2D sprite);
+
+
+void RenderUIEditorMode(void);   // New function declaration
+// UI Editor related structures and variables
+typedef struct {
+    char text[50];
+    Rectangle bounds;
+    Color color;
+} UIButton;
+
+#define BUTTON_COUNT 2
+#define MAX_PLACED_BUTTONS 100
+
+extern UIButton availableButtons[BUTTON_COUNT];
+extern UIButton placedButtons[MAX_PLACED_BUTTONS];
+extern int placedButtonCount;
+extern UIButton *selectedForPlacement;
+extern UIButton *selectedPlacedButton;
+
 
 
 #endif  // MODES_H

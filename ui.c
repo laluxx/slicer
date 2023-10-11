@@ -132,7 +132,7 @@ void DrawIncrementerButton(int *value, const char *name, const char *type, int x
         nameHeight + 2 /* * nameRectPadding */  // Adjusted to cover text height
     };
     DrawRectangleRec(typeRect, typeColor);
-    DrawRectangleRec(nameRect, typeColor);
+    /* DrawRectangleRec(nameRect, typeColor); */
 
     // Draw type and name texts
     DrawText(type, x, y, 10, WHITE);
@@ -143,7 +143,7 @@ void DrawIncrementerButton(int *value, const char *name, const char *type, int x
     int pipeYStart = y + nameHeight + 4;
     int pipeYEnd = nameRect.y;  // Adjusted to connect precisely with the nameRect
     int pipeWidth = 2;
-    DrawRectangle(pipeX - pipeWidth / 2, pipeYStart, pipeWidth, pipeYEnd - pipeYStart, typeColor);
+    /* DrawRectangle(pipeX - pipeWidth / 2, pipeYStart, pipeWidth, pipeYEnd - pipeYStart, typeColor); */
 
     // Button rectangles
     Rectangle minusRect = { x + typeWidth + textPadding, y, buttonWidth, buttonHeight };
