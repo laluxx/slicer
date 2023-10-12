@@ -237,13 +237,478 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
 
 }
 
-
-
+// TODO movable rect(camera) ontop of another rect(screen prportion)
+// this will visualize the proportion of the screen, camera and let the camera be move by dragging the camera rect
 void DrawCameraInspector(){
     cameraManagerEnabled = DrawToggleButton((Vector2){ SCREEN_WIDTH - 295, SCREEN_HEIGHT - 350 }, cameraManagerEnabled, "Camera Manager");
 }
 
+
+
 // INSPECTORS END
+
+
+
+
+
+// FILE MANAGER
+/* #include <dirent.h> */
+/* #include <string.h> */
+
+/* // File Manager Structure */
+/* typedef struct { */
+/*     char** files; */
+/*     int fileCount; */
+/*     int selectedIndex; */
+/*     char currentDir[1024]; */
+/* } FileManager; */
+
+/* FileManager fm; */
+
+/* // Initialize the FileManager */
+/* void InitializeFileManager(const char* startDir) { */
+/*     fm.files = NULL; */
+/*     fm.fileCount = 0; */
+/*     fm.selectedIndex = 0; */
+
+/*     // Get the absolute path of the current directory */
+/*     getcwd(fm.currentDir, sizeof(fm.currentDir)); */
+
+/*     UpdateFileList(); */
+/* } */
+
+
+/* // Load the list of files and directories for the current directory */
+/* void UpdateFileList() { */
+/*     // Free previously loaded files */
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         free(fm.files[i]); */
+/*     } */
+/*     free(fm.files); */
+/*     fm.files = NULL; */
+/*     fm.fileCount = 0; */
+
+/*     DIR* dir = opendir(fm.currentDir); */
+/*     if (dir == NULL) return; */
+
+/*     struct dirent* entry; */
+/*     while ((entry = readdir(dir)) != NULL) { */
+/*         // Skip "." and ".." entries */
+/*         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) { */
+/*             continue; */
+/*         } */
+
+/*         fm.fileCount++; */
+/*         fm.files = realloc(fm.files, fm.fileCount * sizeof(char*)); */
+/*         fm.files[fm.fileCount - 1] = strdup(entry->d_name); */
+/*     } */
+/*     closedir(dir); */
+/* } */
+
+
+/* // Draw the FileManager on screen */
+/* void DrawFileManager() { */
+/*     // Draw the current directory path */
+/*     DrawText(fm.currentDir, 10, 1000, 20, WHITE); */
+
+/*     // Draw the list of files and directories */
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         Color color = (i == fm.selectedIndex) ? YELLOW : WHITE; */
+/*         DrawText(fm.files[i], 10, 40 + i * 25, 20, color); */
+/*     } */
+/* } */
+
+
+/* // Navigate up */
+/* void NavigateUp() { */
+/*     fm.selectedIndex--; */
+/*     if (fm.selectedIndex < 0) { */
+/*         fm.selectedIndex = fm.fileCount - 1; */
+/*     } */
+/* } */
+
+/* // Navigate down */
+/* void NavigateDown() { */
+/*     fm.selectedIndex++; */
+/*     if (fm.selectedIndex >= fm.fileCount) { */
+/*         fm.selectedIndex = 0; */
+/*     } */
+/* } */
+
+/* // Navigate inside a directory or toggle it */
+/* void NavigateIn() { */
+/*     // Construct the new path */
+/*     char newPath[1024]; */
+/*     sprintf(newPath, "%s/%s", fm.currentDir, fm.files[fm.selectedIndex]); */
+
+/*     // Check if it's a directory */
+/*     DIR* dir = opendir(newPath); */
+/*     if (dir) { */
+/*         // It's a directory, navigate into it */
+/*         closedir(dir); */
+/*         strcpy(fm.currentDir, newPath); */
+/*         fm.selectedIndex = 0; */
+/*         UpdateFileList(); */
+/*     } */
+/*     // If it's a file, do nothing for now */
+/* } */
+
+/* // Navigate to the parent directory */
+/* void NavigateOut() { */
+/*     // Find the last '/' in the path */
+/*     char* lastSlash = strrchr(fm.currentDir, '/'); */
+/*     if (lastSlash) { */
+/*         *lastSlash = '\0'; */
+/*     } */
+/*     fm.selectedIndex = 0; */
+/*     UpdateFileList(); */
+/* } */
+
+/* // Handle input */
+/* void UpdateFileManager() { */
+/*     if (IsKeyPressed(KEY_H)) { */
+/*         NavigateOut(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_J)) { */
+/*         NavigateDown(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_K)) { */
+/*         NavigateUp(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_L)) { */
+/*         NavigateIn(); */
+/*     } */
+/* } */
+
+
+// ICONS
+/* #include <dirent.h> */
+/* #include <string.h> */
+
+/* // File Manager Structure */
+/* typedef struct { */
+/*     char** files; */
+/*     int fileCount; */
+/*     int selectedIndex; */
+/*     char currentDir[1024]; */
+/* } FileManager; */
+
+/* FileManager fm; */
+
+
+/* Texture2D GetIconForExtension(const char* extension) { */
+/*     // If extension is null or empty, return a default icon */
+/*     if (!extension || strlen(extension) == 0) { */
+/*         // You can specify a default icon here */
+/*         return LoadTexture("./icons/file-manager-icons/24/default.png"); */
+/*     } */
+
+/*     // Check for the '.' at the start of the extension and skip it */
+/*     if (extension[0] == '.') { */
+/*         extension++; */
+/*     } */
+
+/*     char iconPath[1024]; */
+/*     snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/%s.png", extension); */
+
+/*     printf("Trying to load icon: %s\n", iconPath); */
+
+/*     Texture2D texture = LoadTexture(iconPath); */
+/*     if (texture.id <= 0) { */
+/*         printf("Failed to load icon: %s\n", iconPath); */
+/*         // You can return a default texture here if you wish */
+/*     } */
+/*     return texture; */
+/* } */
+
+
+
+/* // Initialize the FileManager */
+/* void InitializeFileManager(const char* startDir) { */
+/*     fm.files = NULL; */
+/*     fm.fileCount = 0; */
+/*     fm.selectedIndex = 0; */
+/*     getcwd(fm.currentDir, sizeof(fm.currentDir)); */
+/*     UpdateFileList(); */
+/* } */
+
+/* // Load the list of files and directories for the current directory */
+/* void UpdateFileList() { */
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         free(fm.files[i]); */
+/*     } */
+/*     free(fm.files); */
+/*     fm.files = NULL; */
+/*     fm.fileCount = 0; */
+
+/*     DIR* dir = opendir(fm.currentDir); */
+/*     if (!dir) return; */
+
+/*     struct dirent* entry; */
+/*     while ((entry = readdir(dir)) != NULL) { */
+/*         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) { */
+/*             continue; */
+/*         } */
+/*         fm.fileCount++; */
+/*         fm.files = realloc(fm.files, fm.fileCount * sizeof(char*)); */
+/*         fm.files[fm.fileCount - 1] = strdup(entry->d_name); */
+/*     } */
+/*     closedir(dir); */
+/* } */
+
+/* void DrawFileManager() { */
+/*     // Draw the current directory path */
+/*     DrawText(fm.currentDir, 10, 1000, 20, WHITE); */
+
+/*     // Icon dimensions (assuming square icons) */
+/*     int iconSize = 24; */
+/*     int iconPadding = 4; // Space between the icon and the file name */
+
+/*     // Draw the list of files and directories */
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         // Get the icon for the file */
+/*         const char* ext = GetFileExtension(fm.files[i]); */
+/*         Texture2D icon = GetIconForExtension(ext); */
+
+/*         // Draw the icon */
+/*         DrawTexture(icon, 10, 40 + i * 25, WHITE); */
+
+/*         // Draw the file name offset to the right of the icon */
+/*         Color color = (i == fm.selectedIndex) ? YELLOW : WHITE; */
+/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, 20, color); */
+/*     } */
+/* } */
+
+
+/* void NavigateUp() { */
+/*     fm.selectedIndex--; */
+/*     if (fm.selectedIndex < 0) { */
+/*         fm.selectedIndex = fm.fileCount - 1; */
+/*     } */
+/* } */
+
+/* void NavigateDown() { */
+/*     fm.selectedIndex++; */
+/*     if (fm.selectedIndex >= fm.fileCount) { */
+/*         fm.selectedIndex = 0; */
+/*     } */
+/* } */
+
+/* void NavigateIn() { */
+/*     char newPath[1024]; */
+/*     sprintf(newPath, "%s/%s", fm.currentDir, fm.files[fm.selectedIndex]); */
+/*     DIR* dir = opendir(newPath); */
+/*     if (dir) { */
+/*         closedir(dir); */
+/*         strcpy(fm.currentDir, newPath); */
+/*         fm.selectedIndex = 0; */
+/*         UpdateFileList(); */
+/*     } */
+/* } */
+
+/* void NavigateOut() { */
+/*     char* lastSlash = strrchr(fm.currentDir, '/'); */
+/*     if (lastSlash) { */
+/*         *lastSlash = '\0'; */
+/*     } */
+/*     fm.selectedIndex = 0; */
+/*     UpdateFileList(); */
+/* } */
+
+/* void UpdateFileManager() { */
+/*     if (IsKeyPressed(KEY_H)) { */
+/*         NavigateOut(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_J)) { */
+/*         NavigateDown(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_K)) { */
+/*         NavigateUp(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_L)) { */
+/*         NavigateIn(); */
+/*     } */
+/* } */
+
+
+
+#include <dirent.h>
+#include <string.h>
+
+// File Manager Structure
+typedef struct {
+    char** files;
+    int fileCount;
+    int selectedIndex;
+    char currentDir[1024];
+} FileManager;
+
+FileManager fm;
+
+
+void UpdateFileList() {
+    for (int i = 0; i < fm.fileCount; i++) {
+        free(fm.files[i]);
+    }
+    free(fm.files);
+    fm.files = NULL;
+    fm.fileCount = 0;
+
+    DIR* dir = opendir(fm.currentDir);
+    if (!dir) return;
+
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+        fm.fileCount++;
+        fm.files = realloc(fm.files, fm.fileCount * sizeof(char*));
+        fm.files[fm.fileCount - 1] = strdup(entry->d_name);
+    }
+    closedir(dir);
+}
+
+/* Texture2D GetIconForExtension(const char* extension) { */
+/*     char iconPath[1024]; */
+
+/*     // If extension is null or empty, return a default icon */
+/*     if (!extension || strlen(extension) == 0) { */
+/*         snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/default.png"); */
+/*         return LoadTexture(iconPath); */
+/*     } */
+
+/*     // Check for the '.' at the start of the extension and skip it */
+/*     if (extension[0] == '.') { */
+/*         extension++; */
+/*     } */
+
+/*     snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/%s.png", extension); */
+/*     return LoadTexture(iconPath); */
+/* } */
+
+
+Texture2D GetIconForExtension(const char* extension) {
+    char iconPath[1024];
+
+    // If extension is null or empty, return a default icon
+    if (!extension || strlen(extension) == 0) {
+        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/default.png");
+        return LoadTexture(iconPath);
+    }
+
+    // Check for the '.' at the start of the extension and skip it
+    if (extension[0] == '.') {
+        extension++;
+    }
+
+    // Explicitly set paths for certain extensions
+    if (strcmp(extension, "png") == 0) {
+        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/image.png");
+    } else if (strcmp(extension, "jpg") == 0) {
+        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/my_custom_jpg_icon.png");
+    } else {
+        // For other extensions, search automatically
+        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/%s.png", extension);
+    }
+
+    return LoadTexture(iconPath);
+}
+
+
+
+
+void InitializeFileManager(const char* startDir) {
+    fm.files = NULL;
+    fm.fileCount = 0;
+    fm.selectedIndex = 0;
+    getcwd(fm.currentDir, sizeof(fm.currentDir));
+    UpdateFileList();
+}
+
+
+
+void DrawFileManager() {
+    DrawText(fm.currentDir, 10, 1000, 20, WHITE);
+
+    int iconSize = 24;
+    int iconPadding = 4;
+    int iconVerticalOffset = -6;
+
+    for (int i = 0; i < fm.fileCount; i++) {
+        const char* ext = GetFileExtension(fm.files[i]);
+        Texture2D icon = GetIconForExtension(ext);
+
+        DrawTexture(icon, 10, 40 + i * 25 + iconVerticalOffset, WHITE);
+
+        Color color = (i == fm.selectedIndex) ? YELLOW : WHITE;
+        DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, 20, color);
+    }
+}
+
+void NavigateUp() {
+    fm.selectedIndex--;
+    if (fm.selectedIndex < 0) {
+        fm.selectedIndex = fm.fileCount - 1;
+    }
+}
+
+void NavigateDown() {
+    fm.selectedIndex++;
+    if (fm.selectedIndex >= fm.fileCount) {
+        fm.selectedIndex = 0;
+    }
+}
+
+void NavigateIn() {
+    char newPath[1024];
+    sprintf(newPath, "%s/%s", fm.currentDir, fm.files[fm.selectedIndex]);
+
+    DIR* dir = opendir(newPath);
+    if (dir) {
+        closedir(dir);
+        strcpy(fm.currentDir, newPath);
+        fm.selectedIndex = 0;
+        UpdateFileList();
+    }
+}
+
+void NavigateOut() {
+    char* lastSlash = strrchr(fm.currentDir, '/');
+    if (lastSlash) {
+        *lastSlash = '\0';
+    }
+    fm.selectedIndex = 0;
+    UpdateFileList();
+}
+
+void UpdateFileManager() {
+    if (IsKeyPressed(KEY_H)) {
+        NavigateOut();
+    }
+    if (IsKeyPressed(KEY_J)) {
+        NavigateDown();
+    }
+    if (IsKeyPressed(KEY_K)) {
+        NavigateUp();
+    }
+    if (IsKeyPressed(KEY_L)) {
+        NavigateIn();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -303,6 +768,7 @@ RenderTexture2D target;
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
+    InitializeFileManager(".");
     Texture2D sprite = LoadTexture("./sprite.png");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()); // blur
 
@@ -389,6 +855,10 @@ int main(void) {
                 DrawCursorCoordinatesLines(cursor);
                 DrawPanels();
                 /* DrawFPS(10, 10); */
+
+                UpdateFileManager();
+                DrawFileManager();
+
                 DrawModeBar();
 
                 DrawCameraInspector();
