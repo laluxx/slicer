@@ -283,40 +283,79 @@ void UpdateFileList() {
     closedir(dir);
 }
 
-Texture2D GetIconForExtension(const char* extension) {
+/* default folders */
+Texture2D GetIconForExtension(const char* name) {
     char iconPath[1024];
 
-    // If extension is null or empty, return a default icon
-    if (!extension || strlen(extension) == 0) {
+    // If name is null or empty, return a default icon
+    if (!name || strlen(name) == 0) {
         snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/default.png");
         return LoadTexture(iconPath);
     }
 
-    // Check for the '.' at the start of the extension and skip it
-    if (extension[0] == '.') {
-        extension++;
+    // If no '.' in the name, treat as a folder
+    if (!strchr(name, '.')) {
+        if (strcmp(name, "src") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/folder-src.png");
+        } else if (strcmp(name, "shaders") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/folder-shader.png");
+        } else if (strcmp(name, "shaders") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/folder-shader.png");
+        } else if (strcmp(name, "godot") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/folder-godot.png");
+        } else {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/folder-batch.png");  // Default folder icon
+        }
+        return LoadTexture(iconPath);
     }
 
-    // Explicitly set paths for certain extensions
-    if (strcmp(extension, "png") == 0) {
-        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/image.png");
-    } else if (strcmp(extension, "md") == 0) {
-        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/markdown.png");
-    } else if (strcmp(extension, "conf") == 0) {
-        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/settings.png");
-    } else if (strcmp(extension, "config") == 0) {
-        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/settings.png");
-    } else if (strcmp(extension, "config") == 0) {
-        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/settings.png");
+    // Treat as a file and get its extension
+    const char* ext = GetFileExtension(name);
+
+    // Check for the '.' at the start of the extension and skip it
+    if (ext && ext[0] == '.') {
+        ext++;
+    }
+
+    // Match against hardcoded file extensions
+    if (ext) {
+        if (strcmp(ext, "png") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/image.png");
+        } else if (strcmp(ext, "md") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/markdown.png");
+        } else if (strcmp(ext, "conf") == 0 || strcmp(ext, "config") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/settings.png");
+        } else if (strcmp(ext, "txt") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/document.png");
+        } else if (strcmp(ext, "obj") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/3d.png");
+        } else if (strcmp(ext, "sh") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/console.png");
+        } else if (strcmp(ext, "gd") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/godot.png");
+        } else if (strcmp(ext, "hs") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/haskell.png");
+        } else if (strcmp(ext, "js") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/javascript.png");
+        } else if (strcmp(ext, "ogg") == 0 || strcmp(ext, "mp3") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/lilypond.png");
+        } else if (strcmp(ext, "py") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/python.png");
+        } else if (strcmp(ext, "rs") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/rust.png");
+        } else if (strcmp(ext, "glsl") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/shader.png");
+        } else if (strcmp(ext, "mp4") == 0) {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/video.png");
+        } else {
+            snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/%s.png", ext);  // Search for the extension in the icons directory
+        }
     } else {
-        // For other extensions, search automatically
-        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/%s.png", extension);
+        snprintf(iconPath, sizeof(iconPath), "./icons/file-manager-icons/24/default.png");  // Default icon if no valid extension found
     }
 
     return LoadTexture(iconPath);
 }
-
-
 
 void InitializeFileManager(const char* startDir) {
     fm.files = NULL;
@@ -326,8 +365,6 @@ void InitializeFileManager(const char* startDir) {
     UpdateFileList();
 }
 
-
-
 void DrawFileManager() {
     DrawText(fm.currentDir, 10, 1000, 20, WHITE);
 
@@ -336,10 +373,8 @@ void DrawFileManager() {
     int iconVerticalOffset = -6;
 
     for (int i = 0; i < fm.fileCount; i++) {
-        const char* ext = GetFileExtension(fm.files[i]);
-        Texture2D icon = GetIconForExtension(ext);
-
-
+        // Pass the full file/folder name to GetIconForExtension
+        Texture2D icon = GetIconForExtension(fm.files[i]);
 
         DrawTexture(icon, 10, 40 + i * 25 + iconVerticalOffset, WHITE);
 
@@ -347,6 +382,9 @@ void DrawFileManager() {
         DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, 20, color);
     }
 }
+
+
+
 
 void NavigateUp() {
     fm.selectedIndex--;
@@ -413,9 +451,6 @@ void UpdateFileManager() {
 
 
 
-
-
-
 // CAMERA MANAGER
 #define LERP_AMOUNT 0.030f
 
@@ -458,6 +493,25 @@ void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
 
 
 
+/* void RunDedEditor() { */
+/*     // Define a path for the temporary binary */
+/*     const char *tempPath = "/tmp/ded_temp"; */
+
+/*     // Write the binary data to a temporary file */
+/*     FILE *f = fopen(tempPath, "wb"); */
+/*     fwrite(ded, 1, sizeof(ded), f); */
+
+/*     fclose(f); */
+
+/*     // Make the binary executable */
+/*     chmod(tempPath, 0755); */
+
+/*     // Execute the binary */
+/*     system(tempPath); */
+
+/*     // Clean up: delete the temporary file */
+/*     remove(tempPath); */
+/* } */
 
 
 
