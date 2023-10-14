@@ -8,8 +8,10 @@
 // and highlight for when overing with the mouse []
 // we should use scissor mode to make it fit the left panel
 // file preview [] */
+// dont render the files off screen []
 
 #include "filemanager.h"
+#include "panels.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <direct.h>
@@ -20,8 +22,25 @@
 FileManager fm;
 TextureCache textureCache[MAX_TEXTURES] = {0};
 
+int fontSize = 20;
+const int FILE_NAME_PADDING = 10;
+
+const int ADDITIONAL_WIDTH = 41;
+
+void AdjustLeftPanelWidthForFileNames() {
+    int requiredWidth = INITIAL_LEFT_WIDTH + ADDITIONAL_WIDTH;  // Starting with the initial width and adding the additional hardcoded width
+    for (int i = 0; i < fm.fileCount; ++i) {
+        int width = MeasureText(fm.files[i], fontSize) + FILE_NAME_PADDING + ADDITIONAL_WIDTH;
+        if (width > requiredWidth) {
+            requiredWidth = width;
+        }
+    }
+
+    panel.leftWidth = requiredWidth;  // Adjust the left panel width directly
+}
+
 void UpdateFileList() {
-    // Free existing files in the list
+    // Free existing files in the list first
     for (int i = 0; i < fm.fileCount; i++) {
         free(fm.files[i]);
     }
@@ -71,7 +90,11 @@ void UpdateFileList() {
     for (int i = 0; i < MAX_TEXTURES; i++) {
         textureCache[i].used = false;
     }
+
+    // Adjust the left panel width based on the new file list
+    AdjustLeftPanelWidthForFileNames();
 }
+
 
 
 Texture2D GetIconForExtension(const char* name) {
@@ -201,7 +224,7 @@ void InitializeFileManager(const char* startDir) {
 }
 
 void DrawFileManager() {
-    DrawText(fm.currentDir, 10, 1000, 20, WHITE);
+    DrawText(fm.currentDir, 10, 1000, 10, WHITE);
 
     int iconSize = 24;
     int iconPadding = 4;
@@ -211,7 +234,9 @@ void DrawFileManager() {
         Texture2D icon = GetTextureFromCache(fm.files[i]);
         DrawTexture(icon, 10, 40 + i * 25 + iconVerticalOffset, WHITE);
         Color color = (i == fm.selectedIndex) ? YELLOW : WHITE;
-        DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, 20, color);
+        /* DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, 20, color); */
+        DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, fontSize, color);
+
     }
 
     ClearUnusedTextures();
@@ -245,12 +270,33 @@ void NavigateIn() {
 }
 
 void NavigateOut() {
+    // Store the current directory name before navigating out
+    char* currentDirName = strrchr(fm.currentDir, '/');
+    if (currentDirName) {
+        currentDirName++;  // skip the '/'
+    } else {
+        currentDirName = fm.currentDir;  // handle case when fm.currentDir is just a name without '/'
+    }
+
+    char previousDirName[1024];
+    strncpy(previousDirName, currentDirName, sizeof(previousDirName) - 1);
+    previousDirName[sizeof(previousDirName) - 1] = '\0';
+
+    // Navigate out
     char* lastSlash = strrchr(fm.currentDir, '/');
     if (lastSlash) {
         *lastSlash = '\0';
     }
-    fm.selectedIndex = 0;
+
     UpdateFileList();
+
+    // Set selectedIndex to the previously entered directory
+    for (int i = 0; i < fm.fileCount; i++) {
+        if (strcmp(fm.files[i], previousDirName) == 0) {
+            fm.selectedIndex = i;
+            break;
+        }
+    }
 }
 
 void UpdateFileManager() {
@@ -267,3 +313,6 @@ void UpdateFileManager() {
         NavigateIn();
     }
 }
+
+
+

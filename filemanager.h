@@ -15,6 +15,7 @@ typedef struct {
     int fileCount;
     int selectedIndex;
     char currentDir[1024];
+    char displayedDir[1024];
 } FileManager;
 
 typedef struct {

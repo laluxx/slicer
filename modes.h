@@ -1,7 +1,7 @@
 #ifndef MODES_H
 #define MODES_H
 
-#include "raylib.h"  // Assume raylib is used for graphical elements
+#include "raylib.h"
 #include "screen.h"
 #include "ui.h"
 #include "slicer.h"
@@ -12,6 +12,7 @@ typedef enum {
     MODE_DEFAULT,
     MODE_SLICER,
     MODE_UI_EDITOR,
+    MODE_PLAY,
     MODE_MAX
 } EditorMode;
 
@@ -26,25 +27,6 @@ void DrawModeBar(void);
 
 /* void RenderSlicerMode(Texture2D sprite); */
 void RenderSlicerMode(Character* character, Texture2D sprite);
-
-
-/* void RenderUIEditorMode(void);   // New function declaration */
-/* // UI Editor related structures and variables */
-/* typedef struct { */
-/*     char text[50]; */
-/*     Rectangle bounds; */
-/*     Color color; */
-/* } UIButton; */
-
-/* #define BUTTON_COUNT 2 */
-/* #define MAX_PLACED_BUTTONS 100 */
-
-/* extern UIButton availableButtons[BUTTON_COUNT]; */
-/* extern UIButton placedButtons[MAX_PLACED_BUTTONS]; */
-/* extern int placedButtonCount; */
-/* extern UIButton *selectedForPlacement; */
-/* extern UIButton *selectedPlacedButton; */
-
 
 typedef enum {
     BUTTON_NORMAL,
@@ -74,9 +56,5 @@ void RenderUIEditorMode(void);   // Main function
 void DrawBottomPanelContent(void);  // Draw available buttons at the bottom
 void DrawGizmo(UIButton *button);   // Draw 2D gizmo for the selected button
 void PlaceSelectedButton(Vector2 mousePos);  // Place the selected button onto the main screen
-
-
-
-
 
 #endif  // MODES_H

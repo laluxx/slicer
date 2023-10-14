@@ -4,58 +4,6 @@
 EditorMode currentMode = MODE_DEFAULT;
 bool panelsResetOnModeChange = true;
 
-
-
-/* void DrawModeBar() { */
-/*     // Constants for mode circles */
-/*     const int circleRadius = 8; */
-/*     const int circleSpacing = 15; */
-/*     const int circleStartX = 10;  // Starting position of the first circle */
-/*     const int circleY = 10;  // Vertical position of the circles */
-
-/*     // Drawing the mode circles */
-/*     for (int i = 0; i < MODE_MAX; i++) { */
-/*         int circleX = circleStartX + i * (circleRadius * 2 + circleSpacing); */
-/*         if (i == currentMode) { */
-/*             DrawCircle(circleX, circleY, circleRadius, WHITE);  // Fill the circle for the current mode */
-/*         } else { */
-/*             DrawCircleLines(circleX, circleY, circleRadius, WHITE);  // Only draw the border for other modes */
-/*         } */
-/*     } */
-/* } */
-
-
-/* void DrawModeBar() { */
-/*     // Constants for mode circles */
-/*     const int circleRadius = 8; */
-/*     const int circleSpacing = 15; */
-/*     const int paddingX = 10; // Padding from left of the screen */
-/*     const int paddingY = 10; // Padding from top of the screen */
-
-/*     // Check for mouse click */
-/*     Vector2 mousePos = GetMousePosition(); */
-/*     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) { */
-/*         for (int i = 0; i < MODE_MAX; i++) { */
-/*             int circleX = paddingX + circleRadius + i * (circleRadius * 2 + circleSpacing); */
-/*             float distance = sqrt(pow(mousePos.x - circleX, 2) + pow(mousePos.y - (paddingY + circleRadius), 2)); */
-/*             if (distance < circleRadius) { */
-/*                 EditorChangeMode((EditorMode)i); */
-/*                 break; */
-/*             } */
-/*         } */
-/*     } */
-
-/*     // Drawing the mode circles */
-/*     for (int i = 0; i < MODE_MAX; i++) { */
-/*         int circleX = paddingX + circleRadius + i * (circleRadius * 2 + circleSpacing); */
-/*         if (i == currentMode) { */
-/*             DrawCircle(circleX, paddingY + circleRadius, circleRadius, WHITE);  // Fill the circle for the current mode */
-/*         } else { */
-/*             DrawCircleLines(circleX, paddingY + circleRadius, circleRadius, WHITE);  // Only draw the border for other modes */
-/*         } */
-/*     } */
-/* } */
-
 void DrawModeBar() {
     // Constants for mode circles
     const int circleRadius = 8;

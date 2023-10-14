@@ -228,15 +228,88 @@ void DrawCursorCoordinatesInspector(Cursor cursor) {
 
 }
 
+/* void DrawCursorCoordinatesLines(Cursor cursor) { */
+/*     int lineThickness = 2; // default value */
+
+/*     if (coordinateLinesEnabled) { */
+/*         Vector2 start, end; */
+
+/*         // For the vertical blue line: */
+/*         if (cursor.x < panel.leftWidth) { */
+/*             start.x = end.x = panel.leftWidth + lineThickness / 2.0; // Adjust for thickness */
+/*         } else if (cursor.x > SCREEN_WIDTH - panel.rightWidth) { */
+/*             start.x = end.x = SCREEN_WIDTH - panel.rightWidth - lineThickness / 2.0; // Adjust for thickness */
+/*         } else { */
+/*             start.x = end.x = cursor.x; */
+/*         } */
+
+/*         start.y = panel.topHeight; */
+/*         end.y = SCREEN_HEIGHT - panel.bottomHeight; */
+
+/*         DrawLineEx(start, end, lineThickness, BLUE); */
+
+/*         // For the horizontal red line: */
+/*         if (cursor.y < panel.topHeight) { */
+/*             start.y = end.y = panel.topHeight + lineThickness / 2.0; // Adjust for thickness */
+/*         } else if (cursor.y > SCREEN_HEIGHT - panel.bottomHeight) { */
+/*             start.y = end.y = SCREEN_HEIGHT - panel.bottomHeight - lineThickness / 2.0; // Adjust for thickness */
+/*         } else { */
+/*             start.y = end.y = cursor.y; */
+/*         } */
+
+/*         start.x = panel.leftWidth; */
+/*         end.x = SCREEN_WIDTH - panel.rightWidth; */
+
+/*         DrawLineEx(start, end, lineThickness, RED); */
+/*     } */
+/* } */
+
+
 
 void DrawCursorCoordinatesLines(Cursor cursor) {
-    // Conditional rendering of red and blue lines based on toggle state
-    if (coordinateLinesEnabled) {
-        DrawLine(0, cursor.y, SCREEN_WIDTH, cursor.y, RED);
-        DrawLine(cursor.x, 0, cursor.x, SCREEN_HEIGHT, BLUE);
+    int lineThickness = 2; // default value
+
+    Vector2 startVertical, endVertical, startHorizontal, endHorizontal;
+
+    // Setup for the vertical blue line:
+    if (cursor.x < panel.leftWidth) {
+        startVertical.x = endVertical.x = panel.leftWidth + lineThickness / 2.0; // Adjust for thickness
+    } else if (cursor.x > SCREEN_WIDTH - panel.rightWidth) {
+        startVertical.x = endVertical.x = SCREEN_WIDTH - panel.rightWidth - lineThickness / 2.0; // Adjust for thickness
+    } else {
+        startVertical.x = endVertical.x = cursor.x;
     }
 
+    startVertical.y = panel.topHeight;
+    endVertical.y = SCREEN_HEIGHT - panel.bottomHeight;
+
+    // Setup for the horizontal red line:
+    if (cursor.y < panel.topHeight) {
+        startHorizontal.y = endHorizontal.y = panel.topHeight + lineThickness / 2.0; // Adjust for thickness
+    } else if (cursor.y > SCREEN_HEIGHT - panel.bottomHeight) {
+        startHorizontal.y = endHorizontal.y = SCREEN_HEIGHT - panel.bottomHeight - lineThickness / 2.0; // Adjust for thickness
+    } else {
+        startHorizontal.y = endHorizontal.y = cursor.y;
+    }
+
+    startHorizontal.x = panel.leftWidth;
+    endHorizontal.x = SCREEN_WIDTH - panel.rightWidth;
+
+    if (coordinateLinesEnabled) {
+        if (cursor.y < panel.topHeight || cursor.y > SCREEN_HEIGHT - panel.bottomHeight) {
+            DrawLineEx(startVertical, endVertical, lineThickness, BLUE);
+            DrawLineEx(startHorizontal, endHorizontal, lineThickness, RED);
+        } else {
+            DrawLineEx(startHorizontal, endHorizontal, lineThickness, RED);
+            DrawLineEx(startVertical, endVertical, lineThickness, BLUE);
+        }
+    }
 }
+
+
+
+
+
 
 // TODO movable rect(camera) ontop of another rect(screen prportion)
 // this will visualize the proportion of the screen, camera and let the camera be move by dragging the camera rect
@@ -290,41 +363,7 @@ void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
     cm->camera.target.x = Lerp(cm->camera.target.x, targetPosition.x, cm->lerpAmount);
     cm->camera.target.y = Lerp(cm->camera.target.y, targetPosition.y, cm->lerpAmount);
 }
-
-
-
-
-
-
-
-
 // CameraManager END
-
-
-
-
-
-/* void RunDedEditor() { */
-/*     // Define a path for the temporary binary */
-/*     const char *tempPath = "/tmp/ded_temp"; */
-
-/*     // Write the binary data to a temporary file */
-/*     FILE *f = fopen(tempPath, "wb"); */
-/*     fwrite(ded, 1, sizeof(ded), f); */
-
-/*     fclose(f); */
-
-/*     // Make the binary executable */
-/*     chmod(tempPath, 0755); */
-
-/*     // Execute the binary */
-/*     system(tempPath); */
-
-/*     // Clean up: delete the temporary file */
-/*     remove(tempPath); */
-/* } */
-
-
 
 
 
@@ -335,6 +374,7 @@ RenderTexture2D target;
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
+    SetExitKey(0); // Disable the exit key
     InitializeFileManager(".");
     Texture2D sprite = LoadTexture("./sprite.png");
     target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()); // blur
@@ -400,9 +440,19 @@ int main(void) {
             }
         }
 
+
+        if (IsKeyPressed(KEY_ESCAPE)) {
+            CloseFlexiblePanel();
+        }
+
         if (IsKeyPressed(KEY_C)) {
             cameraManagerEnabled = !cameraManagerEnabled;
         }
+
+        if (IsKeyPressed(KEY_O)) {
+            panel.centerPanelVisible = !panel.centerPanelVisible;
+        }
+
 
         if (cameraManagerEnabled) {
             UpdateCameraManager(&cameraManager, character.position);
@@ -421,7 +471,13 @@ int main(void) {
                 DrawMouseInspector();
                 DrawCursorCoordinatesLines(cursor);
                 DrawPanels();
-                /* DrawFPS(10, 10); */
+
+                //buttons
+                panel.centerPanelVisible = DrawToggleButton((Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 570}, panel.centerPanelVisible, panel.centerPanelVisible ? "Hide Center Panel" : "Show Center Panel");
+
+
+
+                DrawFPS(120, 10);
 
                 UpdateFileManager();
                 DrawFileManager();
@@ -433,6 +489,7 @@ int main(void) {
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
                 DrawEditorLog(panel.bottomHeight);
+                OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM);
                 DrawCharacter(character, sprite, frameCounter);
                 DrawCharacterInspector(character, sprite, frameCounter);
 
@@ -475,6 +532,14 @@ int main(void) {
                 DrawPanels();  // Draw all panels
                 RenderUIEditorMode();
                 DrawModeBar();
+            case MODE_PLAY:
+                UpdatePanelsDimensions();
+                ClosePanel('T');  // Close top panel
+                ClosePanel('R');  // Close right panel
+                ClosePanel('L');  // Close left panel
+                ClosePanel('B');  // Close bottom panel
+                DrawPanels();  // Draw all panels
+                DrawCharacter(character, sprite, frameCounter);
             default:
                 break;
         }
