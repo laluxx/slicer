@@ -40,47 +40,6 @@ bool DrawButton(const char *text, Rectangle btnBounds, Color baseColor) {
     return clicked;
 }
 
-
-/* void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y) { */
-/*     const int buttonHeight = 20; */
-/*     const int buttonWidth = 30; */
-/*     const int textPadding = 5; */
-/*     const int roundness = 5;  // Controls the roundness of the corners */
-
-/*     // Determine color based on type */
-/*     Color typeColor = RED;  // Default to red for int */
-/*     if (strcmp(type, "float") == 0) typeColor = BLUE; */
-/*     else if (strcmp(type, "char") == 0) typeColor = GREEN; */
-
-/*     // Draw type, name, and value texts */
-/*     DrawText(type, x, y, 10, BLACK); */
-/*     DrawText(name, x, y + buttonHeight + textPadding, 10, BLACK); */
-
-/*     // Create rectangles for the buttons and value display */
-/*     Rectangle minusRect = { x + MeasureText(type, 10) + textPadding, y, buttonWidth, buttonHeight }; */
-/*     Rectangle plusRect = { minusRect.x + buttonWidth + textPadding, y, buttonWidth, buttonHeight }; */
-/*     Rectangle valueRect = { minusRect.x + buttonWidth, y, textPadding, buttonHeight }; */
-/*     Rectangle fill = { minusRect.x + (buttonWidth * 3 / 4), y, plusRect.x - minusRect.x - (buttonWidth / 2), buttonHeight }; */
-
-
-
-/*     // Check for mouse interactions for incrementing and decrementing */
-/*     Vector2 mousePos = GetMousePosition(); */
-/*     if (CheckCollisionPointRec(mousePos, minusRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && (*value > 1)) (*value)--; */
-/*     if (CheckCollisionPointRec(mousePos, plusRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) (*value)++; */
-
-/*     // Draw the buttons and value display */
-/*     DrawRectangleRounded(minusRect, roundness, 16, (Color){50, 50, 50, 255}); */
-/*     DrawRectangleRounded(plusRect, roundness, 16, (Color){50, 50, 50, 255}); */
-/*     DrawRectangle(fill.x, fill.y, fill.width, fill.height, WHITE); */
-/*     DrawRectangle(valueRect.x, valueRect.y, valueRect.width, valueRect.height, WHITE); */
-/*     DrawText(TextFormat("%d", *value), valueRect.x + valueRect.width / 2 - MeasureText(TextFormat("%d", *value), 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, BLACK); */
-/*     DrawText("-", minusRect.x + buttonWidth / 2 - MeasureText("-", 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, WHITE); */
-/*     DrawText("+", plusRect.x + buttonWidth / 2 - MeasureText("+", 10) / 2, y + buttonHeight / 2 - 10 / 2, 10, WHITE); */
-/* } */
-
-
-
 void DrawIncrementerButton2(int *value, const char *name, const char *type, int x, int y) {
     int buttonWidth = 20;
     int buttonHeight = 20;
@@ -258,3 +217,153 @@ bool DrawToggleButton2(Vector2 position, bool currentState, const char *text) {
 }
 
 
+/* /\* TODO smoother edges *\/ */
+/* bool DrawIosToggleButton(Vector2 position, bool currentState) { */
+/*     const float baseWidth = 60.0f;  // Adjusted width for more roundness */
+/*     const float baseHeight = 30.0f; */
+/*     const float sliderRadius = baseHeight / 2.0f; */
+/*     static float sliderAnimValue = 15.0f;  // Initial value representing the initial position of the circle */
+
+/*     Rectangle baseRect = { position.x, position.y, baseWidth, baseHeight }; */
+/*     Vector2 sliderTarget = { currentState ? (position.x + baseWidth - sliderRadius) : position.x + sliderRadius }; */
+/*     Vector2 sliderPosition = { position.x + sliderAnimValue, position.y + baseHeight / 2 }; */
+
+/*     if (currentState) { */
+/*         sliderAnimValue += (sliderTarget.x - sliderPosition.x) * 0.1f;  // Smooth animation */
+/*     } else { */
+/*         sliderAnimValue -= (sliderPosition.x - sliderTarget.x) * 0.1f;  // Smooth animation */
+/*     } */
+
+/*     Color baseColor = currentState ? GREEN : GRAY; */
+
+/*     if (CheckCollisionPointRec(GetMousePosition(), baseRect) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) { */
+/*         currentState = !currentState; */
+/*     } */
+
+/*     DrawRectangleRounded(baseRect, 0.8, 20, baseColor); */
+/*     DrawCircleV(sliderPosition, sliderRadius - 2, WHITE); */
+
+/*     return currentState; */
+/* } */
+
+
+
+Texture2D toggleOnTexture;
+Texture2D toggleOffTexture;
+Texture2D toggleCircleTexture;
+
+void LoadToggleTextures() {
+    toggleOnTexture = LoadTexture("./icons/ui/png/toggleon.png");
+    toggleOffTexture = LoadTexture("./icons/ui/png/toggleoff.png");
+    toggleCircleTexture = LoadTexture("./icons/ui/png/togglecircle.png");
+}
+
+void UnloadToggleTextures() {
+    UnloadTexture(toggleOnTexture);
+    UnloadTexture(toggleOffTexture);
+    UnloadTexture(toggleCircleTexture);
+}
+
+
+bool DrawIosToggleButton(Vector2 position, bool currentState) {
+    const float baseWidth = 60.0f;
+    const float baseHeight = 30.0f;
+    const float sliderRadius = toggleCircleTexture.width / 2.0f;  // Assuming the texture is a square
+    const float sliderPadding = 5.0f;
+
+    static float sliderAnimValue = 0.0f;
+    static bool initialized = false;
+    if (!initialized) {
+        sliderAnimValue = sliderRadius + sliderPadding;
+        initialized = true;
+    }
+
+    Rectangle baseRect = { position.x, position.y, baseWidth, baseHeight };
+    Vector2 sliderTarget = { currentState ? (position.x + baseWidth - sliderRadius - sliderPadding) : (position.x + sliderRadius + sliderPadding) };
+    Vector2 sliderPosition = { position.x + sliderAnimValue, position.y + baseHeight / 2 };
+
+    if (currentState) {
+        sliderAnimValue += (sliderTarget.x - sliderPosition.x) * 0.1f;  // Smooth animation
+    } else {
+        sliderAnimValue -= (sliderPosition.x - sliderTarget.x) * 0.1f;  // Smooth animation
+    }
+
+    if (CheckCollisionPointRec(GetMousePosition(), baseRect) && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        currentState = !currentState;
+    }
+
+    if (currentState) {
+        DrawTexture(toggleOnTexture, position.x, position.y, WHITE);
+    } else {
+        DrawTexture(toggleOffTexture, position.x, position.y, WHITE);
+    }
+
+    DrawTexture(toggleCircleTexture, sliderPosition.x - sliderRadius, sliderPosition.y - (toggleCircleTexture.height / 2.0f), WHITE);
+
+    return currentState;
+}
+
+
+
+
+// COLOR PICKER
+
+
+
+
+void DrawColorPicker(ColorPicker *colorPicker) {
+    Vector2 gradientSelectorPos = { 0, 0 };
+    Vector2 spectrumSelectorPos = { colorPicker->spectrumBox.x, 50 };
+
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (CheckCollisionPointRec(GetMousePosition(), colorPicker->gradientBox)) {
+            gradientSelectorPos = GetMousePosition();
+            colorPicker->selectedColor = GetColorFromGradient(colorPicker->gradientBox, gradientSelectorPos, colorPicker->selectedHue);
+        } else if (CheckCollisionPointRec(GetMousePosition(), colorPicker->spectrumBox)) {
+            spectrumSelectorPos = GetMousePosition();
+            colorPicker->selectedColor = GetColorFromSpectrum(colorPicker->spectrumBox, spectrumSelectorPos);
+            colorPicker->selectedHue = colorPicker->selectedColor.r;  // Assuming hue is stored in red component
+        }
+    }
+
+    Color topColor = ColorFromHSV(colorPicker->selectedHue, 1.0f, 1.0f);
+    DrawRectangleGradientV(colorPicker->gradientBox.x, colorPicker->gradientBox.y, colorPicker->gradientBox.width, colorPicker->gradientBox.height, WHITE, topColor);
+    DrawRectangleGradientH(colorPicker->gradientBox.x, colorPicker->gradientBox.y, colorPicker->gradientBox.width, colorPicker->gradientBox.height, BLACK, BLANK);
+
+    // Drawing the hue gradient manually
+    for (int i = 0; i < colorPicker->spectrumBox.height; i++) {
+        float normalizedY = (float)i / colorPicker->spectrumBox.height;
+        int hue = normalizedY * 360;
+        Color color = ColorFromHSV(hue, 1.0f, 1.0f);
+        DrawRectangle(colorPicker->spectrumBox.x, colorPicker->spectrumBox.y + i, colorPicker->spectrumBox.width, 1, color);
+    }
+
+    DrawRectangleRec(colorPicker->selectedColorBox, colorPicker->selectedColor);
+
+    DrawText(TextFormat("HEX: #%02X%02X%02X", colorPicker->selectedColor.r, colorPicker->selectedColor.g, colorPicker->selectedColor.b), colorPicker->selectedColorBox.x, colorPicker->selectedColorBox.y + colorPicker->selectedColorBox.height + 10, 20, WHITE);
+    DrawText(TextFormat("R: %d\nG: %d\nB: %d", colorPicker->selectedColor.r, colorPicker->selectedColor.g, colorPicker->selectedColor.b), colorPicker->selectedColorBox.x, colorPicker->selectedColorBox.y + colorPicker->selectedColorBox.height + 40, 20, WHITE);
+}
+
+Color GetColorFromGradient(Rectangle gradientBox, Vector2 position, float hue) {
+    float gradientWidth = gradientBox.width;
+    float gradientHeight = gradientBox.height;
+
+    float normalizedX = (position.x - gradientBox.x) / gradientWidth;
+    float normalizedY = (position.y - gradientBox.y) / gradientHeight;
+
+    // Use the hue to get the selected color
+    Color color = ColorFromHSV(hue, normalizedX, 1.0f - normalizedY);
+
+    return color;
+}
+
+Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position) {
+    float spectrumHeight = spectrumBox.height;
+    float normalizedY = (position.y - spectrumBox.y) / spectrumHeight;
+
+    int hue = normalizedY * 360;
+
+    Color color = ColorFromHSV(hue, 1.0f, 1.0f);
+
+    return color;
+}

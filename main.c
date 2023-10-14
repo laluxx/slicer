@@ -11,7 +11,6 @@
 #include "window.h"
 #include "filemanager.h"
 
-#include <unistd.h>
 
 
 
@@ -224,47 +223,8 @@ void DrawCursorCoordinatesInspector(Cursor cursor) {
     DrawText(yPosStr, positionTextPos.x + MeasureText("y: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
 
     // Draw toggle buttons
-    coordinateLinesEnabled = DrawToggleButton2((Vector2){ SCREEN_WIDTH - 390, SCREEN_HEIGHT - 910 }, coordinateLinesEnabled, "Coordinate Lines");
-
+    coordinateLinesEnabled = DrawIosToggleButton((Vector2){ SCREEN_WIDTH - 390, SCREEN_HEIGHT - 910 }, coordinateLinesEnabled);
 }
-
-/* void DrawCursorCoordinatesLines(Cursor cursor) { */
-/*     int lineThickness = 2; // default value */
-
-/*     if (coordinateLinesEnabled) { */
-/*         Vector2 start, end; */
-
-/*         // For the vertical blue line: */
-/*         if (cursor.x < panel.leftWidth) { */
-/*             start.x = end.x = panel.leftWidth + lineThickness / 2.0; // Adjust for thickness */
-/*         } else if (cursor.x > SCREEN_WIDTH - panel.rightWidth) { */
-/*             start.x = end.x = SCREEN_WIDTH - panel.rightWidth - lineThickness / 2.0; // Adjust for thickness */
-/*         } else { */
-/*             start.x = end.x = cursor.x; */
-/*         } */
-
-/*         start.y = panel.topHeight; */
-/*         end.y = SCREEN_HEIGHT - panel.bottomHeight; */
-
-/*         DrawLineEx(start, end, lineThickness, BLUE); */
-
-/*         // For the horizontal red line: */
-/*         if (cursor.y < panel.topHeight) { */
-/*             start.y = end.y = panel.topHeight + lineThickness / 2.0; // Adjust for thickness */
-/*         } else if (cursor.y > SCREEN_HEIGHT - panel.bottomHeight) { */
-/*             start.y = end.y = SCREEN_HEIGHT - panel.bottomHeight - lineThickness / 2.0; // Adjust for thickness */
-/*         } else { */
-/*             start.y = end.y = cursor.y; */
-/*         } */
-
-/*         start.x = panel.leftWidth; */
-/*         end.x = SCREEN_WIDTH - panel.rightWidth; */
-
-/*         DrawLineEx(start, end, lineThickness, RED); */
-/*     } */
-/* } */
-
-
 
 void DrawCursorCoordinatesLines(Cursor cursor) {
     int lineThickness = 2; // default value
@@ -307,31 +267,12 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
 }
 
 
-
-
-
-
 // TODO movable rect(camera) ontop of another rect(screen prportion)
 // this will visualize the proportion of the screen, camera and let the camera be move by dragging the camera rect
 void DrawCameraInspector(){
     cameraManagerEnabled = DrawToggleButton((Vector2){ SCREEN_WIDTH - 295, SCREEN_HEIGHT - 350 }, cameraManagerEnabled, "Camera Manager");
 }
 // INSPECTORS END
-
-
-// FILE MANAGER
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -367,20 +308,27 @@ void UpdateCameraManager(CameraManager *cm, Vector2 targetPosition) {
 
 
 
-
-// blur
-RenderTexture2D target;
-
+// Initialize the ColorPicker structure
+ColorPicker colorPicker = {
+    .gradientBox = (Rectangle){100, 100, 256, 256},
+    .spectrumBox = (Rectangle){100 + 256 + 10, 100, 20, 256},
+    .selectedColorBox = (Rectangle){100 + 256 + 10 + 20 + 10, 100, 50, 50},
+    .selectedColor = BLACK  // Default selected color
+};
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     SetExitKey(0); // Disable the exit key
-    InitializeFileManager(".");
-    Texture2D sprite = LoadTexture("./sprite.png");
-    target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight()); // blur
+    InitializeFileManager("."); // move in filemanager.c
+    Texture2D sprite = LoadTexture("./sprite.png"); // move in character.c
+    LoadToggleTextures();
 
-    Window myWindow;  // Declare myWindow with type Window
-    myWindow = CreateWindow((Vector2){200, 100}, (Vector2){400, 300}, "My Window");
+
+
+
+
+    Window myWindow;  // Declare myWindow with type Window // move in window.c
+    myWindow = CreateWindow((Vector2){200, 100}, (Vector2){400, 300}, "My Window"); // move in window.c
 
 
     Character character = { { (float)SCREEN_WIDTH/2, (float)SCREEN_HEIGHT/2 }, IDLE_DOWN, IDLE_DOWN };
@@ -390,9 +338,6 @@ int main(void) {
     // Load WASD textures
     LoadWASDTextures();
     LoadMouseTextures();
-
-    // SLICE MODE
-    buttonYStart = SCREEN_HEIGHT - (buttonHeight + buttonSpacing) * 6;
 
 
     // CAMERA MANAGER
@@ -477,6 +422,7 @@ int main(void) {
 
 
 
+
                 DrawFPS(120, 10);
 
                 UpdateFileManager();
@@ -530,7 +476,10 @@ int main(void) {
                 DrawPanel('B', 70.0f);  // for a fixed bottom panel
                 DrawPanel('R', 370.0f);  // for a fixed right panel
                 DrawPanels();  // Draw all panels
+                DrawFPS(120, 10);
                 RenderUIEditorMode();
+                DrawColorPicker(&colorPicker);
+
                 DrawModeBar();
             case MODE_PLAY:
                 UpdatePanelsDimensions();
@@ -553,6 +502,7 @@ int main(void) {
     }
 
     // Freeing memory
+    UnloadToggleTextures();
     UnloadTexture(sprite);
     UnloadMouseTextures();
     CloseWindow();

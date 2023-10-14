@@ -16,6 +16,26 @@ typedef struct {
 
 
 
+// Color Picker
+typedef struct ColorPicker {
+    Rectangle gradientBox;
+    Rectangle spectrumBox;
+    Rectangle selectedColorBox;
+    Color selectedColor;
+    float selectedHue;  // Store selected hue from the spectrum
+} ColorPicker;
+
+
+
+Color GetColorFromGradient(Rectangle gradientBox, Vector2 position, float hue);  // Passing selected hue as argument
+Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position);
+void DrawColorPicker(ColorPicker *colorPicker);
+
+
+
+
+
+
 extern int BUTTON_FONT_SIZE;
 extern int buttonWidth;
 extern int buttonHeight;
@@ -26,5 +46,9 @@ bool DrawButton(const char *text, Rectangle btnBounds, Color baseColor);
 void DrawIncrementerButton(int *value, const char *name, const char *type, int x, int y);
 bool DrawToggleButton(Vector2 position, bool currentState, const char *text);
 bool DrawToggleButton2(Vector2 position, bool currentState, const char *text);
+
+bool DrawIosToggleButton(Vector2 position, bool currentState);
+void UnloadToggleTextures();
+void LoadToggleTextures();
 
 #endif  // UI_H
