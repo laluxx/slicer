@@ -1,4 +1,6 @@
 #include "panels.h"
+#include "theme.h"
+
 
 // CONFIGURATION
 bool showTopRightCorner = true;
@@ -63,11 +65,11 @@ void PanelsReset() {
 
 
 void DrawPanels() {
-    // Drawing the fixed panels (top, bottom, left, right)
-    DrawRectangle(0, 0, SCREEN_WIDTH, panel.topHeight, TOP_COLOR);
-    DrawRectangle(0, SCREEN_HEIGHT - panel.bottomHeight, SCREEN_WIDTH, panel.bottomHeight, BOTTOM_COLOR);
-    DrawRectangle(0, panel.topHeight, panel.leftWidth, SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight, LEFT_COLOR);
-    DrawRectangle(SCREEN_WIDTH - panel.rightWidth, panel.topHeight, panel.rightWidth, SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight, RIGHT_COLOR);
+    DrawRectangle(0, 0, SCREEN_WIDTH, panel.topHeight, CURRENT_THEME.panel_top);
+    DrawRectangle(0, SCREEN_HEIGHT - panel.bottomHeight, SCREEN_WIDTH, panel.bottomHeight, CURRENT_THEME.panel_bottom);
+    DrawRectangle(0, panel.topHeight, panel.leftWidth, SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight, CURRENT_THEME.panel_left);
+    DrawRectangle(SCREEN_WIDTH - panel.rightWidth, panel.topHeight, panel.rightWidth, SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight, CURRENT_THEME.panel_right);
+
 
     // Drawing the center panel
     if (panel.centerPanelVisible) {
@@ -75,29 +77,29 @@ void DrawPanels() {
         panel.centerPanel.y = panel.topHeight + CENTER_GAP;
         panel.centerPanel.width = SCREEN_WIDTH - panel.leftWidth - panel.rightWidth - 2 * CENTER_GAP;
         panel.centerPanel.height = SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight - 2 * CENTER_GAP;
-        DrawRectangleRec(panel.centerPanel, CENTER_COLOR);
+        DrawRectangleRec(panel.centerPanel, CURRENT_THEME.panel_center);
     }
     // Drawing the flexible panel
     if (panel.flexPanelVisible) {
-        DrawRectangleRec(panel.flexPanel, CENTER_COLOR);
+        DrawRectangleRec(panel.flexPanel, CURRENT_THEME.panel_center);
     }
 
 
 
     // Draw the corner images at the adjusted positions
     if (showTopLeftCorner){
-        DrawTexture(topLeftCornerTexture, panel.leftWidth, panel.topHeight, WHITE);
+        DrawTexture(topLeftCornerTexture, panel.leftWidth, panel.topHeight, CURRENT_THEME.panel_corners);
     }
     if (showTopRightCorner){
-        DrawTexture(topRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - topRightCornerTexture.width, panel.topHeight, WHITE);
+        DrawTexture(topRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - topRightCornerTexture.width, panel.topHeight, CURRENT_THEME.panel_corners);
     }
 
     if (showBottomLeftCorner){
-        DrawTexture(bottomLeftCornerTexture, panel.leftWidth, SCREEN_HEIGHT - panel.bottomHeight - bottomLeftCornerTexture.height, WHITE);
+        DrawTexture(bottomLeftCornerTexture, panel.leftWidth, SCREEN_HEIGHT - panel.bottomHeight - bottomLeftCornerTexture.height, CURRENT_THEME.panel_corners);
     }
 
     if (showBottomRightCorner){
-        DrawTexture(bottomRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - bottomRightCornerTexture.width, SCREEN_HEIGHT - panel.bottomHeight - bottomRightCornerTexture.height, WHITE);
+        DrawTexture(bottomRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - bottomRightCornerTexture.width, SCREEN_HEIGHT - panel.bottomHeight - bottomRightCornerTexture.height, CURRENT_THEME.panel_corners);
     }
 
 

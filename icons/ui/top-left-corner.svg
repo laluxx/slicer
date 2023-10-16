@@ -22,16 +22,17 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="7.1714286"
-     inkscape:cx="9.3426295"
-     inkscape:cy="34.930279"
-     inkscape:window-width="1799"
-     inkscape:window-height="1040"
-     inkscape:window-x="1022"
-     inkscape:window-y="22"
+     inkscape:cx="9.3426294"
+     inkscape:cy="34.860558"
+     inkscape:window-width="1627"
+     inkscape:window-height="1048"
+     inkscape:window-x="5"
+     inkscape:window-y="27"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg1" />
   <path
      d="M 0,0 V 70 A 70,70 0 0 1 70,0 Z"
      fill="#0e0e0e"
-     id="path1" />
+     id="path1"
+     style="fill:#ffffff" />
 </svg>

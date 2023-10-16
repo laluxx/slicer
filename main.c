@@ -10,6 +10,7 @@
 #include "ui.h"
 #include "window.h"
 #include "filemanager.h"
+#include "theme.h"
 
 
 
@@ -27,8 +28,8 @@ void DrawCharacterCoordinatesInspector(Character character) {
     snprintf(xPosStr, sizeof(xPosStr), "x: %d", (int) character.position.x);
     snprintf(yPosStr, sizeof(yPosStr), "y: %d", (int) character.position.y);
 
-    DrawText(xPosStr, positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED);
-    DrawText(yPosStr, positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
+    DrawText(xPosStr, positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, CURRENT_THEME.x);
+    DrawText(yPosStr, positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, CURRENT_THEME.y);
 }
 
 void DrawCharacterInspector(Character character, Texture2D sprite, int frameCounter) {
@@ -215,12 +216,11 @@ void DrawCursorCoordinatesInspector(Cursor cursor) {
     snprintf(xPosStr, sizeof(xPosStr), "%d", cursor.x);
     snprintf(yPosStr, sizeof(yPosStr), "%d", cursor.y);
 
-    // Drawing "x: " and "y: " in red and blue
-    DrawText("x: ", positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED);
-    DrawText(xPosStr, positionTextPos.x + MeasureText("x: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, RED);
+    DrawText("x: ", positionTextPos.x, positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, CURRENT_THEME.x);
+    DrawText(xPosStr, positionTextPos.x + MeasureText("x: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y, CHARACTER_INSPECTOR_TEXT_SIZE, CURRENT_THEME.x);
 
-    DrawText("y: ", positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
-    DrawText(yPosStr, positionTextPos.x + MeasureText("y: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, BLUE);
+    DrawText("y: ", positionTextPos.x, positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, CURRENT_THEME.y);
+    DrawText(yPosStr, positionTextPos.x + MeasureText("y: ", CHARACTER_INSPECTOR_TEXT_SIZE), positionTextPos.y + CHARACTER_INSPECTOR_TEXT_SIZE + 5, CHARACTER_INSPECTOR_TEXT_SIZE, CURRENT_THEME.y);
 
     // Draw toggle buttons
     coordinateLinesEnabled = DrawIosToggleButton((Vector2){ SCREEN_WIDTH - 390, SCREEN_HEIGHT - 910 }, coordinateLinesEnabled);
@@ -316,6 +316,7 @@ ColorPicker colorPicker = {
     .selectedColor = BLACK  // Default selected color
 };
 
+
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     SetExitKey(0); // Disable the exit key
@@ -323,6 +324,7 @@ int main(void) {
     Texture2D sprite = LoadTexture("./sprite.png"); // move in character.c
     LoadToggleTextures();
     LoadCornerTextures();
+    InitializeThemes();
 
 
 
@@ -377,6 +379,20 @@ int main(void) {
             perror("Failed to reload the game engine");
             exit(1);
         }
+
+
+
+
+        // THEME KEYBINDS
+        if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {  // Check if Alt key is pressed
+            if (IsKeyPressed(KEY_MINUS)) {    // Check if '-' key is pressed
+                PreviousTheme();    // Go to the previous theme
+            } else if (IsKeyPressed(KEY_EQUAL)) {    // Check if '=' key is pressed
+                NextTheme();    // Go to the next theme
+            }
+        }
+
+
 
         if (IsKeyPressed(KEY_N)) {
             if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {

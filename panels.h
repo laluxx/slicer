@@ -10,14 +10,6 @@
 #define INITIAL_LEFT_WIDTH 250
 #define INITIAL_RIGHT_WIDTH 278
 #define INITIAL_TOP_HEIGHT 45
-
-// COMFY DARK
-#define TOP_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
-#define BOTTOM_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
-#define LEFT_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
-#define RIGHT_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
-#define CENTER_COLOR (Color){14, 14, 14, 255}  // #0E0E0E
-
 #define CENTER_GAP 10.0f
 
 typedef enum {

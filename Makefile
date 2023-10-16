@@ -9,7 +9,7 @@ CFLAGS = -Wall -I.
 LFLAGS = -lraylib -lm -lpthread -ldl -lrt -lX11
 
 # Source files
-SOURCES = main.c slicer.c character.c panels.c log.c screen.c ui.c modes.c window.c filemanager.c
+SOURCES = main.c slicer.c character.c panels.c log.c screen.c ui.c modes.c window.c filemanager.c theme.c
 
 # Compilation and linking
 all: $(TARGET)
