@@ -1,5 +1,11 @@
 #include "panels.h"
 
+// CONFIGURATION
+bool showTopRightCorner = true;
+bool showTopLeftCorner = true;
+bool showBottomRightCorner = true;
+bool showBottomLeftCorner = true;
+
 Panel panel = {
     INITIAL_TOP_HEIGHT,
     INITIAL_BOTTOM_HEIGHT,
@@ -10,6 +16,36 @@ Panel panel = {
     {0, 0, 0, 0}, // Initialize the flexible panel rectangle
     false        // Flexible panel is not visible initially
 };
+
+
+
+// Define textures for the corner images
+Texture2D topLeftCornerTexture;
+Texture2D topRightCornerTexture;
+Texture2D bottomLeftCornerTexture;
+Texture2D bottomRightCornerTexture;
+
+void LoadCornerTextures() {
+    topLeftCornerTexture = LoadTexture("./icons/ui/png/top-left-corner.png");
+    topRightCornerTexture = LoadTexture("./icons/ui/png/top-right-corner.png");
+    bottomLeftCornerTexture = LoadTexture("./icons/ui/png/bottom-left-corner.png");
+    bottomRightCornerTexture = LoadTexture("./icons/ui/png/bottom-right-corner.png");
+}
+
+
+void UnloadCornerTextures() {
+    UnloadTexture(topLeftCornerTexture);
+    UnloadTexture(topRightCornerTexture);
+    UnloadTexture(bottomLeftCornerTexture);
+    UnloadTexture(bottomRightCornerTexture);
+}
+
+
+
+
+
+
+
 
 void PanelsReset() {
     panel = (Panel){
@@ -41,11 +77,33 @@ void DrawPanels() {
         panel.centerPanel.height = SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight - 2 * CENTER_GAP;
         DrawRectangleRec(panel.centerPanel, CENTER_COLOR);
     }
-
     // Drawing the flexible panel
     if (panel.flexPanelVisible) {
         DrawRectangleRec(panel.flexPanel, CENTER_COLOR);
     }
+
+
+
+    // Draw the corner images at the adjusted positions
+    if (showTopLeftCorner){
+        DrawTexture(topLeftCornerTexture, panel.leftWidth, panel.topHeight, WHITE);
+    }
+    if (showTopRightCorner){
+        DrawTexture(topRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - topRightCornerTexture.width, panel.topHeight, WHITE);
+    }
+
+    if (showBottomLeftCorner){
+        DrawTexture(bottomLeftCornerTexture, panel.leftWidth, SCREEN_HEIGHT - panel.bottomHeight - bottomLeftCornerTexture.height, WHITE);
+    }
+
+    if (showBottomRightCorner){
+        DrawTexture(bottomRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - bottomRightCornerTexture.width, SCREEN_HEIGHT - panel.bottomHeight - bottomRightCornerTexture.height, WHITE);
+    }
+
+
+
+
+
 }
 
 void UpdatePanelsDimensions() {

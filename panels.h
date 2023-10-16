@@ -56,6 +56,8 @@ void PanelsReset();
 void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position);
 void CloseFlexiblePanel();
 void AdjustLeftPanelWidthForFileNames();
+void LoadCornerTextures();
+void UnloadCornerTextures();
 
 
 #endif // PANELS_H

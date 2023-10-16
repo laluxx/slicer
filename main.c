@@ -322,6 +322,7 @@ int main(void) {
     InitializeFileManager("."); // move in filemanager.c
     Texture2D sprite = LoadTexture("./sprite.png"); // move in character.c
     LoadToggleTextures();
+    LoadCornerTextures();
 
 
 
@@ -435,7 +436,7 @@ int main(void) {
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
                 DrawEditorLog(panel.bottomHeight);
-                OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM);
+                /* OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM); */
                 DrawCharacter(character, sprite, frameCounter);
                 DrawCharacterInspector(character, sprite, frameCounter);
 
@@ -503,6 +504,7 @@ int main(void) {
 
     // Freeing memory
     UnloadToggleTextures();
+    UnloadCornerTextures();
     UnloadTexture(sprite);
     UnloadMouseTextures();
     CloseWindow();
