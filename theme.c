@@ -16,7 +16,23 @@ Color HexToColor(const char* hexStr) {
 }
 
 void InitializeThemes() {
+    // DOOM
     themes[0] = (Theme) {
+        .panel_left    = HexToColor("#090909"),
+        .panel_top     = HexToColor("#090909"),
+        .panel_right   = HexToColor("#090909"),
+        .panel_bottom  = HexToColor("#090909"),
+        .panel_center  = HexToColor("#090909"),
+        .panel_flex    = HexToColor("#090909"),
+        .panel_corners = HexToColor("#090909"),
+        .minibuffer    = HexToColor("#090909"),
+        .modeline    = HexToColor("#080808"),
+        .x = HexToColor("#564F96"),
+        .y = HexToColor("#658B5F"),
+    };
+
+    // SpaceGray
+    themes[1] = (Theme) {
         .panel_left    = HexToColor("#0E0E0E"),
         .panel_top     = HexToColor("#0E0E0E"),
         .panel_right   = HexToColor("#0E0E0E"),
@@ -24,11 +40,13 @@ void InitializeThemes() {
         .panel_center  = HexToColor("#0E0E0E"),
         .panel_flex    = HexToColor("#0E0E0E"),
         .panel_corners = HexToColor("#0E0E0E"),
+        .minibuffer    = HexToColor("#090909"),
+        .modeline    = HexToColor("#080808"),
         .x = HexToColor("#e62937"),
         .y = HexToColor("#0079F1"),
     };
 
-    themes[1] = (Theme) {
+    themes[2] = (Theme) {
         .panel_left = HexToColor("#DDDDDD"),
         .panel_top = HexToColor("#DDDDDD"),
         .panel_right = HexToColor("#DDDDDD"),
@@ -36,6 +54,7 @@ void InitializeThemes() {
         .panel_center = HexToColor("#DDDDDD"),
         .panel_flex = HexToColor("#DDDDDD"),
         .panel_corners = HexToColor("#DDDDDD"),
+        .minibuffer    = RAYWHITE,
         .x = HexToColor("#E62937"),
         .y = HexToColor("#0079F1"),
     };

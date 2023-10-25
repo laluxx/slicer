@@ -3,10 +3,11 @@
 
 
 // CONFIGURATION
-bool showTopRightCorner = true;
-bool showTopLeftCorner = true;
-bool showBottomRightCorner = true;
-bool showBottomLeftCorner = true;
+bool showTopRightCorner;
+bool showTopLeftCorner;
+bool showBottomRightCorner;
+bool showBottomLeftCorner;
+
 
 Panel panel = {
     INITIAL_TOP_HEIGHT,

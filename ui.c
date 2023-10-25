@@ -1,4 +1,7 @@
 #include "ui.h"
+#include <raylib.h>
+#include "screen.h"
+#include "theme.h"
 
 // BUTTONS
 int BUTTON_FONT_SIZE = 20;
@@ -308,41 +311,43 @@ bool DrawIosToggleButton(Vector2 position, bool currentState) {
 
 // COLOR PICKER
 
+void DrawColorPicker(ColorPicker *colorPicker, int x, int y, float scale) {
+    Vector2 gradientSelectorPos = { x, y };
+    Vector2 spectrumSelectorPos = { x + scale * colorPicker->spectrumBox.x, y + scale * 50 };
 
-
-
-void DrawColorPicker(ColorPicker *colorPicker) {
-    Vector2 gradientSelectorPos = { 0, 0 };
-    Vector2 spectrumSelectorPos = { colorPicker->spectrumBox.x, 50 };
+    Rectangle gradientBoxAdjusted = { x + scale * colorPicker->gradientBox.x, y + scale * colorPicker->gradientBox.y, scale * colorPicker->gradientBox.width, scale * colorPicker->gradientBox.height };
+    Rectangle spectrumBoxAdjusted = { x + scale * colorPicker->spectrumBox.x, y + scale * colorPicker->spectrumBox.y, scale * colorPicker->spectrumBox.width, scale * colorPicker->spectrumBox.height };
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        if (CheckCollisionPointRec(GetMousePosition(), colorPicker->gradientBox)) {
+        if (CheckCollisionPointRec(GetMousePosition(), gradientBoxAdjusted)) {
             gradientSelectorPos = GetMousePosition();
-            colorPicker->selectedColor = GetColorFromGradient(colorPicker->gradientBox, gradientSelectorPos, colorPicker->selectedHue);
-        } else if (CheckCollisionPointRec(GetMousePosition(), colorPicker->spectrumBox)) {
+            colorPicker->selectedColor = GetColorFromGradient(gradientBoxAdjusted, gradientSelectorPos, colorPicker->selectedHue);
+        } else if (CheckCollisionPointRec(GetMousePosition(), spectrumBoxAdjusted)) {
             spectrumSelectorPos = GetMousePosition();
-            colorPicker->selectedColor = GetColorFromSpectrum(colorPicker->spectrumBox, spectrumSelectorPos);
+            colorPicker->selectedColor = GetColorFromSpectrum(spectrumBoxAdjusted, spectrumSelectorPos);
             colorPicker->selectedHue = colorPicker->selectedColor.r;  // Assuming hue is stored in red component
         }
     }
 
     Color topColor = ColorFromHSV(colorPicker->selectedHue, 1.0f, 1.0f);
-    DrawRectangleGradientV(colorPicker->gradientBox.x, colorPicker->gradientBox.y, colorPicker->gradientBox.width, colorPicker->gradientBox.height, WHITE, topColor);
-    DrawRectangleGradientH(colorPicker->gradientBox.x, colorPicker->gradientBox.y, colorPicker->gradientBox.width, colorPicker->gradientBox.height, BLACK, BLANK);
+    DrawRectangleGradientV(gradientBoxAdjusted.x, gradientBoxAdjusted.y, gradientBoxAdjusted.width, gradientBoxAdjusted.height, WHITE, topColor);
+    DrawRectangleGradientH(gradientBoxAdjusted.x, gradientBoxAdjusted.y, gradientBoxAdjusted.width, gradientBoxAdjusted.height, BLACK, BLANK);
 
     // Drawing the hue gradient manually
-    for (int i = 0; i < colorPicker->spectrumBox.height; i++) {
-        float normalizedY = (float)i / colorPicker->spectrumBox.height;
+    for (int i = 0; i < spectrumBoxAdjusted.height; i++) {
+        float normalizedY = (float)i / spectrumBoxAdjusted.height;
         int hue = normalizedY * 360;
         Color color = ColorFromHSV(hue, 1.0f, 1.0f);
-        DrawRectangle(colorPicker->spectrumBox.x, colorPicker->spectrumBox.y + i, colorPicker->spectrumBox.width, 1, color);
+        DrawRectangle(spectrumBoxAdjusted.x, spectrumBoxAdjusted.y + i, spectrumBoxAdjusted.width, scale, color);
     }
 
-    DrawRectangleRec(colorPicker->selectedColorBox, colorPicker->selectedColor);
+    DrawRectangleRec((Rectangle){ x + scale * colorPicker->selectedColorBox.x, y + scale * colorPicker->selectedColorBox.y, scale * colorPicker->selectedColorBox.width, scale * colorPicker->selectedColorBox.height }, colorPicker->selectedColor);
 
-    DrawText(TextFormat("HEX: #%02X%02X%02X", colorPicker->selectedColor.r, colorPicker->selectedColor.g, colorPicker->selectedColor.b), colorPicker->selectedColorBox.x, colorPicker->selectedColorBox.y + colorPicker->selectedColorBox.height + 10, 20, WHITE);
-    DrawText(TextFormat("R: %d\nG: %d\nB: %d", colorPicker->selectedColor.r, colorPicker->selectedColor.g, colorPicker->selectedColor.b), colorPicker->selectedColorBox.x, colorPicker->selectedColorBox.y + colorPicker->selectedColorBox.height + 40, 20, WHITE);
+    DrawText(TextFormat("HEX: #%02X%02X%02X", colorPicker->selectedColor.r, colorPicker->selectedColor.g, colorPicker->selectedColor.b), x + scale * colorPicker->selectedColorBox.x, y + scale * colorPicker->selectedColorBox.y + scale * colorPicker->selectedColorBox.height + 10, 20 * scale, WHITE);
+    DrawText(TextFormat("R: %d\nG: %d\nB: %d", colorPicker->selectedColor.r, colorPicker->selectedColor.g, colorPicker->selectedColor.b), x + scale * colorPicker->selectedColorBox.x, y + scale * colorPicker->selectedColorBox.y + scale * colorPicker->selectedColorBox.height + 40, 20 * scale, WHITE);
 }
+
+
 
 Color GetColorFromGradient(Rectangle gradientBox, Vector2 position, float hue) {
     float gradientWidth = gradientBox.width;
@@ -366,4 +371,21 @@ Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position) {
     Color color = ColorFromHSV(hue, 1.0f, 1.0f);
 
     return color;
+}
+
+
+// MODELINE
+
+float modelineHeight = 30.0f;
+
+void DrawModeline(int width, float minibufferHeight) {
+    Color modelineColor = CURRENT_THEME.modeline;  // Example color; adjust as necessary
+    DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight - modelineHeight, width, modelineHeight, modelineColor);
+}
+
+
+// MINIBUFFER
+void DrawMiniBuffer(int width, float height) {
+    Color minibufferColor = CURRENT_THEME.minibuffer  ; // Or any other color you'd like
+    DrawRectangle(0, SCREEN_HEIGHT - height, width, height, minibufferColor);
 }

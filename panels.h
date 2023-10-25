@@ -39,6 +39,12 @@ typedef struct {
 
 extern Panel panel;
 
+extern bool showTopRightCorner;
+extern bool showTopLeftCorner;
+extern bool showBottomRightCorner;
+extern bool showBottomLeftCorner;
+
+
 void DrawPanels();
 void UpdatePanelsDimensions();
 void DrawPanel(char panelSide, float dimension);

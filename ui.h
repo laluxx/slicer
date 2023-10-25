@@ -29,7 +29,10 @@ typedef struct ColorPicker {
 
 Color GetColorFromGradient(Rectangle gradientBox, Vector2 position, float hue);  // Passing selected hue as argument
 Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position);
-void DrawColorPicker(ColorPicker *colorPicker);
+/* void DrawColorPicker(ColorPicker *colorPicker); */
+void DrawColorPicker(ColorPicker *colorPicker, int x, int y, float scale);
+void DrawMiniBuffer(int width, float height);
+void DrawModeline(int width, float minibufferHeight);
 
 
 

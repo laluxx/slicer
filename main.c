@@ -11,6 +11,7 @@
 #include "window.h"
 #include "filemanager.h"
 #include "theme.h"
+#include <stdbool.h>
 
 
 
@@ -231,7 +232,6 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
 
     Vector2 startVertical, endVertical, startHorizontal, endHorizontal;
 
-    // Setup for the vertical blue line:
     if (cursor.x < panel.leftWidth) {
         startVertical.x = endVertical.x = panel.leftWidth + lineThickness / 2.0; // Adjust for thickness
     } else if (cursor.x > SCREEN_WIDTH - panel.rightWidth) {
@@ -243,7 +243,6 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
     startVertical.y = panel.topHeight;
     endVertical.y = SCREEN_HEIGHT - panel.bottomHeight;
 
-    // Setup for the horizontal red line:
     if (cursor.y < panel.topHeight) {
         startHorizontal.y = endHorizontal.y = panel.topHeight + lineThickness / 2.0; // Adjust for thickness
     } else if (cursor.y > SCREEN_HEIGHT - panel.bottomHeight) {
@@ -257,11 +256,11 @@ void DrawCursorCoordinatesLines(Cursor cursor) {
 
     if (coordinateLinesEnabled) {
         if (cursor.y < panel.topHeight || cursor.y > SCREEN_HEIGHT - panel.bottomHeight) {
-            DrawLineEx(startVertical, endVertical, lineThickness, BLUE);
-            DrawLineEx(startHorizontal, endHorizontal, lineThickness, RED);
+            DrawLineEx(startVertical, endVertical, lineThickness, CURRENT_THEME.y);
+            DrawLineEx(startHorizontal, endHorizontal, lineThickness, CURRENT_THEME.x);
         } else {
-            DrawLineEx(startHorizontal, endHorizontal, lineThickness, RED);
-            DrawLineEx(startVertical, endVertical, lineThickness, BLUE);
+            DrawLineEx(startHorizontal, endHorizontal, lineThickness, CURRENT_THEME.x);
+            DrawLineEx(startVertical, endVertical, lineThickness, CURRENT_THEME.y);
         }
     }
 }
@@ -325,6 +324,7 @@ int main(void) {
     LoadToggleTextures();
     LoadCornerTextures();
     InitializeThemes();
+
 
 
 
@@ -429,10 +429,24 @@ int main(void) {
 
         switch (currentMode) {
             case MODE_DEFAULT:
+                showBottomRightCorner = true;
+                showBottomLeftCorner = true;
+                showTopLeftCorner = true;
+                showTopRightCorner = true;
+
+                DrawPanel('R', 280.0f);  // for a fixed right panel
+
                 UpdatePanelsDimensions();
                 DrawMouseInspector();
                 DrawCursorCoordinatesLines(cursor);
                 DrawPanels();
+
+                float minibufferHeight = 21.0f; // Default height, change as needed
+
+                DrawModeline(SCREEN_WIDTH, minibufferHeight);
+                DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
+
 
                 //buttons
                 panel.centerPanelVisible = DrawToggleButton((Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 570}, panel.centerPanelVisible, panel.centerPanelVisible ? "Hide Center Panel" : "Show Center Panel");
@@ -451,7 +465,7 @@ int main(void) {
                 DrawCursorCoordinatesInspector(cursor);
                 DrawWASDInspector();
                 DrawSlicerInspector(sprite);  // Call the function here
-                DrawEditorLog(panel.bottomHeight);
+                /* DrawEditorLog(panel.bottomHeight); */ // TODO
                 /* OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM); */
                 DrawCharacter(character, sprite, frameCounter);
                 DrawCharacterInspector(character, sprite, frameCounter);
@@ -485,6 +499,10 @@ int main(void) {
                 DrawCharacter(character, sprite, frameCounter);
                 break;
             case MODE_UI_EDITOR:
+                showBottomLeftCorner = false;
+                showTopLeftCorner = false;
+                showTopRightCorner = false;
+
                 UpdatePanelsDimensions();
                 ClosePanel('T');  // Close top panel
                 /* ClosePanel('R');  // Close right panel */
@@ -495,7 +513,7 @@ int main(void) {
                 DrawPanels();  // Draw all panels
                 DrawFPS(120, 10);
                 RenderUIEditorMode();
-                DrawColorPicker(&colorPicker);
+                DrawColorPicker(&colorPicker, 1460, -70, 1);
 
                 DrawModeBar();
             case MODE_PLAY:

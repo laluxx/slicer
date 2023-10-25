@@ -5,6 +5,8 @@
 #include "raylib.h"
 
 typedef struct {
+    Color modeline;
+    Color minibuffer;
     Color panel_left;
     Color panel_top;
     Color panel_right;
