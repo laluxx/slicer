@@ -11,6 +11,7 @@
 
 typedef enum {
     MODE_DASHBOARD,
+    MODE_EDITOR,
     MODE_DEFAULT,
     MODE_UI_EDITOR,
     MODE_PLAY,

@@ -441,6 +441,10 @@ int main(void) {
             DrawPanel('L', 580.0f); // for a fixed left panel
             DrawPanels();
 
+
+            HandleFrameKeyBindings();
+            DrawFrames();
+
             RenderDashboard();
             float minibufferHeight = 21.0f; // Default height, change as needed
 
@@ -457,10 +461,16 @@ int main(void) {
 
             DrawPanel('R', 280.0f); // for a fixed right panel
 
+
+            HandleFrameKeyBindings();
+            DrawFrames();
+
             UpdatePanelsDimensions();
             DrawMouseInspector();
             DrawCursorCoordinatesLines(cursor);
+            DrawCharacter(character, sprite, frameCounter);
             DrawPanels();
+
 
             minibufferHeight = 21.0f; // Default height, change as needed
 
@@ -488,28 +498,54 @@ int main(void) {
             /* DrawEditorLog(panel.bottomHeight); */ // TODO
             /* OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM);
              */
-            DrawCharacter(character, sprite, frameCounter);
             DrawCharacterInspector(character, sprite, frameCounter);
 
-            /* bool windowState = DrawToggleButton((Vector2){100, 100},
-             * myWindow.isEnabled, myWindow.isEnabled ? "Hide Window" : "Show
-             * Window"); */
-            bool windowState = DrawToggleButton(
-                (Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 600},
-                myWindow.isEnabled,
-                myWindow.isEnabled ? "Hide Window" : "Show Window");
+            break;
 
-            if (windowState != myWindow.isEnabled) {
-                myWindow.isEnabled =
-                    windowState; // Toggle window visibility based on the button
-                }
 
-                if (myWindow.isEnabled) {  // Check myWindow.isEnabled instead of windowEnabled
-                    UpdateWindow(&myWindow);
-                    DrawWindow(&myWindow);
+            case MODE_EDITOR:
+            showBottomRightCorner = 0;
+            showBottomLeftCorner = 0;
+            showTopLeftCorner = 0;
+            showTopRightCorner = 0;
 
-                }
-                break;
+            ClosePanel('T');
+            ClosePanel('R');
+            ClosePanel('B');
+
+
+            UpdatePanelsDimensions();
+            DrawPanels();
+
+
+
+            HandleFrameKeyBindings();
+            DrawFrames();
+
+
+
+
+
+
+            minibufferHeight = 21.0f;
+
+            DrawModeline(SCREEN_WIDTH, minibufferHeight);
+            DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
+
+            UpdateFileManager();
+            DrawFileManager();
+
+            DrawModeBar();
+
+            break;
+
+
+
+
+
+
+
 
             case MODE_UI_EDITOR:
                 showBottomLeftCorner = false;
@@ -520,6 +556,10 @@ int main(void) {
                 ClosePanel('T');  // Close top panel
                 /* ClosePanel('R');  // Close right panel */
                 ClosePanel('L');  // Close left panela
+
+
+                HandleFrameKeyBindings();
+                DrawFrames();
 
                 DrawPanel('B', 70.0f);  // for a fixed bottom panel
                 DrawPanel('R', 370.0f);  // for a fixed right panel

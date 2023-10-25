@@ -37,6 +37,30 @@ typedef struct {
     bool flexPanelVisible;
 } Panel;
 
+// WINDOW MANAGER
+/* typedef struct Frame { */
+/*     Rectangle rect; */
+/*     bool isSelected; */
+/* } Frame; */
+
+/* typedef enum { */
+/*     LAYOUT_COLUMNS, */
+/*     LAYOUT_MASTER_STACK */
+/* } Layouts; */
+
+
+
+typedef struct Frame {
+    Rectangle rect;
+    bool isSelected;
+} Frame;
+
+typedef enum {
+    LAYOUT_MASTER_STACK,
+    LAYOUT_COLUMNS,
+    LAYOUT_COUNT // Sentinel for wrap-around
+} LayoutType;
+
 extern Panel panel;
 
 extern bool showTopRightCorner;
@@ -56,6 +80,13 @@ void CloseFlexiblePanel();
 void AdjustLeftPanelWidthForFileNames();
 void LoadCornerTextures();
 void UnloadCornerTextures();
+
+// WINDOW MANAGMENT
+void ArrangeFrames();
+void HandleFrameKeyBindings();
+void CreateNewFrame();
+void CloseSelectedFrame();
+void DrawFrames();
 
 
 #endif // PANELS_H

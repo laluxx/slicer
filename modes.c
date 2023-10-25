@@ -67,6 +67,10 @@ void EditorNextMode() {
     if (currentMode == MODE_DASHBOARD && panelsResetOnModeChange) {
         PanelsReset();
     }
+
+    if (currentMode == MODE_EDITOR && panelsResetOnModeChange) {
+        PanelsReset();
+    }
 }
 
 void EditorPreviousMode() {

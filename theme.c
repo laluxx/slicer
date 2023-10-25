@@ -45,6 +45,7 @@ void InitializeThemes() {
         .minibuffer    = HexToColor("#090909"),
         .modeline    = HexToColor("#080808"),
         .background    = HexToColor("#0B0B0B"),
+        .modeline_highlight = HexToColor("#0079F1"),
         .x = HexToColor("#e62937"),
         .y = HexToColor("#0079F1"),
     };

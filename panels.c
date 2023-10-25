@@ -1,5 +1,6 @@
 #include "panels.h"
 #include "theme.h"
+/* #include <cstddef> */
 
 
 // CONFIGURATION
@@ -258,4 +259,254 @@ void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position) {
 
 void CloseFlexiblePanel() {
     panel.flexPanelVisible = false;
+}
+
+
+
+
+// FRAMES
+/* #define MAX_FRAMES 100 */
+/* #define FRAME_GAP 10 */
+
+/* Frame frames[MAX_FRAMES]; */
+/* int frameCount = 0; */
+/* int selectedIndex = -1; */
+/* float masterFactor = 0.6; // 60% for the master frame */
+
+/* void HandleFrameKeyBindings() { */
+/*     if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) { */
+/*         if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) { */
+/*             CreateNewFrame(); */
+/*         } */
+/*         else if (IsKeyPressed(KEY_Q)) { */
+/*             CloseSelectedFrame(); */
+/*         } */
+/*         else if (IsKeyPressed(KEY_J)) { */
+/*             MoveFrameSelection(1); */
+/*         } */
+/*         else if (IsKeyPressed(KEY_K)) { */
+/*             MoveFrameSelection(-1); */
+/*         } */
+/*         else if (IsKeyPressed(KEY_H)) { */
+/*             masterFactor -= 0.05; */
+/*             if (masterFactor < 0.1) masterFactor = 0.1; */
+/*             ArrangeFrames(); */
+/*         } */
+/*         else if (IsKeyPressed(KEY_L)) { */
+/*             masterFactor += 0.05; */
+/*             if (masterFactor > 0.9) masterFactor = 0.9; */
+/*             ArrangeFrames(); */
+/*         } */
+/*     } */
+/* } */
+
+/* void CreateNewFrame() { */
+/*     if (frameCount < MAX_FRAMES) { */
+/*         frames[frameCount].isSelected = false; */
+/*         frameCount++; */
+/*         ArrangeFrames(); */
+/*         if (selectedIndex == -1) { */
+/*             selectedIndex = 0; */
+/*             frames[0].isSelected = true; */
+/*         } */
+/*     } */
+/* } */
+
+/* void CloseSelectedFrame() { */
+/*     if (selectedIndex != -1) { */
+/*         for (int i = selectedIndex; i < frameCount - 1; i++) { */
+/*             frames[i] = frames[i + 1]; */
+/*         } */
+/*         frameCount--; */
+/*         if (frameCount == 0) { */
+/*             selectedIndex = -1; */
+/*         } else { */
+/*             selectedIndex %= frameCount; */
+/*             frames[selectedIndex].isSelected = true; */
+/*         } */
+/*         ArrangeFrames(); */
+/*     } */
+/* } */
+
+/* void MoveFrameSelection(int direction) { */
+/*     if (selectedIndex != -1) { */
+/*         frames[selectedIndex].isSelected = false; */
+/*         selectedIndex = (selectedIndex + direction + frameCount) % frameCount; */
+/*         frames[selectedIndex].isSelected = true; */
+/*     } */
+/* } */
+
+/* void ArrangeFrames() { */
+/*     // Dimensions of the main workspace area */
+/*     float totalGapWidth = (frameCount - 1) * FRAME_GAP; */
+/*     Rectangle workspace = { */
+/*         panel.leftWidth + CENTER_GAP, */
+/*         panel.topHeight + CENTER_GAP, */
+/*         SCREEN_WIDTH - panel.leftWidth - panel.rightWidth - 2 * CENTER_GAP - totalGapWidth, */
+/*         SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight - 2 * CENTER_GAP */
+/*     }; */
+
+/*     if (frameCount == 1) { */
+/*         frames[0].rect = workspace; */
+/*     } else { */
+/*         // Master frame */
+/*         frames[0].rect = (Rectangle){ */
+/*             workspace.x, */
+/*             workspace.y, */
+/*             workspace.width * masterFactor, */
+/*             workspace.height */
+/*         }; */
+
+/*         // Distribute the remaining space among slave frames */
+/*         float slaveFrameWidth = (workspace.width - frames[0].rect.width - (frameCount - 2) * FRAME_GAP) / (frameCount - 1); */
+/*         for (int i = 1; i < frameCount; i++) { */
+/*             frames[i].rect = (Rectangle){ */
+/*                 frames[0].rect.x + frames[0].rect.width + FRAME_GAP + (i-1) * (slaveFrameWidth + FRAME_GAP), */
+/*                 workspace.y, */
+/*                 slaveFrameWidth, */
+/*                 workspace.height */
+/*             }; */
+/*         } */
+/*     } */
+/* } */
+
+/* void DrawFrames() { */
+/*     for (int i = 0; i < frameCount; i++) { */
+/*         Color frameColor = frames[i].isSelected ? CURRENT_THEME.x : CURRENT_THEME.y; */
+/*         DrawRectangleRec(frames[i].rect, frameColor); */
+/*     } */
+/* } */
+
+
+#define MAX_FRAMES 100
+#define FRAME_GAP 10
+
+
+Frame frames[MAX_FRAMES];
+int frameCount = 0;
+int selectedIndex = -1;
+float masterFactor = 0.6;  // 60% for the master frame
+LayoutType currentLayout = LAYOUT_MASTER_STACK; // Default layout
+
+void HandleFrameKeyBindings() {
+    if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
+        if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
+            CreateNewFrame();
+        }
+        else if (IsKeyPressed(KEY_Q)) {
+            CloseSelectedFrame();
+        }
+        else if (IsKeyPressed(KEY_J)) {
+            MoveFrameSelection(1);
+        }
+        else if (IsKeyPressed(KEY_K)) {
+            MoveFrameSelection(-1);
+        }
+        else if (IsKeyPressed(KEY_H)) {
+            masterFactor -= 0.05;
+            if (masterFactor < 0.1) masterFactor = 0.1;
+            ArrangeFrames();
+        }
+        else if (IsKeyPressed(KEY_L)) {
+            masterFactor += 0.05;
+            if (masterFactor > 0.9) masterFactor = 0.9;
+            ArrangeFrames();
+        }
+        else if (IsKeyPressed(KEY_M)) {  // For switching layout mode
+            currentLayout = (currentLayout + 1) % LAYOUT_COUNT;
+            ArrangeFrames();
+        }
+    }
+}
+
+void CreateNewFrame() {
+    if (frameCount < MAX_FRAMES) {
+        frames[frameCount].isSelected = false;
+        frameCount++;
+        ArrangeFrames();
+        if (selectedIndex == -1) {
+            selectedIndex = 0;
+            frames[0].isSelected = true;
+        }
+    }
+}
+
+void CloseSelectedFrame() {
+    if (selectedIndex != -1) {
+        for (int i = selectedIndex; i < frameCount - 1; i++) {
+            frames[i] = frames[i + 1];
+        }
+        frameCount--;
+        if (frameCount == 0) {
+            selectedIndex = -1;
+        } else {
+            selectedIndex %= frameCount;
+            frames[selectedIndex].isSelected = true;
+        }
+        ArrangeFrames();
+    }
+}
+
+void MoveFrameSelection(int direction) {
+    if (selectedIndex != -1) {
+        frames[selectedIndex].isSelected = false;
+        selectedIndex = (selectedIndex + direction + frameCount) % frameCount;
+        frames[selectedIndex].isSelected = true;
+    }
+}
+
+void ArrangeFrames() {
+    // Dimensions of the main workspace area
+    Rectangle workspace = {
+        panel.leftWidth,
+        panel.topHeight,
+        SCREEN_WIDTH - panel.leftWidth - panel.rightWidth,
+        SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight
+    };
+
+    if (frameCount == 1) {
+        frames[0].rect = workspace;
+    } else {
+        switch (currentLayout) {
+            case LAYOUT_MASTER_STACK:
+                frames[0].rect = (Rectangle){
+                    workspace.x,
+                    workspace.y,
+                    workspace.width * masterFactor,
+                    workspace.height
+                };
+                float stackedFrameHeight = (workspace.height - FRAME_GAP * (frameCount - 2)) / (frameCount - 1);
+                for (int i = 1; i < frameCount; i++) {
+                    frames[i].rect = (Rectangle){
+                        frames[0].rect.x + frames[0].rect.width + FRAME_GAP,
+                        workspace.y + (i-1) * (stackedFrameHeight + FRAME_GAP),
+                        workspace.width - frames[0].rect.width - FRAME_GAP,
+                        stackedFrameHeight
+                    };
+                }
+                break;
+
+            case LAYOUT_COLUMNS:
+                float columnWidth = (workspace.width - FRAME_GAP * (frameCount - 1)) / frameCount;
+                for (int i = 0; i < frameCount; i++) {
+                    frames[i].rect = (Rectangle){
+                        workspace.x + i * (columnWidth + FRAME_GAP),
+                        workspace.y,
+                        columnWidth,
+                        workspace.height
+                    };
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+void DrawFrames() {
+    for (int i = 0; i < frameCount; i++) {
+        Color frameColor = frames[i].isSelected ? themes[0].x : themes[0].y;
+        DrawRectangleRec(frames[i].rect, frameColor);
+    }
 }
