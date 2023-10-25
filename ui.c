@@ -376,16 +376,25 @@ Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position) {
 
 // MODELINE
 
-float modelineHeight = 30.0f;
+
+
+float modelineHeight = 26.0f;
 
 void DrawModeline(int width, float minibufferHeight) {
-    Color modelineColor = CURRENT_THEME.modeline;  // Example color; adjust as necessary
+    // Assuming modelineHeight is a constant or a defined variable elsewhere in your code
+    Color modelineColor = CURRENT_THEME.modeline;  // Use the theme's modeline color
     DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight - modelineHeight, width, modelineHeight, modelineColor);
-}
 
+    // Drawing the vertical bar on the left side of the modeline
+    int highlightWidth = 3;  // Adjust width as desired
+    DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight - modelineHeight, highlightWidth, modelineHeight, CURRENT_THEME.modeline_highlight);
+}
 
 // MINIBUFFER
 void DrawMiniBuffer(int width, float height) {
     Color minibufferColor = CURRENT_THEME.minibuffer  ; // Or any other color you'd like
     DrawRectangle(0, SCREEN_HEIGHT - height, width, height, minibufferColor);
 }
+
+
+

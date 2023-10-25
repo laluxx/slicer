@@ -25,8 +25,10 @@ void InitializeThemes() {
         .panel_center  = HexToColor("#090909"),
         .panel_flex    = HexToColor("#090909"),
         .panel_corners = HexToColor("#090909"),
+        .background    = HexToColor("#0B0B0B"),
         .minibuffer    = HexToColor("#090909"),
-        .modeline    = HexToColor("#080808"),
+        .modeline      = HexToColor("#080808"),
+        .modeline_highlight = HexToColor("#658B5F"),
         .x = HexToColor("#564F96"),
         .y = HexToColor("#658B5F"),
     };
@@ -42,6 +44,7 @@ void InitializeThemes() {
         .panel_corners = HexToColor("#0E0E0E"),
         .minibuffer    = HexToColor("#090909"),
         .modeline    = HexToColor("#080808"),
+        .background    = HexToColor("#0B0B0B"),
         .x = HexToColor("#e62937"),
         .y = HexToColor("#0079F1"),
     };

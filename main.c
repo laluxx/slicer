@@ -421,61 +421,90 @@ int main(void) {
         }
 
         BeginDrawing();
-        ClearBackground((Color){11, 11, 11, 255});
+        ClearBackground(CURRENT_THEME.background);
 
         if (cameraManagerEnabled) {
             BeginMode2D(cameraManager.camera);
         }
 
         switch (currentMode) {
+            case MODE_DASHBOARD:
+            ClosePanel('T');  // Close top panel
+            ClosePanel('B');  // Close right panel
+            ClosePanel('R');  // Close right panel
+            showBottomRightCorner = 0;
+            showBottomLeftCorner = 0;
+            showTopLeftCorner = 0;
+            showTopRightCorner = 0;
+
+
+            UpdatePanelsDimensions();
+            DrawPanels();
+
+            float minibufferHeight = 21.0f; // Default height, change as needed
+
+            DrawModeline(SCREEN_WIDTH, minibufferHeight);
+            DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
+            UpdateFileManager();
+            DrawFileManager();
+
+            break;
+
+
             case MODE_DEFAULT:
-                showBottomRightCorner = true;
-                showBottomLeftCorner = true;
-                showTopLeftCorner = true;
-                showTopRightCorner = true;
+            showBottomRightCorner = 1;
+            showBottomLeftCorner = 1;
+            showTopLeftCorner = 1;
+            showTopRightCorner = 1;
 
-                DrawPanel('R', 280.0f);  // for a fixed right panel
+            DrawPanel('R', 280.0f); // for a fixed right panel
 
-                UpdatePanelsDimensions();
-                DrawMouseInspector();
-                DrawCursorCoordinatesLines(cursor);
-                DrawPanels();
+            UpdatePanelsDimensions();
+            DrawMouseInspector();
+            DrawCursorCoordinatesLines(cursor);
+            DrawPanels();
 
-                float minibufferHeight = 21.0f; // Default height, change as needed
+            minibufferHeight = 21.0f; // Default height, change as needed
 
-                DrawModeline(SCREEN_WIDTH, minibufferHeight);
-                DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+            DrawModeline(SCREEN_WIDTH, minibufferHeight);
+            DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
+            // buttons
+            panel.centerPanelVisible = DrawToggleButton(
+                (Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 570},
+                panel.centerPanelVisible,
+                panel.centerPanelVisible ? "Hide Center Panel"
+                                         : "Show Center Panel");
 
+            DrawFPS(120, 10);
 
-                //buttons
-                panel.centerPanelVisible = DrawToggleButton((Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 570}, panel.centerPanelVisible, panel.centerPanelVisible ? "Hide Center Panel" : "Show Center Panel");
+            UpdateFileManager();
+            DrawFileManager();
 
+            DrawModeBar();
 
+            DrawCameraInspector();
+            DrawCursorCoordinatesInspector(cursor);
+            DrawWASDInspector();
+            DrawSlicerInspector(sprite);             // Call the function here
+            /* DrawEditorLog(panel.bottomHeight); */ // TODO
+            /* OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM);
+             */
+            DrawCharacter(character, sprite, frameCounter);
+            DrawCharacterInspector(character, sprite, frameCounter);
 
+            /* bool windowState = DrawToggleButton((Vector2){100, 100},
+             * myWindow.isEnabled, myWindow.isEnabled ? "Hide Window" : "Show
+             * Window"); */
+            bool windowState = DrawToggleButton(
+                (Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 600},
+                myWindow.isEnabled,
+                myWindow.isEnabled ? "Hide Window" : "Show Window");
 
-                DrawFPS(120, 10);
-
-                UpdateFileManager();
-                DrawFileManager();
-
-                DrawModeBar();
-
-                DrawCameraInspector();
-                DrawCursorCoordinatesInspector(cursor);
-                DrawWASDInspector();
-                DrawSlicerInspector(sprite);  // Call the function here
-                /* DrawEditorLog(panel.bottomHeight); */ // TODO
-                /* OpenFlexiblePanel(FLEX_SIZE_ONE_QUARTER, FLEX_POSITION_BOTTOM); */
-                DrawCharacter(character, sprite, frameCounter);
-                DrawCharacterInspector(character, sprite, frameCounter);
-
-
-                /* bool windowState = DrawToggleButton((Vector2){100, 100}, myWindow.isEnabled, myWindow.isEnabled ? "Hide Window" : "Show Window"); */
-                bool windowState = DrawToggleButton((Vector2){SCREEN_WIDTH - 294, SCREEN_HEIGHT - 600}, myWindow.isEnabled, myWindow.isEnabled ? "Hide Window" : "Show Window");
-
-                if (windowState != myWindow.isEnabled) {
-                    myWindow.isEnabled = windowState;  // Toggle window visibility based on the button
+            if (windowState != myWindow.isEnabled) {
+                myWindow.isEnabled =
+                    windowState; // Toggle window visibility based on the button
                 }
 
                 if (myWindow.isEnabled) {  // Check myWindow.isEnabled instead of windowEnabled
@@ -485,19 +514,6 @@ int main(void) {
                 }
                 break;
 
-
-            case MODE_SLICER:
-                DrawModeBar();
-                UpdatePanelsDimensions();
-                ClosePanel('T');  // Close top panel
-                ClosePanel('B');  // Close bottom panel
-                ClosePanel('L');  // Close left panela
-
-                DrawPanel('R', 600.0f);  // for a fixed right panel
-                DrawPanels();  // Draw all panels
-                RenderSlicerMode(&character, sprite);
-                DrawCharacter(character, sprite, frameCounter);
-                break;
             case MODE_UI_EDITOR:
                 showBottomLeftCorner = false;
                 showTopLeftCorner = false;

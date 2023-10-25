@@ -224,7 +224,7 @@ void InitializeFileManager(const char* startDir) {
 }
 
 void DrawFileManager() {
-    DrawText(fm.currentDir, 10, 1000, 10, WHITE);
+    DrawText(fm.currentDir, 15, 1040, 8, WHITE);
 
     int iconSize = 24;
     int iconPadding = 4;

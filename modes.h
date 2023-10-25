@@ -7,10 +7,11 @@
 #include "slicer.h"
 #include "log.h"
 #include "panels.h"
+#include "theme.h"
 
 typedef enum {
+    MODE_DASHBOARD,
     MODE_DEFAULT,
-    MODE_SLICER,
     MODE_UI_EDITOR,
     MODE_PLAY,
     MODE_MAX
@@ -21,13 +22,10 @@ extern EditorMode currentMode;
 void EditorChangeMode(EditorMode mode);
 void EditorNextMode(void);
 void EditorPreviousMode(void);
-
-
 void DrawModeBar(void);
 
-/* void RenderSlicerMode(Texture2D sprite); */
-void RenderSlicerMode(Character* character, Texture2D sprite);
 
+// UI EDITOR
 typedef enum {
     BUTTON_NORMAL,
     BUTTON_INCREMENTER,

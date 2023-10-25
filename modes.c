@@ -1,7 +1,7 @@
 #include "modes.h"
 #include <stdlib.h>
 
-EditorMode currentMode = MODE_DEFAULT;
+EditorMode currentMode = MODE_DASHBOARD;
 bool panelsResetOnModeChange = true;
 
 void DrawModeBar() {
@@ -29,7 +29,7 @@ void DrawModeBar() {
         if (IsKeyPressed(KEY_ONE)) {
             EditorChangeMode(MODE_DEFAULT);  // Delegate the mode change and associated behaviors to EditorChangeMode
         } else if (IsKeyPressed(KEY_TWO)) {
-            EditorChangeMode(MODE_SLICER);  // Delegate the mode change and associated behaviors to EditorChangeMode
+            EditorChangeMode(MODE_UI_EDITOR);  // Delegate the mode change and associated behaviors to EditorChangeMode
         }
         // Add similar checks for KEY_THREE, KEY_FOUR, etc. if you add more modes in the future
     }
@@ -63,6 +63,10 @@ void EditorNextMode() {
     if (currentMode == MODE_DEFAULT && panelsResetOnModeChange) {
         PanelsReset();
     }
+
+    if (currentMode == MODE_DASHBOARD && panelsResetOnModeChange) {
+        PanelsReset();
+    }
 }
 
 void EditorPreviousMode() {
@@ -73,157 +77,6 @@ void EditorPreviousMode() {
         PanelsReset();
     }
 }
-
-void RenderSlicerMode(Character* character, Texture2D sprite) {
-    const int infoX = 20;
-    const int infoY = 40;
-
-    static int framesCounter = 0;
-    static int animation_rate = 8;
-
-    float scale = 2.0f;
-    int buttonWidth = 180;
-    int buttonHeight = 30;
-    int smallButtonWidth = buttonWidth / 6;
-
-    Rectangle spriteDest = {
-        infoX + smallButtonWidth * 2 + 30,
-        infoY,
-        sprite.width * scale,
-        sprite.height * scale
-    };
-
-    framesCounter++;
-    if (framesCounter >= (60/animation_rate)) {
-        framesCounter = 0;
-        UpdateCharacterState(character);
-    }
-
-    if (IsKeyPressed(KEY_RIGHT) && animation_rate < MAX_FRAME_SPEED) animation_rate++;
-    if (IsKeyPressed(KEY_LEFT) && animation_rate > MIN_FRAME_SPEED) animation_rate--;
-
-    BeginDrawing();
-    ClearBackground((Color){0x0B, 0x0B, 0x0B, 0xFF});
-
-    /* DrawCharacter(*character, sprite, framesCounter); */
-
-    DrawTexturePro(sprite, (Rectangle){0, 0, sprite.width, sprite.height}, spriteDest, (Vector2){0, 0}, 0, WHITE);
-
-    for (int i = 0; i < SLICE_HORIZONTAL; i++) {
-        for (int j = 0; j < SLICE_VERTICAL; j++) {
-            Rectangle gridRect = {
-                spriteDest.x + i * SLICE_SIZE_X * scale,
-                spriteDest.y + j * SLICE_SIZE_Y * scale,
-                SLICE_SIZE_X * scale,
-                SLICE_SIZE_Y * scale
-            };
-            DrawRectangleLinesEx(gridRect, 1, RED);
-        }
-    }
-
-    Rectangle srcRec = GetCharacterSourceRec(framesCounter, character->state);
-    DrawRectangleLines(
-        spriteDest.x + (int)srcRec.x * scale,
-        spriteDest.y + (int)srcRec.y * scale,
-        SLICE_SIZE_X * scale,
-        SLICE_SIZE_Y * scale,
-        GREEN
-    );
-
-    if (DrawButton("-", (Rectangle){spriteDest.x - smallButtonWidth - 10, spriteDest.y, smallButtonWidth, buttonHeight}, RED)) {
-        if (SLICE_VERTICAL > 1) SLICE_VERTICAL--;
-    }
-    if (DrawButton("+", (Rectangle){spriteDest.x - smallButtonWidth - 10, spriteDest.y + buttonHeight + 10, smallButtonWidth, buttonHeight}, GREEN)) {
-        SLICE_VERTICAL++;
-    }
-
-    if (DrawButton("-", (Rectangle){spriteDest.x, spriteDest.y - buttonHeight - 10, smallButtonWidth, buttonHeight}, RED)) {
-        if (SLICE_HORIZONTAL > 1) SLICE_HORIZONTAL--;
-    }
-    if (DrawButton("+", (Rectangle){spriteDest.x + smallButtonWidth + 10, spriteDest.y - buttonHeight - 10, smallButtonWidth, buttonHeight}, GREEN)) {
-        SLICE_HORIZONTAL++;
-    }
-
-    DrawText("FRAME SPEED: ", spriteDest.x + spriteDest.width + 10, spriteDest.y, 10, RED);
-    DrawText(TextFormat("%02i FPS", animation_rate), spriteDest.x + spriteDest.width + 120, spriteDest.y, 10, RED);
-
-    for (int i = 0; i < MAX_FRAME_SPEED; i++) {
-        if (i < animation_rate) DrawRectangle(spriteDest.x + spriteDest.width + 10 + 21*i, spriteDest.y + 40, 20, 20, RED);
-        DrawRectangleLines(spriteDest.x + spriteDest.width + 10 + 21*i, spriteDest.y + 40, 20, 20, GREEN);
-    }
-
-    // Displaying the character's current state
-    DrawText(CharacterStateNames[character->state], spriteDest.x, spriteDest.y + spriteDest.height + 10, 10, GREEN);
-
-    EndDrawing();
-}
-
-
-
-/* // UI EDITOR */
-/* UIButton availableButtons[BUTTON_COUNT] = { */
-/*     {"Button 1", {0, 0, 100, 50}, RED}, */
-/*     {"Incrementer", {0, 0, 150, 50}, BLUE} */
-/* }; */
-
-/* UIButton placedButtons[MAX_PLACED_BUTTONS]; */
-/* int placedButtonCount = 0; */
-/* UIButton *selectedForPlacement = NULL; */
-/* UIButton *selectedPlacedButton = NULL; */
-
-
-/* void RenderUIEditorMode() { */
-/*     // Draw available buttons at the bottom for selection */
-/*     int startX = 10; */
-/*     int previewHeight = 60; */
-/*     int startY = GetScreenHeight() - previewHeight; */
-
-/*     for (int i = 0; i < BUTTON_COUNT; i++) { */
-/*         Rectangle btnBounds = availableButtons[i].bounds; */
-/*         btnBounds.y = startY; */
-/*         btnBounds.x = startX; */
-
-/*         if (DrawButton(availableButtons[i].text, btnBounds, availableButtons[i].color)) { */
-/*             selectedForPlacement = &availableButtons[i]; */
-/*             selectedPlacedButton = NULL; */
-/*         } */
-
-/*         startX += btnBounds.width + 10; */
-/*     } */
-
-/*     Vector2 mousePos = GetMousePosition(); */
-
-/*     // Place a new button if one is selected for placement */
-/*     if (selectedForPlacement && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mousePos.y < startY) { */
-/*         UIButton newButton = *selectedForPlacement; */
-/*         newButton.bounds.x = mousePos.x - newButton.bounds.width / 2;   // Centered placement */
-/*         newButton.bounds.y = mousePos.y - newButton.bounds.height / 2; */
-/*         placedButtons[placedButtonCount++] = newButton; */
-/*         selectedPlacedButton = &placedButtons[placedButtonCount - 1]; */
-/*         selectedForPlacement = NULL; */
-/*     } */
-
-/*     // Render placed buttons and handle their selection */
-/*     for (int i = 0; i < placedButtonCount; i++) { */
-/*         if (DrawButton(placedButtons[i].text, placedButtons[i].bounds, placedButtons[i].color)) { */
-/*             selectedPlacedButton = &placedButtons[i]; */
-/*         } */
-
-/*         // Draw the 2D gizmo if this button is selected */
-/*         if (selectedPlacedButton == &placedButtons[i]) { */
-/*             DrawRectangleLinesEx((Rectangle) { placedButtons[i].bounds.x + placedButtons[i].bounds.width, placedButtons[i].bounds.y, 20, placedButtons[i].bounds.height }, 2, RED); */
-/*             DrawRectangleLinesEx((Rectangle) { placedButtons[i].bounds.x, placedButtons[i].bounds.y - 20, placedButtons[i].bounds.width, 20 }, 2, BLUE); */
-/*         } */
-/*     } */
-
-/*     // Deselect the placed button if we click outside */
-/*     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && selectedPlacedButton && !CheckCollisionPointRec(mousePos, selectedPlacedButton->bounds)) { */
-/*         selectedPlacedButton = NULL; */
-/*     } */
-/* } */
-
-
-
 
 
 // UI EDITOR
@@ -376,4 +229,54 @@ void RenderUIEditorMode() {
     if (!isDragging) {
         PlaceSelectedButton(mousePos);
     }
+}
+
+
+
+
+// DASHBOARD
+
+#define MAX_RECENT_FILES 5
+#define MAX_PROJECTS 5
+const char* recentFiles[MAX_RECENT_FILES] = {
+    "~/xos/slicer/modes.h",
+    "~/xos/slicer/modes.c",
+    "~/xos/slicer/main.c",
+    "~/xos/slicer/",
+    "~/.config/emacs/.local/etc/workspaces/autosave"
+};
+
+const char* projects[MAX_PROJECTS] = {
+    "~/xos/slicer/",
+    "~/Desktop/pulls/dotfiles/",
+    "~/Desktop/pulls/dotfiles/polybar-collection/",
+    "~/xos/graphene/",
+    "~/xos/suckless/dwm/"
+};
+
+void RenderDashboard() {
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+    int margin = 20;
+
+    // Drawing the title
+    DrawText("X O S", screenWidth / 2 - 50, margin, 40, CURRENT_THEME.x);
+
+    // Drawing "Recent Files" section
+    DrawText("Recent Files:", margin, 2 * margin + 50, 20, CURRENT_THEME.y);
+    int y = 3 * margin + 70;
+    for (int i = 0; i < MAX_RECENT_FILES; i++) {
+        DrawText(recentFiles[i], margin, y, 20, RAYWHITE);
+        y += 30;  // Incrementing y-position for the next item
+    }
+
+    // Drawing "Projects" section
+    DrawText("Projects:", screenWidth / 2 + margin, 2 * margin + 50, 20, CURRENT_THEME.y);
+    y = 3 * margin + 70;
+    for (int i = 0; i < MAX_PROJECTS; i++) {
+        DrawText(projects[i], screenWidth / 2 + margin, y, 20, RAYWHITE);
+        y += 30;  // Incrementing y-position for the next item
+    }
+
+    // Add more UI elements as per your requirements
 }
