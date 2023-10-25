@@ -54,5 +54,7 @@ void RenderUIEditorMode(void);   // Main function
 void DrawBottomPanelContent(void);  // Draw available buttons at the bottom
 void DrawGizmo(UIButton *button);   // Draw 2D gizmo for the selected button
 void PlaceSelectedButton(Vector2 mousePos);  // Place the selected button onto the main screen
+void RenderDashboard();
+void RenderCenteredDashboard();
 
 #endif  // MODES_H

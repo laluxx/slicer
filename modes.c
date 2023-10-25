@@ -243,7 +243,7 @@ const char* recentFiles[MAX_RECENT_FILES] = {
     "~/xos/slicer/modes.c",
     "~/xos/slicer/main.c",
     "~/xos/slicer/",
-    "~/.config/emacs/.local/etc/workspaces/autosave"
+    "~/.config/slicer/.local/etc/workspaces/autosave"
 };
 
 const char* projects[MAX_PROJECTS] = {
@@ -254,29 +254,78 @@ const char* projects[MAX_PROJECTS] = {
     "~/xos/suckless/dwm/"
 };
 
-void RenderDashboard() {
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
-    int margin = 20;
 
-    // Drawing the title
-    DrawText("X O S", screenWidth / 2 - 50, margin, 40, CURRENT_THEME.x);
+
+void RenderCenteredDashboard() {
+    int y;
+
+    // Drawing the title "SLICER"
+    y = SCREEN_HEIGHT * 0.1;  // Starting at 10% from the top
+    DrawText("SLICER", SCREEN_WIDTH / 2 - MeasureText("SLICER", 50) / 2, y, 50, CURRENT_THEME.x);
+
+    // Drawing the subtitle "Welcome to Slicer Dashboard"
+    y += 80;  // Adjust this value for vertical spacing
+    DrawText("Welcome to Slicer Dashboard", SCREEN_WIDTH / 2 - MeasureText("Welcome to Slicer Dashboard", 20) / 2, y, 20, RAYWHITE);
+
+    // Drawing "Slicer started in..." section
+    y += 60;  // Adjust this value for vertical spacing
+    char startText[] = "Slicer started in 2.213421 seconds";
+    DrawText(startText, SCREEN_WIDTH / 2 - MeasureText(startText, 20) / 2, y, 20, RAYWHITE);
 
     // Drawing "Recent Files" section
-    DrawText("Recent Files:", margin, 2 * margin + 50, 20, CURRENT_THEME.y);
-    int y = 3 * margin + 70;
+    y += 60;  // Adjust this value for vertical spacing
+    DrawText("Recent Files:", SCREEN_WIDTH / 2 - MeasureText("Recent Files:", 20) / 2, y, 20, CURRENT_THEME.y);
+    y += 30;  // Adjust this value for vertical spacing
     for (int i = 0; i < MAX_RECENT_FILES; i++) {
-        DrawText(recentFiles[i], margin, y, 20, RAYWHITE);
+        DrawText(recentFiles[i], SCREEN_WIDTH / 2 - MeasureText(recentFiles[i], 20) / 2, y, 20, RAYWHITE);
         y += 30;  // Incrementing y-position for the next item
     }
 
     // Drawing "Projects" section
-    DrawText("Projects:", screenWidth / 2 + margin, 2 * margin + 50, 20, CURRENT_THEME.y);
-    y = 3 * margin + 70;
+    y += 40;  // Adjust this value for vertical spacing
+    DrawText("Projects:", SCREEN_WIDTH / 2 - MeasureText("Projects:", 20) / 2, y, 20, CURRENT_THEME.y);
+    y += 30;  // Adjust this value for vertical spacing
     for (int i = 0; i < MAX_PROJECTS; i++) {
-        DrawText(projects[i], screenWidth / 2 + margin, y, 20, RAYWHITE);
+        DrawText(projects[i], SCREEN_WIDTH / 2 - MeasureText(projects[i], 20) / 2, y, 20, RAYWHITE);
         y += 30;  // Incrementing y-position for the next item
     }
+}
 
-    // Add more UI elements as per your requirements
+
+void RenderDashboard() {
+    int screenWidth = GetScreenWidth();
+    int y = 30;  // Initial vertical padding from the top, reduced for a closer alignment to the top
+
+    // Assuming a left-aligned position, let's set a constant horizontal starting point
+    int startX = 20;  // Initial horizontal padding from the left
+
+    // Drawing the title "SLICER"
+    DrawText("SLICER", startX, y, 50, CURRENT_THEME.x);
+
+    // Drawing the subtitle "Welcome to Slicer Dashboard"
+    y += 60;
+    DrawText("Welcome to Slicer Dashboard", startX, y, 20, RAYWHITE);
+
+    // Drawing "Slicer started in..." section
+    y += 60;
+    char startText[] = "Slicer started in 2.213421 seconds";
+    DrawText(startText, startX, y, 20, RAYWHITE);
+
+    // Drawing "Recent Files" section
+    y += 60;
+    DrawText("Recent Files:", startX, y, 20, CURRENT_THEME.y);
+    y += 30;
+    for (int i = 0; i < MAX_RECENT_FILES; i++) {
+        DrawText(recentFiles[i], startX, y, 20, RAYWHITE);
+        y += 30;
+    }
+
+    // Drawing "Projects" section
+    y += 40;
+    DrawText("Projects:", startX, y, 20, CURRENT_THEME.y);
+    y += 30;
+    for (int i = 0; i < MAX_PROJECTS; i++) {
+        DrawText(projects[i], startX, y, 20, RAYWHITE);
+        y += 30;
+    }
 }

@@ -438,17 +438,14 @@ int main(void) {
             showTopRightCorner = 0;
 
 
-            UpdatePanelsDimensions();
+            DrawPanel('L', 580.0f); // for a fixed left panel
             DrawPanels();
 
+            RenderDashboard();
             float minibufferHeight = 21.0f; // Default height, change as needed
 
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
-
-            UpdateFileManager();
-            DrawFileManager();
-
             break;
 
 
