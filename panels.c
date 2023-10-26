@@ -1,5 +1,7 @@
 #include "panels.h"
 #include "theme.h"
+#include "string.h"
+#include <stdio.h>
 /* #include <cstddef> */
 
 
@@ -264,119 +266,14 @@ void CloseFlexiblePanel() {
 
 
 
+
+
+
+
+
+
+
 // FRAMES
-/* #define MAX_FRAMES 100 */
-/* #define FRAME_GAP 10 */
-
-/* Frame frames[MAX_FRAMES]; */
-/* int frameCount = 0; */
-/* int selectedIndex = -1; */
-/* float masterFactor = 0.6; // 60% for the master frame */
-
-/* void HandleFrameKeyBindings() { */
-/*     if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) { */
-/*         if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) { */
-/*             CreateNewFrame(); */
-/*         } */
-/*         else if (IsKeyPressed(KEY_Q)) { */
-/*             CloseSelectedFrame(); */
-/*         } */
-/*         else if (IsKeyPressed(KEY_J)) { */
-/*             MoveFrameSelection(1); */
-/*         } */
-/*         else if (IsKeyPressed(KEY_K)) { */
-/*             MoveFrameSelection(-1); */
-/*         } */
-/*         else if (IsKeyPressed(KEY_H)) { */
-/*             masterFactor -= 0.05; */
-/*             if (masterFactor < 0.1) masterFactor = 0.1; */
-/*             ArrangeFrames(); */
-/*         } */
-/*         else if (IsKeyPressed(KEY_L)) { */
-/*             masterFactor += 0.05; */
-/*             if (masterFactor > 0.9) masterFactor = 0.9; */
-/*             ArrangeFrames(); */
-/*         } */
-/*     } */
-/* } */
-
-/* void CreateNewFrame() { */
-/*     if (frameCount < MAX_FRAMES) { */
-/*         frames[frameCount].isSelected = false; */
-/*         frameCount++; */
-/*         ArrangeFrames(); */
-/*         if (selectedIndex == -1) { */
-/*             selectedIndex = 0; */
-/*             frames[0].isSelected = true; */
-/*         } */
-/*     } */
-/* } */
-
-/* void CloseSelectedFrame() { */
-/*     if (selectedIndex != -1) { */
-/*         for (int i = selectedIndex; i < frameCount - 1; i++) { */
-/*             frames[i] = frames[i + 1]; */
-/*         } */
-/*         frameCount--; */
-/*         if (frameCount == 0) { */
-/*             selectedIndex = -1; */
-/*         } else { */
-/*             selectedIndex %= frameCount; */
-/*             frames[selectedIndex].isSelected = true; */
-/*         } */
-/*         ArrangeFrames(); */
-/*     } */
-/* } */
-
-/* void MoveFrameSelection(int direction) { */
-/*     if (selectedIndex != -1) { */
-/*         frames[selectedIndex].isSelected = false; */
-/*         selectedIndex = (selectedIndex + direction + frameCount) % frameCount; */
-/*         frames[selectedIndex].isSelected = true; */
-/*     } */
-/* } */
-
-/* void ArrangeFrames() { */
-/*     // Dimensions of the main workspace area */
-/*     float totalGapWidth = (frameCount - 1) * FRAME_GAP; */
-/*     Rectangle workspace = { */
-/*         panel.leftWidth + CENTER_GAP, */
-/*         panel.topHeight + CENTER_GAP, */
-/*         SCREEN_WIDTH - panel.leftWidth - panel.rightWidth - 2 * CENTER_GAP - totalGapWidth, */
-/*         SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight - 2 * CENTER_GAP */
-/*     }; */
-
-/*     if (frameCount == 1) { */
-/*         frames[0].rect = workspace; */
-/*     } else { */
-/*         // Master frame */
-/*         frames[0].rect = (Rectangle){ */
-/*             workspace.x, */
-/*             workspace.y, */
-/*             workspace.width * masterFactor, */
-/*             workspace.height */
-/*         }; */
-
-/*         // Distribute the remaining space among slave frames */
-/*         float slaveFrameWidth = (workspace.width - frames[0].rect.width - (frameCount - 2) * FRAME_GAP) / (frameCount - 1); */
-/*         for (int i = 1; i < frameCount; i++) { */
-/*             frames[i].rect = (Rectangle){ */
-/*                 frames[0].rect.x + frames[0].rect.width + FRAME_GAP + (i-1) * (slaveFrameWidth + FRAME_GAP), */
-/*                 workspace.y, */
-/*                 slaveFrameWidth, */
-/*                 workspace.height */
-/*             }; */
-/*         } */
-/*     } */
-/* } */
-
-/* void DrawFrames() { */
-/*     for (int i = 0; i < frameCount; i++) { */
-/*         Color frameColor = frames[i].isSelected ? CURRENT_THEME.x : CURRENT_THEME.y; */
-/*         DrawRectangleRec(frames[i].rect, frameColor); */
-/*     } */
-/* } */
-
 
 #define MAX_FRAMES 100
 #define FRAME_GAP 10
@@ -416,6 +313,81 @@ void HandleFrameKeyBindings() {
             currentLayout = (currentLayout + 1) % LAYOUT_COUNT;
             ArrangeFrames();
         }
+        else if (IsKeyPressed(KEY_T) && selectedIndex != -1) {  // Toggle selected frame's floating/managed state
+            frames[selectedIndex].isFloating = !frames[selectedIndex].isFloating;
+
+            if (frames[selectedIndex].isFloating) {
+                frames[selectedIndex].prevState = frames[selectedIndex].rect; // Store the current state before making it floating
+            } else {
+                frames[selectedIndex].rect = frames[selectedIndex].prevState;
+            }
+            ArrangeFrames();  // Re-arrange the frames immediately
+        }
+    }
+}
+
+Vector2 dragOffset;  // Global or member variable to store the drag offset
+
+void HandleFrameMouseInteractions() {
+    UpdateFrameFocusWithMouse();
+
+    // If ALT is pressed
+    if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
+
+        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && selectedIndex != -1 && frames[selectedIndex].isFloating) {
+
+            // On initial mouse button press, compute the drag offset
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                Vector2 mousePos = GetMousePosition();
+                dragOffset.x = mousePos.x - frames[selectedIndex].rect.x;
+                dragOffset.y = mousePos.y - frames[selectedIndex].rect.y;
+            }
+
+            // Use the offset to compute the new position
+            Vector2 mousePos = GetMousePosition();
+            frames[selectedIndex].rect.x = mousePos.x - dragOffset.x;
+            frames[selectedIndex].rect.y = mousePos.y - dragOffset.y;
+
+        } else if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON) && selectedIndex != -1 && frames[selectedIndex].isFloating) {
+            Vector2 mousePos = GetMousePosition();
+            frames[selectedIndex].rect.width = (mousePos.x - frames[selectedIndex].rect.x);
+            frames[selectedIndex].rect.height = (mousePos.y - frames[selectedIndex].rect.y);
+
+        } else if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
+            // Same logic for resizing the master frame as before...
+            Vector2 mousePos = GetMousePosition();
+            float leftBound = panel.leftWidth;
+            float rightBound = SCREEN_WIDTH - panel.rightWidth;
+            masterFactor = (mousePos.x - leftBound) / (rightBound - leftBound);
+            if (masterFactor < 0.1f) masterFactor = 0.1f;
+            if (masterFactor > 0.9f) masterFactor = 0.9f;
+            ArrangeFrames();
+        }
+    }
+}
+
+void UpdateFrameFocusWithMouse() {
+    static Vector2 lastMousePos = {0, 0};  // Store the last mouse position
+    Vector2 mousePos = GetMousePosition();
+
+    // Check if mouse has moved
+    if (mousePos.x != lastMousePos.x || mousePos.y != lastMousePos.y) {
+        // Iterate through all frames
+        for (int i = 0; i < frameCount; i++) {
+            // Check if mouse position is within frame rectangle
+            if (CheckCollisionPointRec(mousePos, frames[i].rect)) {
+                if (selectedIndex != i) { // Check to avoid redundant updates
+                    if (selectedIndex != -1) {
+                        frames[selectedIndex].isSelected = false; // Deselect the previous frame
+                    }
+                    selectedIndex = i;
+                    frames[i].isSelected = true; // Select the current frame
+                    break; // Exit loop once a frame is focused
+                }
+            }
+        }
+
+        lastMousePos = mousePos;  // Update the last mouse position
     }
 }
 
@@ -464,37 +436,46 @@ void ArrangeFrames() {
         SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight
     };
 
+    // If only one frame exists
     if (frameCount == 1) {
-        frames[0].rect = workspace;
+        if (!frames[0].isFloating) {
+            frames[0].rect = workspace;
+        }
     } else {
         switch (currentLayout) {
             case LAYOUT_MASTER_STACK:
-                frames[0].rect = (Rectangle){
-                    workspace.x,
-                    workspace.y,
-                    workspace.width * masterFactor,
-                    workspace.height
-                };
+                if (!frames[0].isFloating) {
+                    frames[0].rect = (Rectangle){
+                        workspace.x,
+                        workspace.y,
+                        workspace.width * masterFactor,
+                        workspace.height
+                    };
+                }
                 float stackedFrameHeight = (workspace.height - FRAME_GAP * (frameCount - 2)) / (frameCount - 1);
                 for (int i = 1; i < frameCount; i++) {
-                    frames[i].rect = (Rectangle){
-                        frames[0].rect.x + frames[0].rect.width + FRAME_GAP,
-                        workspace.y + (i-1) * (stackedFrameHeight + FRAME_GAP),
-                        workspace.width - frames[0].rect.width - FRAME_GAP,
-                        stackedFrameHeight
-                    };
+                    if (!frames[i].isFloating) {
+                        frames[i].rect = (Rectangle){
+                            frames[0].rect.x + frames[0].rect.width + FRAME_GAP,
+                            workspace.y + (i-1) * (stackedFrameHeight + FRAME_GAP),
+                            workspace.width - frames[0].rect.width - FRAME_GAP,
+                            stackedFrameHeight
+                        };
+                    }
                 }
                 break;
 
             case LAYOUT_COLUMNS:
                 float columnWidth = (workspace.width - FRAME_GAP * (frameCount - 1)) / frameCount;
                 for (int i = 0; i < frameCount; i++) {
-                    frames[i].rect = (Rectangle){
-                        workspace.x + i * (columnWidth + FRAME_GAP),
-                        workspace.y,
-                        columnWidth,
-                        workspace.height
-                    };
+                    if (!frames[i].isFloating) {
+                        frames[i].rect = (Rectangle){
+                            workspace.x + i * (columnWidth + FRAME_GAP),
+                            workspace.y,
+                            columnWidth,
+                            workspace.height
+                        };
+                    }
                 }
                 break;
 
@@ -506,7 +487,41 @@ void ArrangeFrames() {
 
 void DrawFrames() {
     for (int i = 0; i < frameCount; i++) {
-        Color frameColor = frames[i].isSelected ? themes[0].x : themes[0].y;
+        Color frameColor = frames[i].isSelected ? CURRENT_THEME.x : CURRENT_THEME.y;
         DrawRectangleRec(frames[i].rect, frameColor);
+
+        // If this frame has the config buffer, draw its contents
+        if(frames[i].buffer.isOpen && strcmp(frames[i].buffer.title, "Config Buffer") == 0) {
+            DrawText("Hello World", frames[i].rect.x + 10, frames[i].rect.y + 10, 20, RAYWHITE);
+        }
+    }
+}
+
+
+// BUFFERS TODO
+// buffers live in frame space
+// Handle functions incapsulate their keybinds directly
+// all the handle functions will be grouped in the hadlebuffers function
+void HandleHelpBuffer() {
+    static bool wasCtrlHPressedLastFrame = false;
+
+    if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_D)) {
+        if (!wasCtrlHPressedLastFrame) {
+            if (frameCount < MAX_FRAMES) {
+                frames[frameCount].isSelected = false;
+                frames[frameCount].buffer.title = "Config Buffer";
+                frames[frameCount].buffer.isOpen = true;
+
+                frameCount++;
+                ArrangeFrames();
+                if (selectedIndex == -1) {
+                    selectedIndex = 0;
+                    frames[0].isSelected = true;
+                }
+            }
+            wasCtrlHPressedLastFrame = true;
+        }
+    } else {
+        wasCtrlHPressedLastFrame = false;
     }
 }

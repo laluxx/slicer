@@ -323,6 +323,9 @@ int main(void) {
     Texture2D sprite = LoadTexture("./sprite.png"); // move in character.c
     LoadToggleTextures();
     LoadCornerTextures();
+
+
+
     InitializeThemes();
 
 
@@ -347,6 +350,7 @@ int main(void) {
     InitializeCameraManager(&cameraManager, character.position);  // Initialize the camera manager
 
     while (!WindowShouldClose()) {
+        ArrangeFrames();
         Cursor cursor;
         cursor.x = GetMouseX();  // Update cursor x position with current mouse x position
         cursor.y = GetMouseY();  // Update cursor y position with current mouse y position
@@ -380,6 +384,8 @@ int main(void) {
             exit(1);
         }
 
+
+        HandleHelpBuffer();
 
 
 
@@ -439,13 +445,15 @@ int main(void) {
 
 
             DrawPanel('L', 580.0f); // for a fixed left panel
-            DrawPanels();
-
 
             HandleFrameKeyBindings();
+            HandleFrameMouseInteractions();
             DrawFrames();
 
+            DrawPanels();
+
             RenderDashboard();
+
             float minibufferHeight = 21.0f; // Default height, change as needed
 
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
@@ -463,6 +471,7 @@ int main(void) {
 
 
             HandleFrameKeyBindings();
+            HandleFrameMouseInteractions();
             DrawFrames();
 
             UpdatePanelsDimensions();
@@ -511,19 +520,22 @@ int main(void) {
 
             ClosePanel('T');
             ClosePanel('R');
+            /* ClosePanel('L'); */
             ClosePanel('B');
+
+            /* DrawPanel('L', 280.0f); // for a fixed left panel */
 
 
             UpdatePanelsDimensions();
             DrawPanels();
 
-
-
             HandleFrameKeyBindings();
+            HandleFrameMouseInteractions();
             DrawFrames();
 
 
-
+            UpdateFileManager();
+            DrawFileManager();
 
 
 
@@ -533,8 +545,8 @@ int main(void) {
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
 
-            UpdateFileManager();
-            DrawFileManager();
+            /* UpdateFileManager(); */
+            /* DrawFileManager(); */
 
             DrawModeBar();
 
@@ -559,6 +571,7 @@ int main(void) {
 
 
                 HandleFrameKeyBindings();
+                HandleFrameMouseInteractions();
                 DrawFrames();
 
                 DrawPanel('B', 70.0f);  // for a fixed bottom panel

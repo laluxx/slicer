@@ -1,8 +1,7 @@
 // TODO
-// visual mode []
 // actually edit dirs, rename delete ad copy directories []
-// if the folder is not big (<10) simply open the tree
-// while still viewing the current directory, []
+// if the folder is not big (<10) simply open the tree with the mouse
+// while in the same current directory, []
 // add mouse support to open and close folder  []
 // introduce highlight for selection []
 // and highlight for when overing with the mouse []
@@ -299,20 +298,35 @@ void NavigateOut() {
     }
 }
 
+/* void UpdateFileManager() { */
+/*     if (IsKeyPressed(KEY_H)) { */
+/*         NavigateOut(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_J)) { */
+/*         NavigateDown(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_K)) { */
+/*         NavigateUp(); */
+/*     } */
+/*     if (IsKeyPressed(KEY_L)) { */
+/*         NavigateIn(); */
+/*     } */
+/* } */
+
+
 void UpdateFileManager() {
-    if (IsKeyPressed(KEY_H)) {
-        NavigateOut();
-    }
-    if (IsKeyPressed(KEY_J)) {
-        NavigateDown();
-    }
-    if (IsKeyPressed(KEY_K)) {
-        NavigateUp();
-    }
-    if (IsKeyPressed(KEY_L)) {
-        NavigateIn();
+    if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) {
+        if (IsKeyPressed(KEY_H)) {
+            NavigateOut();
+        }
+        if (IsKeyPressed(KEY_J)) {
+            NavigateDown();
+        }
+        if (IsKeyPressed(KEY_K)) {
+            NavigateUp();
+        }
+        if (IsKeyPressed(KEY_L)) {
+            NavigateIn();
+        }
     }
 }
-
-
-

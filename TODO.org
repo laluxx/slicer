@@ -1,0 +1,6 @@
+#+title: Todo
+
+* Inspectors
+** Layout inspector
+lead textures to indicate the current active layout []
+it will have a scale position and will tint the png based on the CURRENT_THEME

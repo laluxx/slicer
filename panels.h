@@ -37,22 +37,17 @@ typedef struct {
     bool flexPanelVisible;
 } Panel;
 
-// WINDOW MANAGER
-/* typedef struct Frame { */
-/*     Rectangle rect; */
-/*     bool isSelected; */
-/* } Frame; */
+typedef struct {
+    char* title;
+    bool isOpen;
+} Buffer;
 
-/* typedef enum { */
-/*     LAYOUT_COLUMNS, */
-/*     LAYOUT_MASTER_STACK */
-/* } Layouts; */
-
-
-
-typedef struct Frame {
+typedef struct {
     Rectangle rect;
     bool isSelected;
+    Buffer buffer;
+    bool isFloating;                  // To determine if the frame is floating
+    Rectangle prevState;             // To store the previous position and size of the frame before it started floating
 } Frame;
 
 typedef enum {
@@ -81,12 +76,15 @@ void AdjustLeftPanelWidthForFileNames();
 void LoadCornerTextures();
 void UnloadCornerTextures();
 
-// WINDOW MANAGMENT
+// FRAMES
 void ArrangeFrames();
 void HandleFrameKeyBindings();
 void CreateNewFrame();
 void CloseSelectedFrame();
 void DrawFrames();
-
+void UpdateFrameFocusWithMouse();
+void HandleFrameMouseInteractions();
+// BUFFERS
+void HandleHelpBuffer();
 
 #endif // PANELS_H

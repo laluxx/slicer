@@ -53,5 +53,8 @@ bool DrawToggleButton2(Vector2 position, bool currentState, const char *text);
 bool DrawIosToggleButton(Vector2 position, bool currentState);
 void UnloadToggleTextures();
 void LoadToggleTextures();
+void LoadConfigIconTexture();
+void UnloadConfigIconTexture();
+bool DrawConfigButton(Rectangle bounds);
 
 #endif  // UI_H

@@ -42,7 +42,7 @@ void InitializeThemes() {
         .panel_center  = HexToColor("#0E0E0E"),
         .panel_flex    = HexToColor("#0E0E0E"),
         .panel_corners = HexToColor("#0E0E0E"),
-        .minibuffer    = HexToColor("#090909"),
+        .minibuffer    = HexToColor("#0B0B0B"),
         .modeline    = HexToColor("#080808"),
         .background    = HexToColor("#0B0B0B"),
         .modeline_highlight = HexToColor("#0079F1"),
