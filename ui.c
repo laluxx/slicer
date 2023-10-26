@@ -374,27 +374,45 @@ Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position) {
 }
 
 
-// MODELINE
-
 
 
 float modelineHeight = 26.0f;
+float minibufferHeight = 21.0f; // starting height
+bool isDraggingModeline = false; // to check if modeline is currently being dragged
+float initialClickOffset = 0.0f; // Stores the initial vertical offset when dragging starts
 
-void DrawModeline(int width, float minibufferHeight) {
-    // Assuming modelineHeight is a constant or a defined variable elsewhere in your code
-    Color modelineColor = CURRENT_THEME.modeline;  // Use the theme's modeline color
-    DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight - modelineHeight, width, modelineHeight, modelineColor);
+
+void UpdateModelinePosition() {
+    Vector2 mousePos = GetMousePosition();
+
+    // Check if the left mouse button is pressed while hovering over the modeline
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+        mousePos.y > (SCREEN_HEIGHT - minibufferHeight - modelineHeight) &&
+        mousePos.y < (SCREEN_HEIGHT - minibufferHeight)) {
+        isDraggingModeline = true;
+        initialClickOffset = SCREEN_HEIGHT - mousePos.y - minibufferHeight; // Set the initial offset
+    }
+
+    // Adjust the modeline and minibuffer position if dragging
+    if (isDraggingModeline && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        minibufferHeight = SCREEN_HEIGHT - mousePos.y - initialClickOffset; // Use the offset to adjust
+    } else if (isDraggingModeline && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        isDraggingModeline = false; // stop dragging
+    }
+}
+
+void DrawModeline() {
+    Color modelineColor = CURRENT_THEME.modeline;
+    DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight - modelineHeight, SCREEN_WIDTH, modelineHeight, modelineColor);
 
     // Drawing the vertical bar on the left side of the modeline
-    int highlightWidth = 3;  // Adjust width as desired
+    int highlightWidth = 3;
     DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight - modelineHeight, highlightWidth, modelineHeight, CURRENT_THEME.modeline_highlight);
 }
 
-// MINIBUFFER
-void DrawMiniBuffer(int width, float height) {
-    Color minibufferColor = CURRENT_THEME.minibuffer  ; // Or any other color you'd like
-    DrawRectangle(0, SCREEN_HEIGHT - height, width, height, minibufferColor);
+void DrawMiniBuffer() {
+    Color minibufferColor = CURRENT_THEME.minibuffer;
+    DrawRectangle(0, SCREEN_HEIGHT - minibufferHeight, SCREEN_WIDTH, minibufferHeight, minibufferColor);
+
+    DrawText("Hello World", 6, SCREEN_HEIGHT - minibufferHeight + 6, 9, RAYWHITE);
 }
-
-
-

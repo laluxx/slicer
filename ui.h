@@ -31,9 +31,14 @@ Color GetColorFromGradient(Rectangle gradientBox, Vector2 position, float hue); 
 Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position);
 /* void DrawColorPicker(ColorPicker *colorPicker); */
 void DrawColorPicker(ColorPicker *colorPicker, int x, int y, float scale);
-void DrawMiniBuffer(int width, float height);
-void DrawModeline(int width, float minibufferHeight);
 
+
+/* void DrawMiniBuffer(int width, float height); */
+/* void DrawModeline(int width, float minibufferHeight); */
+
+void UpdateModelinePosition();
+void DrawModeline();
+void DrawMiniBuffer();
 
 
 
@@ -55,6 +60,5 @@ void UnloadToggleTextures();
 void LoadToggleTextures();
 void LoadConfigIconTexture();
 void UnloadConfigIconTexture();
-bool DrawConfigButton(Rectangle bounds);
 
 #endif  // UI_H

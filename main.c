@@ -456,8 +456,11 @@ int main(void) {
 
             float minibufferHeight = 21.0f; // Default height, change as needed
 
+            UpdateModelinePosition();
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
+
             break;
 
 

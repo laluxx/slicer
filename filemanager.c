@@ -298,22 +298,6 @@ void NavigateOut() {
     }
 }
 
-/* void UpdateFileManager() { */
-/*     if (IsKeyPressed(KEY_H)) { */
-/*         NavigateOut(); */
-/*     } */
-/*     if (IsKeyPressed(KEY_J)) { */
-/*         NavigateDown(); */
-/*     } */
-/*     if (IsKeyPressed(KEY_K)) { */
-/*         NavigateUp(); */
-/*     } */
-/*     if (IsKeyPressed(KEY_L)) { */
-/*         NavigateIn(); */
-/*     } */
-/* } */
-
-
 void UpdateFileManager() {
     if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) {
         if (IsKeyPressed(KEY_H)) {
