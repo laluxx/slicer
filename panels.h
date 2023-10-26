@@ -37,10 +37,19 @@ typedef struct {
     bool flexPanelVisible;
 } Panel;
 
+
+
+typedef enum {
+    LAYOUT_MASTER_STACK,
+    LAYOUT_COLUMNS,
+    LAYOUT_COUNT // Sentinel for wrap-around
+} LayoutType;
+
 typedef struct {
     char* title;
     bool isOpen;
 } Buffer;
+
 
 typedef struct {
     Rectangle rect;
@@ -50,11 +59,6 @@ typedef struct {
     Rectangle prevState;             // To store the previous position and size of the frame before it started floating
 } Frame;
 
-typedef enum {
-    LAYOUT_MASTER_STACK,
-    LAYOUT_COLUMNS,
-    LAYOUT_COUNT // Sentinel for wrap-around
-} LayoutType;
 
 extern Panel panel;
 

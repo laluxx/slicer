@@ -11,6 +11,7 @@
 
 #include "filemanager.h"
 #include "panels.h"
+#include "ui.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <direct.h>
@@ -222,24 +223,41 @@ void InitializeFileManager(const char* startDir) {
     UpdateFileList();
 }
 
+
 void DrawFileManager() {
-    DrawText(fm.currentDir, 15, 1040, 8, WHITE);
+    // This is drawn outside the scissor mode, so it's unaffected.
+    DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, 8, WHITE);
+
+    // Start the scissor mode for restricting drawing.
+    BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height);
 
     int iconSize = 24;
     int iconPadding = 4;
     int iconVerticalOffset = -6;
 
     for (int i = 0; i < fm.fileCount; i++) {
-        Texture2D icon = GetTextureFromCache(fm.files[i]);
-        DrawTexture(icon, 10, 40 + i * 25 + iconVerticalOffset, WHITE);
-        Color color = (i == fm.selectedIndex) ? YELLOW : WHITE;
-        /* DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, 20, color); */
-        DrawText(fm.files[i], 10 + iconSize + iconPadding, 40 + i * 25, fontSize, color);
+        // Calculate position before drawing to determine if it's inside the scissor region.
+        int yPosition = 40 + i * 25 + iconVerticalOffset;
 
+        // If the icon or text would be rendered below the scissor region, skip this iteration.
+        if (yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) {
+            break;
+        }
+
+        Texture2D icon = GetTextureFromCache(fm.files[i]);
+        DrawTexture(icon, 10, yPosition, WHITE);
+
+        Color color = (i == fm.selectedIndex) ? YELLOW : WHITE;
+        DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, color);
     }
+
+    // End the scissor mode.
+    EndScissorMode();
 
     ClearUnusedTextures();
 }
+
+
 
 void NavigateUp() {
     fm.selectedIndex--;

@@ -15,6 +15,11 @@ typedef struct {
 } ValueEditor;
 
 
+typedef struct {
+    char keys[256];
+    int length;
+} KeyIndicator;
+
 
 // Color Picker
 typedef struct ColorPicker {
@@ -33,12 +38,30 @@ Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position);
 void DrawColorPicker(ColorPicker *colorPicker, int x, int y, float scale);
 
 
-/* void DrawMiniBuffer(int width, float height); */
-/* void DrawModeline(int width, float minibufferHeight); */
+// MODELINE && MINIBUFFER
+typedef struct {
+    float height;
+    bool isDragging;
+    float initialClickOffset;
+} Modeline;
+
+typedef struct {
+    float height;
+} Minibuffer;
+
+extern Modeline modeline;      // Declares the modeline global variable but does not define it
+extern Minibuffer minibuffer;  // Declares the minibuffer global variable but does not define it
 
 void UpdateModelinePosition();
 void DrawModeline();
 void DrawMiniBuffer();
+
+
+
+
+
+
+
 
 
 

@@ -27,6 +27,7 @@ typedef struct {
 extern FileManager fm;
 extern TextureCache textureCache[MAX_TEXTURES];
 
+
 // Function prototypes
 void UpdateFileList();
 Texture2D GetIconForExtension(const char* name);

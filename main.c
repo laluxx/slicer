@@ -11,6 +11,7 @@
 #include "window.h"
 #include "filemanager.h"
 #include "theme.h"
+#include "keychords.h"
 #include <stdbool.h>
 
 
@@ -316,6 +317,22 @@ ColorPicker colorPicker = {
 };
 
 
+
+
+
+
+// Sample action to execute when a specific keychord is detected
+void MyCustomAction(int argCount, int args[]) {
+    // Your action code here, e.g., print received arguments
+    for (int i = 0; i < argCount; i++) {
+        printf("Argument %d: %d\n", i + 1, args[i]);
+    }
+}
+
+
+
+
+
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     SetExitKey(0); // Disable the exit key
@@ -327,9 +344,6 @@ int main(void) {
 
 
     InitializeThemes();
-
-
-
 
 
 
@@ -350,6 +364,7 @@ int main(void) {
     InitializeCameraManager(&cameraManager, character.position);  // Initialize the camera manager
 
     while (!WindowShouldClose()) {
+        /* KeyChord_Update(); */
         ArrangeFrames();
         Cursor cursor;
         cursor.x = GetMouseX();  // Update cursor x position with current mouse x position
@@ -451,16 +466,13 @@ int main(void) {
             DrawFrames();
 
             DrawPanels();
-
             RenderDashboard();
 
-            float minibufferHeight = 21.0f; // Default height, change as needed
 
+            float minibufferHeight = 21.0f; // Default height, change as needed
             UpdateModelinePosition();
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
-
-
             break;
 
 
@@ -484,10 +496,6 @@ int main(void) {
             DrawPanels();
 
 
-            minibufferHeight = 21.0f; // Default height, change as needed
-
-            DrawModeline(SCREEN_WIDTH, minibufferHeight);
-            DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
             // buttons
             panel.centerPanelVisible = DrawToggleButton(
@@ -497,6 +505,15 @@ int main(void) {
                                          : "Show Center Panel");
 
             DrawFPS(120, 10);
+
+
+
+
+            minibufferHeight = 21.0f; // Default height, change as needed
+            UpdateModelinePosition();
+            DrawModeline(SCREEN_WIDTH, minibufferHeight);
+            DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
 
             UpdateFileManager();
             DrawFileManager();
@@ -524,12 +541,10 @@ int main(void) {
             ClosePanel('T');
             ClosePanel('R');
             /* ClosePanel('L'); */
-            ClosePanel('B');
-
-            /* DrawPanel('L', 280.0f); // for a fixed left panel */
-
+            /* ClosePanel('B'); */
 
             UpdatePanelsDimensions();
+            panel.bottomHeight = minibufferHeight; // seem to work
             DrawPanels();
 
             HandleFrameKeyBindings();
@@ -537,28 +552,18 @@ int main(void) {
             DrawFrames();
 
 
-            UpdateFileManager();
-            DrawFileManager();
-
-
-
             minibufferHeight = 21.0f;
-
+            UpdateModelinePosition();
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
 
-            /* UpdateFileManager(); */
-            /* DrawFileManager(); */
+            UpdateFileManager();
+            DrawFileManager();
 
             DrawModeBar();
 
             break;
-
-
-
-
-
 
 
 
