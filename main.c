@@ -465,6 +465,8 @@ int main(void) {
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
             DrawModeBar();
+            DrawFPSWidget();
+            DrawAltIndicator();
             break;
 
 
@@ -499,8 +501,7 @@ int main(void) {
                 panel.centerPanelVisible ? "Hide Center Panel"
                                          : "Show Center Panel");
 
-            DrawFPS(120, 10);
-
+            /* DrawFPS(120, 10); */
 
 
 
@@ -525,6 +526,9 @@ int main(void) {
              */
             DrawCharacterInspector(character, sprite, frameCounter);
 
+            DrawFPSWidget();
+
+            DrawAltIndicator();
             break;
 
 
@@ -561,6 +565,7 @@ int main(void) {
 
             DrawModeBar();
 
+            DrawAltIndicator();
             break;
 
 
@@ -583,11 +588,12 @@ int main(void) {
                 DrawPanel('B', 70.0f);  // for a fixed bottom panel
                 DrawPanel('R', 370.0f);  // for a fixed right panel
                 DrawPanels();  // Draw all panels
-                DrawFPS(120, 10);
+                DrawFPSWidget();
                 RenderUIEditorMode();
                 DrawColorPicker(&colorPicker, 1460, -70, 1);
 
                 /* DrawModeBar(); */
+
                 break;
             case MODE_PLAY:
                 UpdatePanelsDimensions();

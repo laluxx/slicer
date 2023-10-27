@@ -26,7 +26,7 @@ const char* GetModeName(EditorMode mode) {
 
 void DrawModeBar() {
     // Constants for mode squares
-    const int squareSize = 10;
+    const int squareSize = 8;
     const int squareSpacing = 15;
     const int totalWidth = MODE_MAX * squareSize + (MODE_MAX - 1) * squareSpacing;
     const int paddingX = (SCREEN_WIDTH - totalWidth) / 2;
@@ -69,14 +69,6 @@ void DrawModeBar() {
     }
 }
 
-Color ColorLerp(Color a, Color b, float f) {
-    return (Color) {
-        a.r + f * (b.r - a.r),
-        a.g + f * (b.g - a.g),
-        a.b + f * (b.b - a.b),
-        255
-    };
-}
 
 void EditorChangeMode(EditorMode mode) {
     currentMode = mode;

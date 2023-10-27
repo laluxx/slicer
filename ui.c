@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include "screen.h"
 #include "theme.h"
+#include <stdio.h>
 
 // BUTTONS
 int BUTTON_FONT_SIZE = 20;
@@ -452,4 +453,121 @@ void DrawMiniBuffer() {
 
     // Draw the keychord content instead of "Hello World"
     DrawText(minibuffer.content, 6, SCREEN_HEIGHT - minibuffer.height + 6, 9, RAYWHITE);
+}
+
+
+void DrawFPSWidget() {
+    // Constants for easy customization:
+    const int fpsWidth = 50;
+    const int fontSize = 8;
+    const Color textColor = themes[currentThemeIndex].modeline;
+
+    // FPS dependent colors
+    const Color goodFPSColor = GREEN;
+    const Color mediumFPSColor = YELLOW;
+    const Color badFPSColor = RED;
+
+    // Calculated values:
+    const int currentFPS = GetFPS();
+    const int fpsPaddingX = SCREEN_WIDTH - fpsWidth;
+    const int paddingY = SCREEN_HEIGHT - minibuffer.height - modeline.height;
+    char fpsText[10];
+    sprintf(fpsText, "%d FPS", currentFPS);
+    Vector2 textSize = MeasureTextEx(GetFontDefault(), fpsText, fontSize, 1);
+    int textX = fpsPaddingX + (fpsWidth - textSize.x) / 2;
+    int textY = paddingY + (modeline.height - textSize.y) / 2;
+
+    // Determine background color based on FPS:
+    Color backgroundColor;
+    if (currentFPS >= 60) {
+        backgroundColor = goodFPSColor;
+    } else if (currentFPS >= 30) {
+        backgroundColor = ColorLerp(mediumFPSColor, goodFPSColor, (float)(currentFPS - 30) / 30);
+    } else {
+        backgroundColor = ColorLerp(badFPSColor, mediumFPSColor, (float)currentFPS / 30);
+    }
+    backgroundColor = ColorLerp(backgroundColor, themes[currentThemeIndex].x, 0.5);
+
+    // Check if widget is clicked:
+    Vector2 mousePos = GetMousePosition();
+    static int currentFPSTarget = 144;  // Static variable to store the current target FPS
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+        mousePos.x >= fpsPaddingX && mousePos.x <= fpsPaddingX + fpsWidth &&
+        mousePos.y >= paddingY && mousePos.y <= paddingY + modeline.height) {
+
+        // Toggle FPS target based on the current target
+        switch(currentFPSTarget) {
+            case 144: currentFPSTarget = 15; break;
+            case 15: currentFPSTarget = 30; break;
+            case 30: currentFPSTarget = 60; break;
+            case 60: currentFPSTarget = 144; break;
+            default: currentFPSTarget = 144; break;  // Default case if for some reason the FPS isn't in the list
+        }
+        SetTargetFPS(currentFPSTarget);  // Update the FPS target in your engine
+    }
+
+    // Drawing the FPS widget:
+    DrawRectangle(fpsPaddingX, paddingY, fpsWidth, modeline.height, backgroundColor);
+    DrawText(fpsText, textX, textY, fontSize, textColor);
+}
+
+
+Color ColorLerp(Color a, Color b, float f) {
+    return (Color) {
+        a.r + f * (b.r - a.r),
+        a.g + f * (b.g - a.g),
+        a.b + f * (b.b - a.b),
+        255
+    };
+}
+
+
+// ALT HOLDING INDICATOR
+AltIndicator altIndicator = {
+    .targetWidth = 0.0f,
+    .currentWidth = 0.0f,
+    .wasActive = false
+};
+
+#define INDICATOR_GROWTH_RATE 10.0f        // Speed of indicator stretching
+#define INDICATOR_X_OFFSET 16.0f               // Distance from the left of the screen
+#define INDICATOR_Y_OFFSET 0.0f                // Distance from the vertical center of the modeline (can be adjusted)
+#define INDICATOR_INITIAL_SIZE 10.0f           // Initial size when ALT is first pressed
+#define INDICATOR_MAX_SIZE 14.0f               // Max size when ALT is held down
+#define INDICATOR_CENTER_OFFSET_FACTOR 0.5f    // Factor to adjust the vertical centering in the modeline
+
+
+void DrawAltIndicator() {
+    UpdateAltIndicator();
+    // Determine the center of the square relative to the width
+    float halfCurrentSize = altIndicator.currentWidth * 0.5f;
+    float startX = INDICATOR_X_OFFSET;  // Start X position of the indicator
+
+    // Calculate the startY position so that the center of the indicator is aligned with the center of the modeline
+    float modelineCenterY = SCREEN_HEIGHT - minibuffer.height - (modeline.height * 0.5f);
+    float startY = modelineCenterY - halfCurrentSize;
+
+    Color startColor = CURRENT_THEME.y;  // Color when the indicator is small
+    Color endColor = CURRENT_THEME.x;    // Color when the indicator is at its max size
+
+    float lerpAmount = (altIndicator.currentWidth - INDICATOR_INITIAL_SIZE) / (INDICATOR_MAX_SIZE - INDICATOR_INITIAL_SIZE);
+    Color currentColor = ColorLerp(startColor, endColor, lerpAmount);
+
+    // Draw the square expanding symmetrically from the center of the modeline
+    DrawRectangle(startX, startY, altIndicator.currentWidth, altIndicator.currentWidth, currentColor);
+}
+
+void UpdateAltIndicator() {
+    bool isActive = IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT);
+
+    if (isActive) {
+        altIndicator.targetWidth = INDICATOR_MAX_SIZE;
+    } else {
+        altIndicator.targetWidth = INDICATOR_INITIAL_SIZE;
+    }
+
+    // Lerp size for smooth appearance and disappearance
+    altIndicator.currentWidth += (altIndicator.targetWidth - altIndicator.currentWidth) * INDICATOR_GROWTH_RATE * GetFrameTime();
+
+    altIndicator.wasActive = isActive;
 }

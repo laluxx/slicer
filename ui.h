@@ -55,14 +55,27 @@ typedef struct {
     float timer;
 } Minibuffer;
 
+
+typedef struct {
+    float targetWidth;
+    float currentWidth;
+    float targetHeight;  // New member
+    float currentHeight; // New member
+    bool wasActive;
+} AltIndicator;
+
+
 extern Modeline modeline;      // Declares the modeline global variable but does not define it
 extern Minibuffer minibuffer;  // Declares the minibuffer global variable but does not define it
 
 void UpdateModelinePosition();
 void DrawModeline();
 void DrawMiniBuffer();
-void UpdateMinibufferKeyChord(); // Newly added function declaration
-
+void UpdateMinibufferKeyChord();
+void DrawFPSWidget();
+Color ColorLerp(Color a, Color b, float f);
+void UpdateAltIndicator();
+void DrawAltIndicator();
 
 
 
