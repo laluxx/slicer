@@ -57,5 +57,6 @@ void DrawGizmo(UIButton *button);   // Draw 2D gizmo for the selected button
 void PlaceSelectedButton(Vector2 mousePos);  // Place the selected button onto the main screen
 void RenderDashboard();
 void RenderCenteredDashboard();
+Color ColorLerp(Color a, Color b, float f);
 
 #endif  // MODES_H

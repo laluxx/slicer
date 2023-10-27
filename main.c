@@ -463,7 +463,10 @@ int main(void) {
             UpdateModelinePosition();
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
+            DrawModeBar();
             break;
+
 
 
             case MODE_DEFAULT:
@@ -484,6 +487,8 @@ int main(void) {
             DrawCursorCoordinatesLines(cursor);
             DrawCharacter(character, sprite, frameCounter);
             DrawPanels();
+
+
 
 
 
@@ -582,7 +587,8 @@ int main(void) {
                 RenderUIEditorMode();
                 DrawColorPicker(&colorPicker, 1460, -70, 1);
 
-                DrawModeBar();
+                /* DrawModeBar(); */
+                break;
             case MODE_PLAY:
                 UpdatePanelsDimensions();
                 ClosePanel('T');  // Close top panel
@@ -591,6 +597,16 @@ int main(void) {
                 ClosePanel('B');  // Close bottom panel
                 DrawPanels();  // Draw all panels
                 DrawCharacter(character, sprite, frameCounter);
+
+
+                minibufferHeight = 21.0f; // Default height, change as needed
+                UpdateModelinePosition();
+                DrawModeline(SCREEN_WIDTH, minibufferHeight);
+                DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+
+                UpdateMinibufferKeyChord();
+
+                DrawModeBar();
             default:
                 break;
         }

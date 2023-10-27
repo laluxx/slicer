@@ -41,49 +41,18 @@ void DrawColorPicker(ColorPicker *colorPicker, int x, int y, float scale);
 
 
 /* // MODELINE && MINIBUFFER */
-/* #define MAX_KEYCHORD_LENGTH 128 */
-
-/* typedef struct { */
-/*     float height; */
-/*     bool isDragging; */
-/*     float initialClickOffset; */
-/* } Modeline; */
-
-/* typedef struct { */
-/*     float height; */
-/*     char content[MAX_KEYCHORD_LENGTH]; */
-/*     float timer; */
-/* } Minibuffer; */
-
-/* extern Modeline modeline;      // Declares the modeline global variable but does not define it */
-/* extern Minibuffer minibuffer;  // Declares the minibuffer global variable but does not define it */
-
-/* void UpdateModelinePosition(); */
-/* void DrawModeline(); */
-/* void DrawMiniBuffer(); */
-/* void UpdateMinibufferKeyChord(); // Newly added function declaration */
-
-
-
 #define MAX_KEYCHORD_LENGTH 128
 
 typedef struct {
     float height;
     bool isDragging;
     float initialClickOffset;
-    float MODELINE_HEIGHT;
-    int MODELINE_HIGHLIGHT_WIDTH;
 } Modeline;
 
 typedef struct {
     float height;
     char content[MAX_KEYCHORD_LENGTH];
     float timer;
-    float MINIBUFFER_CLEAR_TIME;
-    float MINIBUFFER_HEIGHT;
-    int MINIBUFFER_TEXT_OFFSET_X;
-    int MINIBUFFER_TEXT_OFFSET_Y;
-    int MINIBUFFER_TEXT_SIZE;
 } Minibuffer;
 
 extern Modeline modeline;      // Declares the modeline global variable but does not define it
@@ -93,11 +62,6 @@ void UpdateModelinePosition();
 void DrawModeline();
 void DrawMiniBuffer();
 void UpdateMinibufferKeyChord(); // Newly added function declaration
-
-
-
-
-
 
 
 

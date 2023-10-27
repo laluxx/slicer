@@ -557,21 +557,24 @@ float timeSinceLastNavigation = 0.0f;
 void UpdateFileManager() {
     timeSinceLastNavigation += GetFrameTime();
 
-    if (IsKeyPressed(KEY_H)) {
-        NavigateOut();
-    }
-    if (IsKeyPressed(KEY_L)) {
-        NavigateIn();
-    }
-
-    if (timeSinceLastNavigation >= navigationDelay) {
-        if (IsKeyDown(KEY_J)) {
-            NavigateDown();
-            timeSinceLastNavigation = 0.0f; // Reset timer after navigation
+    // Check if neither ALT key is pressed
+    if (!IsKeyDown(KEY_LEFT_ALT) && !IsKeyDown(KEY_RIGHT_ALT)) {
+        if (IsKeyPressed(KEY_H)) {
+            NavigateOut();
         }
-        if (IsKeyDown(KEY_K)) {
-            NavigateUp();
-            timeSinceLastNavigation = 0.0f; // Reset timer after navigation
+        if (IsKeyPressed(KEY_L)) {
+            NavigateIn();
+        }
+
+        if (timeSinceLastNavigation >= navigationDelay) {
+            if (IsKeyDown(KEY_J)) {
+                NavigateDown();
+                timeSinceLastNavigation = 0.0f; // Reset timer after navigation
+            }
+            if (IsKeyDown(KEY_K)) {
+                NavigateUp();
+                timeSinceLastNavigation = 0.0f; // Reset timer after navigation
+            }
         }
     }
     /* if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) { */

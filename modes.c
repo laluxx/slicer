@@ -1,51 +1,82 @@
 #include "modes.h"
+#include "screen.h"
 #include <stdlib.h>
+#include <math.h> // for ui lerp
 
 EditorMode currentMode = MODE_DASHBOARD;
 bool panelsResetOnModeChange = true;
 
-void DrawModeBar() {
-    // Constants for mode circles
-    const int circleRadius = 8;
-    const int circleSpacing = 15;
-    const int paddingX = 10; // Padding from left of the screen
-    const int paddingY = 10; // Padding from top of the screen
 
-    // Check for mouse click
+
+
+
+// Placeholder function. Adjust this to return the name of the mode based on your implementation.
+const char* GetModeName(EditorMode mode) {
+    switch(mode) {
+        case MODE_DEFAULT: return "Default";
+        case MODE_UI_EDITOR: return "UI Editor";
+        case MODE_EDITOR: return "Editor";
+        case MODE_DASHBOARD: return "Dashboard";
+        // ... other cases
+        default: return "Unknown";
+    }
+}
+
+
+
+void DrawModeBar() {
+    // Constants for mode squares
+    const int squareSize = 10;
+    const int squareSpacing = 15;
+    const int totalWidth = MODE_MAX * squareSize + (MODE_MAX - 1) * squareSpacing;
+    const int paddingX = (SCREEN_WIDTH - totalWidth) / 2;
+
+    // This adjustment positions the mode squares right above the modeline.
+    const int paddingY = SCREEN_HEIGHT - minibuffer.height - modeline.height + 17 - squareSize;
+
+    static int previousMode = -1;
+    static float fadeFactor = 0.0f;
+
+    if (previousMode != currentMode) {
+        previousMode = currentMode;
+        fadeFactor = 0.0f;
+    }
+
     Vector2 mousePos = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         for (int i = 0; i < MODE_MAX; i++) {
-            int circleX = paddingX + circleRadius + i * (circleRadius * 2 + circleSpacing);
-            float distance = sqrt(pow(mousePos.x - circleX, 2) + pow(mousePos.y - (paddingY + circleRadius), 2));
-            if (distance < circleRadius) {
-                EditorChangeMode((EditorMode)i);  // Delegate the mode change and associated behaviors to EditorChangeMode
+            int squareX = paddingX + i * (squareSize + squareSpacing);
+            if (mousePos.x >= squareX && mousePos.x <= squareX + squareSize &&
+                mousePos.y >= paddingY && mousePos.y <= paddingY + squareSize) {
+                currentMode = i;
                 break;
             }
         }
     }
 
-    // Check for Alt + Number key combinations
-    if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
-        if (IsKeyPressed(KEY_ONE)) {
-            EditorChangeMode(MODE_DEFAULT);  // Delegate the mode change and associated behaviors to EditorChangeMode
-        } else if (IsKeyPressed(KEY_TWO)) {
-            EditorChangeMode(MODE_UI_EDITOR);  // Delegate the mode change and associated behaviors to EditorChangeMode
+    for (int i = 0; i < MODE_MAX; i++) {
+        int squareX = paddingX + i * (squareSize + squareSpacing);
+        if (i == currentMode) {
+            DrawRectangle(squareX, paddingY, squareSize, squareSize, ColorLerp(CURRENT_THEME.x, CURRENT_THEME.y, fadeFactor));
+        } else {
+            DrawRectangle(squareX, paddingY, squareSize, squareSize, CURRENT_THEME.x);
         }
-        // Add similar checks for KEY_THREE, KEY_FOUR, etc. if you add more modes in the future
     }
 
-    // Drawing the mode circles
-    for (int i = 0; i < MODE_MAX; i++) {
-        int circleX = paddingX + circleRadius + i * (circleRadius * 2 + circleSpacing);
-        if (i == currentMode) {
-            DrawCircle(circleX, paddingY + circleRadius, circleRadius, WHITE);  // Fill the circle for the current mode
-        } else {
-            DrawCircleLines(circleX, paddingY + circleRadius, circleRadius, WHITE);  // Only draw the border for other modes
-        }
+    fadeFactor += 0.02f;
+    if (fadeFactor > 1.0f) {
+        fadeFactor = 1.0f;
     }
 }
 
-
+Color ColorLerp(Color a, Color b, float f) {
+    return (Color) {
+        a.r + f * (b.r - a.r),
+        a.g + f * (b.g - a.g),
+        a.b + f * (b.b - a.b),
+        255
+    };
+}
 
 void EditorChangeMode(EditorMode mode) {
     currentMode = mode;
