@@ -11,7 +11,6 @@
 #include "window.h"
 #include "filemanager.h"
 #include "theme.h"
-#include "keychords.h"
 #include <stdbool.h>
 
 
@@ -318,21 +317,6 @@ ColorPicker colorPicker = {
 
 
 
-
-
-
-// Sample action to execute when a specific keychord is detected
-void MyCustomAction(int argCount, int args[]) {
-    // Your action code here, e.g., print received arguments
-    for (int i = 0; i < argCount; i++) {
-        printf("Argument %d: %d\n", i + 1, args[i]);
-    }
-}
-
-
-
-
-
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     SetExitKey(0); // Disable the exit key
@@ -344,6 +328,8 @@ int main(void) {
 
 
     InitializeThemes();
+
+
 
 
 
@@ -364,7 +350,6 @@ int main(void) {
     InitializeCameraManager(&cameraManager, character.position);  // Initialize the camera manager
 
     while (!WindowShouldClose()) {
-        /* KeyChord_Update(); */
         ArrangeFrames();
         Cursor cursor;
         cursor.x = GetMouseX();  // Update cursor x position with current mouse x position
@@ -444,6 +429,7 @@ int main(void) {
         BeginDrawing();
         ClearBackground(CURRENT_THEME.background);
 
+
         if (cameraManagerEnabled) {
             BeginMode2D(cameraManager.camera);
         }
@@ -460,6 +446,10 @@ int main(void) {
 
 
             DrawPanel('L', 580.0f); // for a fixed left panel
+
+
+            UpdateMinibufferKeyChord();
+
 
             HandleFrameKeyBindings();
             HandleFrameMouseInteractions();
@@ -513,6 +503,7 @@ int main(void) {
             UpdateModelinePosition();
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
+            UpdateMinibufferKeyChord();
 
 
             UpdateFileManager();
@@ -547,6 +538,7 @@ int main(void) {
             panel.bottomHeight = minibufferHeight; // seem to work
             DrawPanels();
 
+
             HandleFrameKeyBindings();
             HandleFrameMouseInteractions();
             DrawFrames();
@@ -557,6 +549,7 @@ int main(void) {
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
+            UpdateMinibufferKeyChord();
 
             UpdateFileManager();
             DrawFileManager();

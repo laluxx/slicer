@@ -1,5 +1,66 @@
 #+title: Todo
 
+* Make an option
+#+begin_src c
+/* Global variable */
+/* start animation at the middle */
+should be an option TODO
+float currentFileOffsetY = 0.0f;
+
+void DrawFileManager() {
+    // Draw the current directory outside of scissor mode.
+    DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, 8, WHITE);
+
+    // Calculate how many files can be visible at once based on the vertical space.
+    float visibleArea = SCREEN_HEIGHT - minibuffer.height - modeline.height;
+    int visibleFileCount = visibleArea / 25;  // Assuming each item takes 25 units vertically.
+
+    // Determine if the selected index has surpassed half of the visible count.
+    if (fm.selectedIndex > visibleFileCount / 2) {
+        // Target Y position where we want the selected file/folder to appear.
+        float targetYPosition = (visibleArea / 2) + (minibuffer.height + modeline.height);
+
+        // Calculate the actual Y position of the selected file/folder based on its index.
+        float actualYPosition = 40 + fm.selectedIndex * 25;
+
+        // Calculate the offset needed to make the selected file/folder appear at the target Y position.
+        float desiredOffset = targetYPosition - actualYPosition;
+
+        // Lerp current offset to desired offset for smooth animation.
+        currentFileOffsetY += (desiredOffset - currentFileOffsetY) * 0.1f;
+    }
+
+    // Apply the scissor mode for restricting drawing.
+    BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height);
+
+    int iconSize = 24;
+    int iconPadding = 4;
+    int iconVerticalOffset = -6;
+
+    for (int i = 0; i < fm.fileCount; i++) {
+        // Adjust the position using the current offset.
+        int yPosition = 40 + i * 25 + iconVerticalOffset + currentFileOffsetY;
+
+        if (yPosition < 0 || yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) {
+            // Skip rendering if it's outside the visible region.
+            continue;
+        }
+
+        Texture2D icon = GetTextureFromCache(fm.files[i]);
+        DrawTexture(icon, 10, yPosition, WHITE);
+
+        Color color = (i == fm.selectedIndex) ? YELLOW : WHITE;
+        DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, color);
+    }
+
+    EndScissorMode();
+    ClearUnusedTextures();
+}
+
+
+
+#+end_src
+
 * Inspectors
 ** Layout inspector
 lead textures to indicate the current active layout []

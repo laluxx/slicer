@@ -12,6 +12,8 @@
 #include "filemanager.h"
 #include "panels.h"
 #include "ui.h"
+#include <raylib.h>
+#include "theme.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <direct.h>
@@ -223,41 +225,272 @@ void InitializeFileManager(const char* startDir) {
     UpdateFileList();
 }
 
+// BASE
+/* void DrawFileManager() { */
+/*     // This is drawn outside the scissor mode, so it's unaffected. */
+/*     DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, 8, WHITE); */
+
+/*     // Start the scissor mode for restricting drawing. */
+/*     BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height); */
+
+/*     int iconSize = 24; */
+/*     int iconPadding = 4; */
+/*     int iconVerticalOffset = -6; */
+
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         // Calculate position before drawing to determine if it's inside the scissor region. */
+/*         int yPosition = 40 + i * 25 + iconVerticalOffset; */
+
+/*         // If the icon or text would be rendered below the scissor region, skip this iteration. */
+/*         if (yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) { */
+/*             break; */
+/*         } */
+
+/*         Texture2D icon = GetTextureFromCache(fm.files[i]); */
+/*         DrawTexture(icon, 10, yPosition, WHITE); */
+
+/*         Color color = (i == fm.selectedIndex) ? YELLOW : WHITE; */
+/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, color); */
+/*     } */
+
+/*     // End the scissor mode. */
+/*     EndScissorMode(); */
+
+/*     ClearUnusedTextures(); */
+/* } */
+
+
+// COOL + SIGMA
+// Global variable
+/* float currentFileOffsetY = 0.0f; */
+
+/* void DrawFileManager() { */
+/*     // Draw the current directory outside of scissor mode. */
+/*     DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, 8, WHITE); */
+
+/*     // Target Y position where we want the selected file/folder to appear. */
+/*     float targetYPosition = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2; */
+
+/*     // Calculate the actual Y position of the selected file/folder based on its index. */
+/*     float actualYPosition = 40 + fm.selectedIndex * 25; */
+
+/*     // Calculate the offset needed to make the selected file/folder appear at the target Y position. */
+/*     float desiredOffset = targetYPosition - actualYPosition; */
+
+/*     // Lerp current offset to desired offset for smooth animation. */
+/*     currentFileOffsetY += (desiredOffset - currentFileOffsetY) * 0.1f; */
+
+/*     // Apply the scissor mode for restricting drawing. */
+/*     BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height); */
+
+/*     int iconSize = 24; */
+/*     int iconPadding = 4; */
+/*     int iconVerticalOffset = -6; */
+
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         // Adjust the position using the current offset. */
+/*         int yPosition = 40 + i * 25 + iconVerticalOffset + currentFileOffsetY; */
+
+/*         if (yPosition < 0 || yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) { */
+/*             // Skip rendering if it's outside the visible region. */
+/*             continue; */
+/*         } */
+
+/*         Texture2D icon = GetTextureFromCache(fm.files[i]); */
+/*         DrawTexture(icon, 10, yPosition, WHITE); */
+
+/*         Color color = (i == fm.selectedIndex) ? YELLOW : WHITE; */
+/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, color); */
+/*     } */
+
+/*     EndScissorMode(); */
+/*     ClearUnusedTextures(); */
+/* } */
+
+
+
+// LENS1
+/* // Required global variables */
+/* float currentFileOffsetY = 0.0f; */
+/* float lerpRate = 0.05f;       // Control the smoothness of lerp */
+/* int iconSize = 24; */
+/* int iconPadding = 8;          // Increased padding for a spacious look */
+/* int iconVerticalOffset = -6; */
+
+/* void DrawFileManager() { */
+/*     // Variables local to this function */
+/*     int textWidth; */
+/*     int yPosition; */
+/*     int totalWidth; */
+
+/*     // Draw the current directory outside of scissor mode. */
+/*     DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, fontSize, WHITE); */
+
+/*     // Target Y position where we want the selected file/folder to appear. */
+/*     float targetYPosition = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2; */
+
+/*     // Calculate the actual Y position of the selected file/folder based on its index. */
+/*     float actualYPosition = 40 + fm.selectedIndex * 25; */
+
+/*     // Calculate the offset needed to make the selected file/folder appear at the target Y position. */
+/*     float desiredOffset = targetYPosition - actualYPosition; */
+
+/*     // Exponential moving average for smoother lerp. */
+/*     currentFileOffsetY = lerpRate * desiredOffset + (1 - lerpRate) * currentFileOffsetY; */
+
+/*     // Apply the scissor mode for restricting drawing. */
+/*     BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height); */
+
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         // Adjust the position using the current offset. */
+/*         yPosition = 40 + i * 25 + iconVerticalOffset + currentFileOffsetY; */
+
+/*         if (yPosition < 0 || yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) { */
+/*             continue; */
+/*         } */
+
+/*         Texture2D icon = GetTextureFromCache(fm.files[i]); */
+/*         textWidth = MeasureText(fm.files[i], fontSize); */
+/*         totalWidth = iconSize + textWidth + 3 * iconPadding;   // Total width of the icon and text with padding */
+
+/*         // Unified rectangle selection design */
+/*         if (i == fm.selectedIndex) { */
+/*             DrawRectangle(10 - iconPadding, yPosition - 2, totalWidth, iconSize + 4, CURRENT_THEME.panel_flex); // Slightly darker background */
+/*             DrawRectangleLines(10 - iconPadding, yPosition - 2, totalWidth, iconSize + 4, CURRENT_THEME.y);     // Highlighted border */
+/*         } */
+
+/*         DrawTexture(icon, 10, yPosition, WHITE); */
+/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, CURRENT_THEME.y); */
+/*     } */
+
+/*     EndScissorMode(); */
+/*     ClearUnusedTextures(); */
+/* } */
+
+
+
+
+// BLOCK
+// Required global variables
+float currentFileOffsetY = 0.0f;
+float lerpRate = 0.05f;       // Control the smoothness of lerp
+int iconSize = 24;
+int iconPadding = 8;
+int iconVerticalOffset = -6;
+int leftPanelWidth = 250;     // Assuming a fixed width for the left panel, adjust as needed.
 
 void DrawFileManager() {
-    // This is drawn outside the scissor mode, so it's unaffected.
-    DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, 8, WHITE);
+    // Variables local to this function
+    int textWidth;
+    int yPosition;
 
-    // Start the scissor mode for restricting drawing.
-    BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height);
+    // Draw the current directory outside of scissor mode.
+    /* DrawText(fm.currentDir, 8, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, fontSize, WHITE); */
 
-    int iconSize = 24;
-    int iconPadding = 4;
-    int iconVerticalOffset = -6;
+    int smallerFontSize = fontSize * 0.50;  // Adjust this multiplier as needed
+    DrawText(fm.currentDir, 8, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, smallerFontSize, WHITE);
+
+
+    // Target Y position where we want the selected file/folder to appear.
+    float targetYPosition = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2;
+
+    // Calculate the actual Y position of the selected file/folder based on its index.
+    float actualYPosition = 40 + fm.selectedIndex * 25;
+
+    // Calculate the offset needed to make the selected file/folder appear at the target Y position.
+    float desiredOffset = targetYPosition - actualYPosition;
+
+    // Exponential moving average for smoother lerp.
+    currentFileOffsetY = lerpRate * desiredOffset + (1 - lerpRate) * currentFileOffsetY;
+
+    // Apply the scissor mode for restricting drawing.
+    BeginScissorMode(0, 0, leftPanelWidth, SCREEN_HEIGHT - minibuffer.height - modeline.height);
 
     for (int i = 0; i < fm.fileCount; i++) {
-        // Calculate position before drawing to determine if it's inside the scissor region.
-        int yPosition = 40 + i * 25 + iconVerticalOffset;
+        // Adjust the position using the current offset.
+        yPosition = 40 + i * 25 + iconVerticalOffset + currentFileOffsetY;
 
-        // If the icon or text would be rendered below the scissor region, skip this iteration.
-        if (yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) {
-            break;
+        if (yPosition < 0 || yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) {
+            continue;
         }
 
         Texture2D icon = GetTextureFromCache(fm.files[i]);
-        DrawTexture(icon, 10, yPosition, WHITE);
+        textWidth = MeasureText(fm.files[i], fontSize);
 
-        Color color = (i == fm.selectedIndex) ? YELLOW : WHITE;
-        DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, color);
+        if (i == fm.selectedIndex) {
+            // Background for the icon
+            DrawRectangle(0, yPosition - 2, iconSize + iconPadding, iconSize + 4, CURRENT_THEME.panel_left);
+
+            // Extended rectangle for the text up to the edge of the left panel
+            DrawRectangle(0 + iconSize + iconPadding, yPosition - 2, leftPanelWidth - (iconSize + 2 * iconPadding), iconSize + 4, CURRENT_THEME.x);
+        }
+
+        DrawTexture(icon, 10, yPosition, WHITE);
+        DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, (i == fm.selectedIndex) ? WHITE : CURRENT_THEME.y);
     }
 
-    // End the scissor mode.
     EndScissorMode();
-
     ClearUnusedTextures();
 }
 
 
+// SIMPLE
+/* void DrawFileManager() { */
+/*     // Variables local to this function */
+/*     int textWidth; */
+/*     int yPosition; */
+
+/*     // Fixed position for the selection highlight bar */
+/*     float fixedYPositionForSelected = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2; */
+
+/*     // Calculate the offset to ensure the file list scrolls so the selected item appears under the highlight bar. */
+/*     float desiredOffset = fixedYPositionForSelected - (40 + fm.selectedIndex * 25); */
+
+/*     // Exponential moving average for smoother scrolling */
+/*     currentFileOffsetY = lerpRate * desiredOffset + (1 - lerpRate) * currentFileOffsetY; */
+
+/*     // Begin drawing */
+/*     BeginScissorMode(0, 0, leftPanelWidth, SCREEN_HEIGHT - minibuffer.height - modeline.height); */
+
+/*     // Draw a stationary translucent selection indicator in the middle */
+/*     DrawRectangle(0, fixedYPositionForSelected - 12, leftPanelWidth, 24, Fade(CURRENT_THEME.panel_left, 0.4f)); */
+
+/*     for (int i = 0; i < fm.fileCount; i++) { */
+/*         yPosition = 40 + i * 25 + iconVerticalOffset + currentFileOffsetY; */
+
+/*         if (yPosition < 0 || yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) { */
+/*             continue; */
+/*         } */
+
+/*         // Create a fade effect for items near the top or bottom */
+/*         float alpha = 1.0f; */
+/*         if (yPosition < 50) { */
+/*             alpha = yPosition / 50.0f; */
+/*         } else if (yPosition > SCREEN_HEIGHT - minibuffer.height - modeline.height - 50) { */
+/*             alpha = (SCREEN_HEIGHT - minibuffer.height - modeline.height - yPosition) / 50.0f; */
+/*         } */
+
+/*         Texture2D icon = GetTextureFromCache(fm.files[i]); */
+/*         textWidth = MeasureText(fm.files[i], fontSize); */
+
+/*         Color itemColor = (i == fm.selectedIndex) ? WHITE : CURRENT_THEME.y; */
+
+/*         DrawTexture(icon, 10, yPosition, Fade(WHITE, alpha)); */
+/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, Fade(itemColor, alpha)); */
+/*     } */
+
+/*     EndScissorMode(); */
+/*     ClearUnusedTextures(); */
+/* } */
+
+
+
+
+
+
+// COMMANDS
+// TODO
+// all commands should be usable ivoking M-x
 
 void NavigateUp() {
     fm.selectedIndex--;
@@ -316,19 +549,31 @@ void NavigateOut() {
     }
 }
 
+
+float navigationDelay = 0.07f; // 200 milliseconds delay
+float timeSinceLastNavigation = 0.0f;
+
+
 void UpdateFileManager() {
-    if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) {
-        if (IsKeyPressed(KEY_H)) {
-            NavigateOut();
-        }
-        if (IsKeyPressed(KEY_J)) {
+    timeSinceLastNavigation += GetFrameTime();
+
+    if (IsKeyPressed(KEY_H)) {
+        NavigateOut();
+    }
+    if (IsKeyPressed(KEY_L)) {
+        NavigateIn();
+    }
+
+    if (timeSinceLastNavigation >= navigationDelay) {
+        if (IsKeyDown(KEY_J)) {
             NavigateDown();
+            timeSinceLastNavigation = 0.0f; // Reset timer after navigation
         }
-        if (IsKeyPressed(KEY_K)) {
+        if (IsKeyDown(KEY_K)) {
             NavigateUp();
-        }
-        if (IsKeyPressed(KEY_L)) {
-            NavigateIn();
+            timeSinceLastNavigation = 0.0f; // Reset timer after navigation
         }
     }
+    /* if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) { */
+    /* } */
 }

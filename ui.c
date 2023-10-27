@@ -375,9 +375,8 @@ Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position) {
 
 
 
-
- // MODELINE && MINIBUFFER */
-
+// MODELINE && MINIBUFFER
+#define MAX_KEYCHORD_LENGTH 128
 
 // Initialize global structs
 Modeline modeline = {
@@ -387,8 +386,37 @@ Modeline modeline = {
 };
 
 Minibuffer minibuffer = {
-    .height = 21.0f
+    .height = 21.0f,
+    .content = "",
+    .timer = 0.0f
 };
+
+// Convert the pressed key to a string
+const char* KeyToString(int key) {
+    switch(key) {
+        case KEY_SPACE: return "spc";
+        // Add other special key mappings as needed.
+        default: return TextFormat("%c", key);
+    }
+}
+
+void UpdateMinibufferKeyChord() {
+    int key = GetKeyPressed();
+    if (key > 0) { // Some key was pressed
+        if(strlen(minibuffer.content) + strlen(KeyToString(key)) < MAX_KEYCHORD_LENGTH - 1) {
+            strcat(minibuffer.content, KeyToString(key));
+            strcat(minibuffer.content, " ");  // space between keys
+        }
+        minibuffer.timer = 0.0f;
+    }
+
+    minibuffer.timer += GetFrameTime();
+
+    if (minibuffer.timer > 2.0f) { // Clear after 2 seconds of inactivity
+        minibuffer.content[0] = '\0';
+        minibuffer.timer = 0.0f;
+    }
+}
 
 void UpdateModelinePosition() {
     Vector2 mousePos = GetMousePosition();
@@ -422,5 +450,6 @@ void DrawMiniBuffer() {
     Color minibufferColor = CURRENT_THEME.minibuffer;
     DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height, SCREEN_WIDTH, minibuffer.height, minibufferColor);
 
-    DrawText("Hello World", 6, SCREEN_HEIGHT - minibuffer.height + 6, 9, RAYWHITE);
+    // Draw the keychord content instead of "Hello World"
+    DrawText(minibuffer.content, 6, SCREEN_HEIGHT - minibuffer.height + 6, 9, RAYWHITE);
 }
