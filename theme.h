@@ -30,4 +30,10 @@ void InitializeThemes();
 void NextTheme();
 void PreviousTheme();
 
+// LUA
+void LoadConfig();
+void* FileWatcher(void *arg);
+void StartFileWatcher();
+
+
 #endif

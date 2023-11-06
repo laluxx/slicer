@@ -1,16 +1,18 @@
-#include "raylib.h"
 #include "screen.h"
 #include "slicer.h"
 #include "character.h"
 #include "log.h"
 #include "panels.h"
-#include "stdio.h"
-#include "stdlib.h"
 #include "modes.h"
 #include "ui.h"
-#include "window.h"
 #include "filemanager.h"
 #include "theme.h"
+#include "keychords.h"
+#include "functions.h"
+
+#include "raylib.h"
+#include "stdlib.h"
+#include "stdio.h"
 #include <stdbool.h>
 
 
@@ -317,24 +319,70 @@ ColorPicker colorPicker = {
 
 
 
+void Handlekeys(){
+
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        leaderKeyActive = 0;
+        CloseFlexiblePanel();
+    }
+
+    if (!leaderKeyActive){
+
+        if (IsKeyPressed(KEY_R) && IsKeyDown(KEY_LEFT_CONTROL)) {
+            log_add("UI resetted");
+            panel = (Panel){INITIAL_TOP_HEIGHT, INITIAL_BOTTOM_HEIGHT,
+                            INITIAL_LEFT_WIDTH, INITIAL_RIGHT_WIDTH};
+        }
+
+        if (IsKeyPressed(KEY_R) && IsKeyDown(KEY_LEFT_ALT) ||
+            IsKeyDown(KEY_RIGHT_ALT)) {
+            LoadConfig();
+        }
+
+        if (IsKeyPressed(KEY_F5)) {
+            restart_slicer();
+        }
+
+        HandleHelpBuffer();
+
+        // THEME KEYBINDS
+        if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
+            if (IsKeyPressed(KEY_MINUS)) {
+              PreviousTheme();
+            } else if (IsKeyPressed(KEY_EQUAL)) {
+              NextTheme();
+            }
+        }
+
+        if (IsKeyPressed(KEY_N)) {
+            if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
+              EditorPreviousMode();
+            } else {
+              EditorNextMode();
+            }
+        }
+
+        if (IsKeyPressed(KEY_C)) {
+            cameraManagerEnabled = !cameraManagerEnabled;
+        }
+
+        if (IsKeyPressed(KEY_O)) {
+            panel.centerPanelVisible = !panel.centerPanelVisible;
+        }
+    }
+}
+
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Slicer");
     SetExitKey(0); // Disable the exit key
+    LoadConfig();
+    StartFileWatcher();
     InitializeFileManager("."); // move in filemanager.c
     Texture2D sprite = LoadTexture("./sprite.png"); // move in character.c
     LoadToggleTextures();
     LoadCornerTextures();
-
-
-
     InitializeThemes();
 
-
-
-
-
-    Window myWindow;  // Declare myWindow with type Window // move in window.c
-    myWindow = CreateWindow((Vector2){200, 100}, (Vector2){400, 300}, "My Window"); // move in window.c
 
 
     Character character = { { (float)SCREEN_WIDTH/2, (float)SCREEN_HEIGHT/2 }, IDLE_DOWN, IDLE_DOWN };
@@ -358,69 +406,9 @@ int main(void) {
         UpdateEditorLogScroll();
         UpdateCharacterState(&character);
 
-        if (IsKeyPressed(KEY_R) && IsKeyDown(KEY_LEFT_CONTROL)) {
-            log_add("UI resetted");
-            panel = (Panel){
-                INITIAL_TOP_HEIGHT,
-                INITIAL_BOTTOM_HEIGHT,
-                INITIAL_LEFT_WIDTH,
-                INITIAL_RIGHT_WIDTH
-            };
-        }
-
-        // Check for F5 key press
-        if (IsKeyPressed(KEY_F5)) {
-            // Save any necessary game state here
-
-            // Run the make command
-            system("make");
-
-            // Restart the game engine
-            char *args[] = { "./slicer", NULL };  // Assuming the binary name is "slicer"
-            execv(args[0], args);
-
-            // If execv fails, you can handle the error here
-            perror("Failed to reload the game engine");
-            exit(1);
-        }
-
-
-        HandleHelpBuffer();
-
-
-
-        // THEME KEYBINDS
-        if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {  // Check if Alt key is pressed
-            if (IsKeyPressed(KEY_MINUS)) {    // Check if '-' key is pressed
-                PreviousTheme();    // Go to the previous theme
-            } else if (IsKeyPressed(KEY_EQUAL)) {    // Check if '=' key is pressed
-                NextTheme();    // Go to the next theme
-            }
-        }
-
-
-
-        if (IsKeyPressed(KEY_N)) {
-            if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
-                EditorPreviousMode();
-            } else {
-                EditorNextMode();
-            }
-        }
-
-
-        if (IsKeyPressed(KEY_ESCAPE)) {
-            CloseFlexiblePanel();
-        }
-
-        if (IsKeyPressed(KEY_C)) {
-            cameraManagerEnabled = !cameraManagerEnabled;
-        }
-
-        if (IsKeyPressed(KEY_O)) {
-            panel.centerPanelVisible = !panel.centerPanelVisible;
-        }
-
+        Handlekeys();
+        HandleKeyChords();
+        /* HandleKeyChords(); */
 
         if (cameraManagerEnabled) {
             UpdateCameraManager(&cameraManager, character.position);
@@ -451,12 +439,13 @@ int main(void) {
             UpdateMinibufferKeyChord();
 
 
-            HandleFrameKeyBindings();
+            HandleFrameKeys();
             HandleFrameMouseInteractions();
             DrawFrames();
 
             DrawPanels();
             RenderDashboard();
+            /* RenderCenteredDashboard(); */
 
 
             float minibufferHeight = 21.0f; // Default height, change as needed
@@ -480,7 +469,7 @@ int main(void) {
             DrawPanel('R', 280.0f); // for a fixed right panel
 
 
-            HandleFrameKeyBindings();
+            HandleFrameKeys();
             HandleFrameMouseInteractions();
             DrawFrames();
 
@@ -512,7 +501,7 @@ int main(void) {
             UpdateMinibufferKeyChord();
 
 
-            UpdateFileManager();
+            HandleFileManagerKeys();
             DrawFileManager();
 
             DrawModeBar();
@@ -548,7 +537,7 @@ int main(void) {
             DrawPanels();
 
 
-            HandleFrameKeyBindings();
+            HandleFrameKeys();
             HandleFrameMouseInteractions();
             DrawFrames();
 
@@ -560,7 +549,7 @@ int main(void) {
 
             UpdateMinibufferKeyChord();
 
-            UpdateFileManager();
+            HandleFileManagerKeys();
             DrawFileManager();
 
             DrawModeBar();
@@ -581,7 +570,7 @@ int main(void) {
                 ClosePanel('L');  // Close left panela
 
 
-                HandleFrameKeyBindings();
+                HandleFrameKeys();
                 HandleFrameMouseInteractions();
                 DrawFrames();
 
@@ -602,7 +591,12 @@ int main(void) {
                 ClosePanel('L');  // Close left panel
                 ClosePanel('B');  // Close bottom panel
                 DrawPanels();  // Draw all panels
-                DrawCharacter(character, sprite, frameCounter);
+
+                HandleFrameKeys();
+                HandleFrameMouseInteractions();
+                DrawFrames();
+
+                /* DrawCharacter(character, sprite, frameCounter); */
 
 
                 minibufferHeight = 21.0f; // Default height, change as needed

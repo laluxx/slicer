@@ -10,6 +10,7 @@
 // dont render the files off screen []
 
 #include "filemanager.h"
+#include "keychords.h"
 #include "panels.h"
 #include "ui.h"
 #include <raylib.h>
@@ -225,50 +226,12 @@ void InitializeFileManager(const char* startDir) {
     UpdateFileList();
 }
 
-// BASE
-/* void DrawFileManager() { */
-/*     // This is drawn outside the scissor mode, so it's unaffected. */
-/*     DrawText(fm.currentDir, 15, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, 8, WHITE); */
-
-/*     // Start the scissor mode for restricting drawing. */
-/*     BeginScissorMode(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - minibuffer.height - modeline.height); */
-
-/*     int iconSize = 24; */
-/*     int iconPadding = 4; */
-/*     int iconVerticalOffset = -6; */
-
-/*     for (int i = 0; i < fm.fileCount; i++) { */
-/*         // Calculate position before drawing to determine if it's inside the scissor region. */
-/*         int yPosition = 40 + i * 25 + iconVerticalOffset; */
-
-/*         // If the icon or text would be rendered below the scissor region, skip this iteration. */
-/*         if (yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) { */
-/*             break; */
-/*         } */
-
-/*         Texture2D icon = GetTextureFromCache(fm.files[i]); */
-/*         DrawTexture(icon, 10, yPosition, WHITE); */
-
-/*         Color color = (i == fm.selectedIndex) ? YELLOW : WHITE; */
-/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, color); */
-/*     } */
-
-/*     // End the scissor mode. */
-/*     EndScissorMode(); */
-
-/*     ClearUnusedTextures(); */
-/* } */
-
-
-
 // BLOCK
-// Required global variables
 float currentFileOffsetY = 0.0f;
-float lerpRate = 0.05f;       // Control the smoothness of lerp
+float lerpRate = 0.03f;
 int iconSize = 24;
 int iconPadding = 8;
 int iconVerticalOffset = -6;
-int leftPanelWidth = 250;     // Assuming a fixed width for the left panel, adjust as needed.
 
 void DrawFileManager() {
     // Variables local to this function
@@ -280,7 +243,6 @@ void DrawFileManager() {
 
     int smallerFontSize = fontSize * 0.50;  // Adjust this multiplier as needed
     DrawText(fm.currentDir, 40, SCREEN_HEIGHT - minibuffer.height - modeline.height + 10, smallerFontSize, WHITE);
-
 
     // Target Y position where we want the selected file/folder to appear.
     float targetYPosition = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2;
@@ -295,7 +257,7 @@ void DrawFileManager() {
     currentFileOffsetY = lerpRate * desiredOffset + (1 - lerpRate) * currentFileOffsetY;
 
     // Apply the scissor mode for restricting drawing.
-    BeginScissorMode(0, 0, leftPanelWidth, SCREEN_HEIGHT - minibuffer.height - modeline.height);
+    BeginScissorMode(0, 0, panel.leftWidth, SCREEN_HEIGHT - minibuffer.height - modeline.height);
 
     for (int i = 0; i < fm.fileCount; i++) {
         // Adjust the position using the current offset.
@@ -313,7 +275,7 @@ void DrawFileManager() {
             DrawRectangle(0, yPosition - 2, iconSize + iconPadding, iconSize + 4, CURRENT_THEME.panel_left);
 
             // Extended rectangle for the text up to the edge of the left panel
-            DrawRectangle(0 + iconSize + iconPadding, yPosition - 2, leftPanelWidth - (iconSize + 2 * iconPadding), iconSize + 4, CURRENT_THEME.x);
+            DrawRectangle(iconSize + iconPadding, yPosition - 2, panel.leftWidth - (iconSize + 2 * iconPadding), iconSize + 4, CURRENT_THEME.x);
         }
 
         DrawTexture(icon, 10, yPosition, WHITE);
@@ -325,57 +287,21 @@ void DrawFileManager() {
 }
 
 
-// SIMPLE
-/* void DrawFileManager() { */
-/*     // Variables local to this function */
-/*     int textWidth; */
-/*     int yPosition; */
+void CenterTopFileImmediately() {
+    // Calculate the Y position of the top file
+    float topFileYPosition = 40; // Assuming the first file starts at Y = 40
 
-/*     // Fixed position for the selection highlight bar */
-/*     float fixedYPositionForSelected = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2; */
+    // Calculate the target Y position for the center of the viewable area
+    float targetYPosition = (SCREEN_HEIGHT - minibuffer.height - modeline.height) / 2;
 
-/*     // Calculate the offset to ensure the file list scrolls so the selected item appears under the highlight bar. */
-/*     float desiredOffset = fixedYPositionForSelected - (40 + fm.selectedIndex * 25); */
+    // Set the currentFileOffsetY to center the top file without lerping
+    currentFileOffsetY = targetYPosition - topFileYPosition;
 
-/*     // Exponential moving average for smoother scrolling */
-/*     currentFileOffsetY = lerpRate * desiredOffset + (1 - lerpRate) * currentFileOffsetY; */
-
-/*     // Begin drawing */
-/*     BeginScissorMode(0, 0, leftPanelWidth, SCREEN_HEIGHT - minibuffer.height - modeline.height); */
-
-/*     // Draw a stationary translucent selection indicator in the middle */
-/*     DrawRectangle(0, fixedYPositionForSelected - 12, leftPanelWidth, 24, Fade(CURRENT_THEME.panel_left, 0.4f)); */
-
-/*     for (int i = 0; i < fm.fileCount; i++) { */
-/*         yPosition = 40 + i * 25 + iconVerticalOffset + currentFileOffsetY; */
-
-/*         if (yPosition < 0 || yPosition >= SCREEN_HEIGHT - minibuffer.height - modeline.height) { */
-/*             continue; */
-/*         } */
-
-/*         // Create a fade effect for items near the top or bottom */
-/*         float alpha = 1.0f; */
-/*         if (yPosition < 50) { */
-/*             alpha = yPosition / 50.0f; */
-/*         } else if (yPosition > SCREEN_HEIGHT - minibuffer.height - modeline.height - 50) { */
-/*             alpha = (SCREEN_HEIGHT - minibuffer.height - modeline.height - yPosition) / 50.0f; */
-/*         } */
-
-/*         Texture2D icon = GetTextureFromCache(fm.files[i]); */
-/*         textWidth = MeasureText(fm.files[i], fontSize); */
-
-/*         Color itemColor = (i == fm.selectedIndex) ? WHITE : CURRENT_THEME.y; */
-
-/*         DrawTexture(icon, 10, yPosition, Fade(WHITE, alpha)); */
-/*         DrawText(fm.files[i], 10 + iconSize + iconPadding, yPosition, fontSize, Fade(itemColor, alpha)); */
-/*     } */
-
-/*     EndScissorMode(); */
-/*     ClearUnusedTextures(); */
-/* } */
-
-
-
+    // If the offset would be negative (top file above the center), set it to 0
+    if (currentFileOffsetY < 0) {
+        currentFileOffsetY = 0;
+    }
+}
 
 
 
@@ -388,6 +314,7 @@ void NavigateUp() {
     if (fm.selectedIndex < 0) {
         fm.selectedIndex = fm.fileCount - 1;
     }
+    /* CenterTopFileImmediately(); */
 }
 
 void NavigateDown() {
@@ -395,6 +322,7 @@ void NavigateDown() {
     if (fm.selectedIndex >= fm.fileCount) {
         fm.selectedIndex = 0;
     }
+    /* CenterTopFileImmediately(); */
 }
 
 void NavigateIn() {
@@ -408,6 +336,7 @@ void NavigateIn() {
         fm.selectedIndex = 0;
         UpdateFileList();
     }
+    CenterTopFileImmediately();
 }
 
 void NavigateOut() {
@@ -445,29 +374,29 @@ float navigationDelay = 0.07f; // 200 milliseconds delay
 float timeSinceLastNavigation = 0.0f;
 
 
-void UpdateFileManager() {
+void HandleFileManagerKeys() {
     timeSinceLastNavigation += GetFrameTime();
 
-    // Check if neither ALT key is pressed
-    if (!IsKeyDown(KEY_LEFT_ALT) && !IsKeyDown(KEY_RIGHT_ALT)) {
-        if (IsKeyPressed(KEY_H)) {
-            NavigateOut();
-        }
-        if (IsKeyPressed(KEY_L)) {
-            NavigateIn();
-        }
+    if (!leaderKeyActive){
+        // Check if neither ALT key is pressed
+        if (!IsKeyDown(KEY_LEFT_ALT) && !IsKeyDown(KEY_RIGHT_ALT)) {
+            if (IsKeyPressed(KEY_H)) {
+              NavigateOut();
+            }
+            if (IsKeyPressed(KEY_L)) {
+              NavigateIn();
+            }
 
-        if (timeSinceLastNavigation >= navigationDelay) {
-            if (IsKeyDown(KEY_J)) {
+            if (timeSinceLastNavigation >= navigationDelay) {
+              if (IsKeyDown(KEY_J)) {
                 NavigateDown();
                 timeSinceLastNavigation = 0.0f; // Reset timer after navigation
-            }
-            if (IsKeyDown(KEY_K)) {
+              }
+              if (IsKeyDown(KEY_K)) {
                 NavigateUp();
                 timeSinceLastNavigation = 0.0f; // Reset timer after navigation
+              }
             }
         }
     }
-    /* if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) { */
-    /* } */
 }

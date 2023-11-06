@@ -6,10 +6,10 @@ TARGET = slicer
 
 # Compiler and Linker flags
 CFLAGS = -Wall -I.
-LFLAGS = -lraylib -lm -lpthread -ldl -lrt -lX11
+LFLAGS = -lraylib -lm -lpthread -ldl -lrt -lX11 -llua
 
 # Source files
-SOURCES = main.c slicer.c character.c panels.c log.c screen.c ui.c modes.c window.c filemanager.c theme.c
+SOURCES = main.c slicer.c character.c panels.c log.c screen.c ui.c modes.c filemanager.c theme.c keychords.c functions.c
 
 # Compilation and linking
 all: $(TARGET)

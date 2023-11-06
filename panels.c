@@ -185,29 +185,6 @@ void ClosePanel(char panelSide) {
     }
 }
 
-/* void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position) { */
-/*     panel.flexPanelVisible = true; */
-
-/*     float flexWidth = SCREEN_WIDTH - panel.leftWidth - panel.rightWidth - 2 * CENTER_GAP; */
-/*     float flexHeight = SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight - 2 * CENTER_GAP; */
-
-/*     switch (position) { */
-/*         case FLEX_POSITION_TOP: */
-/*             panel.flexPanel = (Rectangle){panel.leftWidth + CENTER_GAP, panel.topHeight + CENTER_GAP, flexWidth, (size == FLEX_SIZE_ONE_HALF) ? (flexHeight / 2) : (flexHeight / 3)}; */
-/*             break; */
-/*         case FLEX_POSITION_BOTTOM: */
-/*             panel.flexPanel = (Rectangle){panel.leftWidth + CENTER_GAP, SCREEN_HEIGHT - ((size == FLEX_SIZE_ONE_HALF) ? (flexHeight / 2) : (flexHeight / 3)) - panel.bottomHeight - CENTER_GAP, flexWidth, (size == FLEX_SIZE_ONE_HALF) ? (flexHeight / 2) : (flexHeight / 3)}; */
-/*             break; */
-/*         case FLEX_POSITION_LEFT: */
-/*             panel.flexPanel = (Rectangle){panel.leftWidth + CENTER_GAP, panel.topHeight + CENTER_GAP, (size == FLEX_SIZE_ONE_HALF) ? (flexWidth / 2) : (flexWidth / 3), flexHeight}; */
-/*             break; */
-/*         case FLEX_POSITION_RIGHT: */
-/*             panel.flexPanel = (Rectangle){SCREEN_WIDTH - ((size == FLEX_SIZE_ONE_HALF) ? (flexWidth / 2) : (flexWidth / 3)) - panel.rightWidth - CENTER_GAP, panel.topHeight + CENTER_GAP, (size == FLEX_SIZE_ONE_HALF) ? (flexWidth / 2) : (flexWidth / 3), flexHeight}; */
-/*             break; */
-/*     } */
-/* } */
-
-
 void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position) {
     panel.flexPanelVisible = true;
 
@@ -257,20 +234,25 @@ void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position) {
     }
 }
 
-
-
 void CloseFlexiblePanel() {
     panel.flexPanelVisible = false;
 }
 
+void OpenLeftFlexiblePanel() {
+    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_LEFT);
+}
 
+void OpenRightFlexiblePanel() {
+    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_RIGHT);
+}
 
+void OpenTopFlexiblePanel() {
+    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_TOP);
+}
 
-
-
-
-
-
+void OpenBottomFlexiblePanel() {
+    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_BOTTOM);
+}
 
 
 // FRAMES
@@ -285,7 +267,7 @@ int selectedIndex = -1;
 float masterFactor = 0.6;  // 60% for the master frame
 LayoutType currentLayout = LAYOUT_MASTER_STACK; // Default layout
 
-void HandleFrameKeyBindings() {
+void HandleFrameKeys() {
     if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
         if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
             CreateNewFrame();

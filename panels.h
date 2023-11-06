@@ -76,13 +76,18 @@ void UpdatePanelDimensions(char panelSide);
 void PanelsReset();
 void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position);
 void CloseFlexiblePanel();
+void OpenLeftFlexiblePanel();
+void OpenRightFlexiblePanel();
+void OpenTopFlexiblePanel();
+void OpenBottomFlexiblePanel();
+
 void AdjustLeftPanelWidthForFileNames();
 void LoadCornerTextures();
 void UnloadCornerTextures();
 
 // FRAMES
 void ArrangeFrames();
-void HandleFrameKeyBindings();
+void HandleFrameKeys();
 void CreateNewFrame();
 void CloseSelectedFrame();
 void DrawFrames();
