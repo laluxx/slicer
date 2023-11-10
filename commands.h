@@ -3,5 +3,7 @@
 
 
 void restart_slicer();
+void window_next();
+void toggle_filemanager();
 
 #endif // FUNCTIONS_H_

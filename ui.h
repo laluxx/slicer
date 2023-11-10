@@ -1,6 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
+#include "keychords.h"
 #include "raylib.h"  // Include this if raylib is used for graphical elements
 #include <stdbool.h>  // Include this for the bool type
 #include <string.h>
@@ -41,7 +42,7 @@ void DrawColorPicker(ColorPicker *colorPicker, int x, int y, float scale);
 
 
 /* // MODELINE && MINIBUFFER */
-#define MAX_KEYCHORD_LENGTH 128
+#define MAX_SCREENKEY_LENGTH 128
 
 typedef struct {
     float height;
@@ -51,7 +52,7 @@ typedef struct {
 
 typedef struct {
     float height;
-    char content[MAX_KEYCHORD_LENGTH];
+    char content[MAX_SCREENKEY_LENGTH];
     float timer;
 } Minibuffer;
 
@@ -71,7 +72,7 @@ extern Minibuffer minibuffer;  // Declares the minibuffer global variable but do
 void UpdateModelinePosition();
 void DrawModeline();
 void DrawMiniBuffer();
-void UpdateMinibufferKeyChord();
+void UpdateMinibufferSreenKey();
 void DrawFPSWidget();
 Color ColorLerp(Color a, Color b, float f);
 void UpdateAltIndicator();
@@ -95,5 +96,9 @@ void UnloadToggleTextures();
 void LoadToggleTextures();
 void LoadConfigIconTexture();
 void UnloadConfigIconTexture();
+
+
+
+
 
 #endif  // UI_H

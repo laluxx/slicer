@@ -26,7 +26,7 @@ typedef struct {
 
 extern FileManager fm;
 extern TextureCache textureCache[MAX_TEXTURES];
-
+extern bool fileManagerVisible;
 
 // Function prototypes
 void UpdateFileList();

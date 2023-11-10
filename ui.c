@@ -1,8 +1,9 @@
-#include "ui.h"
 #include <raylib.h>
+#include "keychords.h"
 #include "screen.h"
 #include "theme.h"
 #include <stdio.h>
+#include "ui.h"
 
 // BUTTONS
 int BUTTON_FONT_SIZE = 20;
@@ -374,88 +375,6 @@ Color GetColorFromSpectrum(Rectangle spectrumBox, Vector2 position) {
     return color;
 }
 
-
-
-// MODELINE && MINIBUFFER
-#define MAX_KEYCHORD_LENGTH 128
-
-// Initialize global structs
-Modeline modeline = {
-    .height = 26.0f,
-    .isDragging = false,
-    .initialClickOffset = 0.0f
-};
-
-Minibuffer minibuffer = {
-    .height = 21.0f,
-    .content = "",
-    .timer = 0.0f
-};
-
-// Convert the pressed key to a string
-const char* KeyToString(int key) {
-    switch(key) {
-        case KEY_SPACE: return "spc";
-        // Add other special key mappings as needed.
-        default: return TextFormat("%c", key);
-    }
-}
-
-void UpdateMinibufferKeyChord() {
-    int key = GetKeyPressed();
-    if (key > 0) { // Some key was pressed
-        if(strlen(minibuffer.content) + strlen(KeyToString(key)) < MAX_KEYCHORD_LENGTH - 1) {
-            strcat(minibuffer.content, KeyToString(key));
-            strcat(minibuffer.content, " ");  // space between keys
-        }
-        minibuffer.timer = 0.0f;
-    }
-
-    minibuffer.timer += GetFrameTime();
-
-    if (minibuffer.timer > 2.0f) { // Clear after 2 seconds of inactivity
-        minibuffer.content[0] = '\0';
-        minibuffer.timer = 0.0f;
-    }
-}
-
-void UpdateModelinePosition() {
-    Vector2 mousePos = GetMousePosition();
-
-    // Check if the left mouse button is pressed while hovering over the modeline
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
-        mousePos.y > (SCREEN_HEIGHT - minibuffer.height - modeline.height) &&
-        mousePos.y < (SCREEN_HEIGHT - minibuffer.height)) {
-        modeline.isDragging = true;
-        modeline.initialClickOffset = SCREEN_HEIGHT - mousePos.y - minibuffer.height;
-    }
-
-    // Adjust the modeline and minibuffer position if dragging
-    if (modeline.isDragging && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        minibuffer.height = SCREEN_HEIGHT - mousePos.y - modeline.initialClickOffset;
-    } else if (modeline.isDragging && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-        modeline.isDragging = false;
-    }
-}
-
-void DrawModeline() {
-    Color modelineColor = CURRENT_THEME.modeline;
-    DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height - modeline.height, SCREEN_WIDTH, modeline.height, modelineColor);
-
-    // Drawing the vertical bar on the left side of the modeline
-    int highlightWidth = 3;
-    DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height - modeline.height, highlightWidth, modeline.height, CURRENT_THEME.modeline_highlight);
-}
-
-void DrawMiniBuffer() {
-    Color minibufferColor = CURRENT_THEME.minibuffer;
-    DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height, SCREEN_WIDTH, minibuffer.height, minibufferColor);
-
-    // Draw the keychord content instead of "Hello World"
-    DrawText(minibuffer.content, 6, SCREEN_HEIGHT - minibuffer.height + 6, 9, RAYWHITE);
-}
-
-
 void DrawFPSWidget() {
     // Constants for easy customization:
     const int fpsWidth = 50;
@@ -570,4 +489,89 @@ void UpdateAltIndicator() {
     altIndicator.currentWidth += (altIndicator.targetWidth - altIndicator.currentWidth) * INDICATOR_GROWTH_RATE * GetFrameTime();
 
     altIndicator.wasActive = isActive;
+}
+
+
+
+
+
+
+// MODELINE && MINIBUFFER
+#define MAX_SCREENKEY_LENGTH 128
+
+// Initialize global structs
+Modeline modeline = {
+    .height = 26.0f,
+    .isDragging = false,
+    .initialClickOffset = 0.0f
+};
+
+Minibuffer minibuffer = {
+    .height = 21.0f,
+    .content = "Happy Coding :3",
+    .timer = 0.0f
+};
+
+// Convert the pressed key to a string
+const char* KeyToString(int key) {
+    switch(key) {
+        case KEY_SPACE: return "spc";
+        // Add other special key mappings as needed.
+        default: return TextFormat("%c", key);
+    }
+}
+
+void UpdateMinibufferScreenKey() {
+    int key = GetKeyPressed();
+    if (key > 0) { // Some key was pressed
+        if(strlen(minibuffer.content) + strlen(KeyToString(key)) < MAX_SCREENKEY_LENGTH - 1) {
+            strcat(minibuffer.content, KeyToString(key));
+            strcat(minibuffer.content, " ");  // space between keys
+        }
+        minibuffer.timer = 0.0f;
+    }
+
+    minibuffer.timer += GetFrameTime();
+
+    if (minibuffer.timer > 2.0f) { // Clear after 2 seconds of inactivity
+        minibuffer.content[0] = '\0';
+        minibuffer.timer = 0.0f;
+    }
+}
+
+void UpdateModelinePosition() {
+    Vector2 mousePos = GetMousePosition();
+
+    // Check if the left mouse button is pressed while hovering over the modeline
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&
+        mousePos.y > (SCREEN_HEIGHT - minibuffer.height - modeline.height) &&
+        mousePos.y < (SCREEN_HEIGHT - minibuffer.height)) {
+        modeline.isDragging = true;
+        modeline.initialClickOffset = SCREEN_HEIGHT - mousePos.y - minibuffer.height;
+    }
+
+    // Adjust the modeline and minibuffer position if dragging
+    if (modeline.isDragging && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        minibuffer.height = SCREEN_HEIGHT - mousePos.y - modeline.initialClickOffset;
+    } else if (modeline.isDragging && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        modeline.isDragging = false;
+    }
+}
+
+void DrawModeline() {
+    Color modelineColor = CURRENT_THEME.modeline;
+    DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height - modeline.height, SCREEN_WIDTH, modeline.height, modelineColor);
+
+    // Drawing the vertical bar on the left side of the modeline
+    int highlightWidth = 3;
+    DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height - modeline.height, highlightWidth, modeline.height, CURRENT_THEME.modeline_highlight);
+}
+
+void DrawMiniBuffer() {
+    Color minibufferColor = CURRENT_THEME.minibuffer;
+    DrawRectangle(0, SCREEN_HEIGHT - minibuffer.height, SCREEN_WIDTH, minibuffer.height, minibufferColor);
+
+    // Draw the screenkey content
+    /* DrawText(minibuffer.content, 6, SCREEN_HEIGHT - minibuffer.height + 6, 9, RAYWHITE); */
+    DrawText(minibuffer.content, 6, SCREEN_HEIGHT - 14, 9, RAYWHITE);
 }

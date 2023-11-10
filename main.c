@@ -5,17 +5,16 @@
 #include "panels.h"
 #include "modes.h"
 #include "ui.h"
+#include "whichkey.h"
 #include "filemanager.h"
 #include "theme.h"
 #include "keychords.h"
-#include "functions.h"
+#include "commands.h"
 
 #include "raylib.h"
 #include "stdlib.h"
 #include "stdio.h"
 #include <stdbool.h>
-
-
 
 
 
@@ -324,6 +323,8 @@ void Handlekeys(){
     if (IsKeyPressed(KEY_ESCAPE)) {
         leaderKeyActive = 0;
         CloseFlexiblePanel();
+        minibuffer.height = 21.0f;
+        whichKey.active = 0;
     }
 
     if (!leaderKeyActive){
@@ -344,15 +345,6 @@ void Handlekeys(){
         }
 
         HandleHelpBuffer();
-
-        // THEME KEYBINDS
-        if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
-            if (IsKeyPressed(KEY_MINUS)) {
-              PreviousTheme();
-            } else if (IsKeyPressed(KEY_EQUAL)) {
-              NextTheme();
-            }
-        }
 
         if (IsKeyPressed(KEY_N)) {
             if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
@@ -408,7 +400,6 @@ int main(void) {
 
         Handlekeys();
         HandleKeyChords();
-        /* HandleKeyChords(); */
 
         if (cameraManagerEnabled) {
             UpdateCameraManager(&cameraManager, character.position);
@@ -436,7 +427,7 @@ int main(void) {
             DrawPanel('L', 580.0f); // for a fixed left panel
 
 
-            UpdateMinibufferKeyChord();
+            UpdateMinibufferScreenKey();
 
 
             HandleFrameKeys();
@@ -456,6 +447,9 @@ int main(void) {
             DrawModeBar();
             DrawFPSWidget();
             DrawAltIndicator();
+
+            UpdateWhichKey();
+            DrawWhichKey();
             break;
 
 
@@ -498,7 +492,7 @@ int main(void) {
             UpdateModelinePosition();
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
-            UpdateMinibufferKeyChord();
+            UpdateMinibufferScreenKey();
 
 
             HandleFileManagerKeys();
@@ -547,7 +541,7 @@ int main(void) {
             DrawModeline(SCREEN_WIDTH, minibufferHeight);
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
-            UpdateMinibufferKeyChord();
+            UpdateMinibufferScreenKey();
 
             HandleFileManagerKeys();
             DrawFileManager();
@@ -555,6 +549,9 @@ int main(void) {
             DrawModeBar();
 
             DrawAltIndicator();
+
+            UpdateWhichKey();
+            DrawWhichKey();
             break;
 
 
@@ -604,7 +601,7 @@ int main(void) {
                 DrawModeline(SCREEN_WIDTH, minibufferHeight);
                 DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
 
-                UpdateMinibufferKeyChord();
+                UpdateMinibufferScreenKey();
 
                 DrawModeBar();
             default:

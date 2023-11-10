@@ -1,6 +1,8 @@
 #include "panels.h"
 #include "theme.h"
 #include "string.h"
+#include "ui.h"
+#include <raylib.h>
 #include <stdio.h>
 /* #include <cstddef> */
 
@@ -238,28 +240,9 @@ void CloseFlexiblePanel() {
     panel.flexPanelVisible = false;
 }
 
-void OpenLeftFlexiblePanel() {
-    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_LEFT);
-}
-
-void OpenRightFlexiblePanel() {
-    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_RIGHT);
-}
-
-void OpenTopFlexiblePanel() {
-    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_TOP);
-}
-
-void OpenBottomFlexiblePanel() {
-    OpenFlexiblePanel(FLEX_SIZE_ONE_HALF, FLEX_POSITION_BOTTOM);
-}
-
-
 // FRAMES
-
 #define MAX_FRAMES 100
-#define FRAME_GAP 10
-
+int FRAME_GAP = 2;
 
 Frame frames[MAX_FRAMES];
 int frameCount = 0;
@@ -272,6 +255,19 @@ void HandleFrameKeys() {
         if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
             CreateNewFrame();
         }
+
+        if (IsKeyDown(KEY_MINUS) && FRAME_GAP > 1) {
+            FRAME_GAP--;
+        }
+
+        if (IsKeyDown(KEY_EQUAL)) {
+            FRAME_GAP++;
+        }
+
+        if (IsKeyPressed(KEY_ZERO)) {
+            FRAME_GAP = 2;
+        }
+
         else if (IsKeyPressed(KEY_Q)) {
             CloseSelectedFrame();
         }
@@ -411,12 +407,28 @@ void MoveFrameSelection(int direction) {
 
 void ArrangeFrames() {
     // Dimensions of the main workspace area
+    /* Rectangle workspace = { */
+    /*     panel.leftWidth, */
+    /*     panel.topHeight, */
+    /*     SCREEN_WIDTH - panel.leftWidth - panel.rightWidth, */
+    /*     SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight - modeline.height - minibuffer.height */
+    /* }; */
+
+
+    float bottomUIHeight = modeline.height + minibuffer.height;
+
+    // Determine the larger height between the bottom panel and the combined modeline and minibuffer
+    float bottomHeight = (panel.bottomHeight > bottomUIHeight) ? panel.bottomHeight : bottomUIHeight;
+
+    // Adjust the workspace rectangle to account for the larger of the two bottom heights
     Rectangle workspace = {
-        panel.leftWidth,
-        panel.topHeight,
-        SCREEN_WIDTH - panel.leftWidth - panel.rightWidth,
-        SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight
+        .x = panel.leftWidth,
+        .y = panel.topHeight,
+        .width = SCREEN_WIDTH - panel.leftWidth - panel.rightWidth,
+        // Use the larger bottom height to calculate the workspace height
+        .height = SCREEN_HEIGHT - panel.topHeight - bottomHeight
     };
+
 
     // If only one frame exists
     if (frameCount == 1) {
