@@ -22,6 +22,7 @@ const int keychordCount = sizeof(keychords) / sizeof(KeyChord);
 // Current keychord buffer and leader key state
 char currentKeyChord[MAX_KEYCHORD_LENGTH] = {0};
 bool leaderKeyActive = false;
+bool keychordExecuted = 0;
 
 
 void ProcessKeyChord(const char* keys, char firstChar) {
@@ -34,6 +35,7 @@ void ProcessKeyChord(const char* keys, char firstChar) {
                 if (strlen(keys) == strlen(keychords[i].keychord)) {
                     keychords[i].action(); // Execute the associated action
                     matchFound = true;
+                    keychordExecuted = true; // Set the flag to indicate successful execution
                     break; // We found a match, so we can break out of the loop
                 } else {
                     possibleMatchesRemaining = true;
@@ -48,6 +50,7 @@ void ProcessKeyChord(const char* keys, char firstChar) {
         currentKeyChord[0] = '\0'; // Clear the current keychord
     }
 }
+
 
 
 void HandleKeyChords() {

@@ -33,6 +33,7 @@ extern KeyChord keychords[];
 extern const int keychordCount;
 extern char currentKeyChord[MAX_KEYCHORD_LENGTH];
 extern bool leaderKeyActive;
+extern bool keychordExecuted;
 
 /* void ProcessKeyChord(const char* keys); */
 void ProcessKeyChord(const char* keys, char firstChar);

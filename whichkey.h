@@ -7,7 +7,7 @@ typedef struct WhichKey {
     bool active;
     float timer;
     char buffer[MAX_KEYCHORD_LENGTH];
-    float additionalHeight; // Height of the which-key display area
+    float height;
 } WhichKey;
 
 extern WhichKey whichKey;

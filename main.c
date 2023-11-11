@@ -494,9 +494,7 @@ int main(void) {
             DrawMiniBuffer(SCREEN_WIDTH, minibufferHeight);
             UpdateMinibufferScreenKey();
 
-
-            HandleFileManagerKeys();
-            DrawFileManager();
+            HandleFileManager();
 
             DrawModeBar();
 
@@ -543,8 +541,7 @@ int main(void) {
 
             UpdateMinibufferScreenKey();
 
-            HandleFileManagerKeys();
-            DrawFileManager();
+            HandleFileManager();
 
             DrawModeBar();
 

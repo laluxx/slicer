@@ -9,7 +9,7 @@ void restart_slicer(){
 /* system("rm slicer"); */
   system("make");
   // Restart the game engine
-  char *args[] = {"./slicer", NULL}; // Assuming the binary name is "slicer"
+  char *args[] = {"./slicer", NULL};
   execv(args[0], args);
 
   // If execv fails, you can handle the error here

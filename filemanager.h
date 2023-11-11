@@ -38,6 +38,7 @@ void NavigateDown();
 void NavigateIn();
 void NavigateOut();
 void HandleFileManagerKeys();
+void HandleFileManager();
 void CenterTopFileImmediately();
 
 #endif // FILEMANAGER_H

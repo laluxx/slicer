@@ -1,4 +1,5 @@
 #include "whichkey.h"
+#include "keychords.h"
 #include "ui.h"
 #include "screen.h"
 
@@ -7,7 +8,7 @@ WhichKey whichKey = {
     .active = false,
     .timer = 0.0f,
     .buffer = {0},
-    .additionalHeight = 0.0f // This will be dynamically calculated
+    .height = 0.0f // This will be dynamically calculated
 };
 
 // Function to calculate the height needed for the which-key interface
@@ -41,13 +42,19 @@ void UpdateWhichKey() {
             }
             // Adjust the minibuffer height to make space for which-key interface
             if (numberOfKeyChords > 0) {
-                whichKey.additionalHeight = CalculateWhichKeyHeight(numberOfKeyChords);
-                minibuffer.height = 21.0f + whichKey.additionalHeight;
+                whichKey.height = CalculateWhichKeyHeight(numberOfKeyChords);
+                minibuffer.height = 21.0f + whichKey.height;
             }
-            // Do not deactivate whichKey here, let DrawWhichKey() handle the display
+            if(keychordExecuted){
+                minibuffer.height = 21.0f;
+                whichKey.active = 0;
+                keychordExecuted = false;
+            }
         }
     }
 }
+
+
 
 // Function to draw which-key interface
 void DrawWhichKey() {
