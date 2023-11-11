@@ -17,7 +17,6 @@
 #include <stdbool.h>
 
 
-
 // INSPECTORS
 #define CHARACTER_INSPECTOR_TEXT_SIZE 20
 void DrawCharacterCoordinatesInspector(Character character) {
@@ -374,6 +373,8 @@ int main(void) {
     LoadToggleTextures();
     LoadCornerTextures();
     InitializeThemes();
+
+
 
 
 

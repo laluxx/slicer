@@ -4,7 +4,6 @@
 #include "ui.h"
 #include <raylib.h>
 #include <stdio.h>
-#include "functions.h"
 /* #include <cstddef> */
 
 
@@ -57,18 +56,20 @@ bool isCursorInsideBottomPanel = 0;
 bool isCursorInsideLeftPanel = 0;
 bool isCursorInsideRightPanel = 0;
 
-
 void UpdateCursorPanelFlags() {
-    if (IsMouseMoving()) {
-        Vector2 mousePos = GetMousePosition();
+    static Vector2 lastMousePos = {0, 0};  // Store the last mouse position
+    Vector2 mousePos = GetMousePosition();
 
+    // Check if mouse has moved
+    if (mousePos.x != lastMousePos.x || mousePos.y != lastMousePos.y) {
         isCursorInsideTopPanel = (mousePos.y >= 0 && mousePos.y <= panel.topHeight);
         isCursorInsideBottomPanel = (mousePos.y >= SCREEN_HEIGHT - panel.bottomHeight && mousePos.y <= SCREEN_HEIGHT);
         isCursorInsideLeftPanel = (mousePos.x >= 0 && mousePos.x <= panel.leftWidth);
         isCursorInsideRightPanel = (mousePos.x >= SCREEN_WIDTH - panel.rightWidth && mousePos.x <= SCREEN_WIDTH);
+
+        lastMousePos = mousePos;  // Update the last mouse position
     }
 }
-
 
 
 
@@ -365,7 +366,8 @@ void UpdateFrameFocusWithMouse() {
     static Vector2 lastMousePos = {0, 0};  // Store the last mouse position
     Vector2 mousePos = GetMousePosition();
 
-    if (IsMouseMoving()) {
+    // Check if mouse has moved
+    if (mousePos.x != lastMousePos.x || mousePos.y != lastMousePos.y) {
         // Iterate through all frames
         for (int i = 0; i < frameCount; i++) {
             // Check if mouse position is within frame rectangle
