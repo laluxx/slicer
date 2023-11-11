@@ -41,6 +41,8 @@ void HandleFileManagerKeys();
 void HandleFileManager();
 void CenterTopFileImmediately();
 
+void HandleFileManagerMouse();
+
 #endif // FILEMANAGER_H
 
 

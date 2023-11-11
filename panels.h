@@ -12,6 +12,13 @@
 #define INITIAL_TOP_HEIGHT 45
 #define CENTER_GAP 10.0f
 
+
+extern bool isCursorInsideTopPanel;
+extern bool isCursorInsideBottomPanel;
+extern bool isCursorInsideLeftPanel;
+extern bool isCursorInsideRightPanel;
+
+
 typedef enum {
     FLEX_SIZE_ONE_THIRD,
     FLEX_SIZE_ONE_HALF,
@@ -38,6 +45,30 @@ typedef struct {
 } Panel;
 
 
+extern Panel panel;
+
+extern bool showTopRightCorner;
+extern bool showTopLeftCorner;
+extern bool showBottomRightCorner;
+extern bool showBottomLeftCorner;
+
+
+void DrawPanels();
+void UpdatePanelsDimensions();
+void DrawPanel(char panelSide, float dimension);
+void ClosePanel(char panelSide);
+void UpdatePanelDimensions(char panelSide);
+void PanelsReset();
+void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position);
+void CloseFlexiblePanel();
+
+void AdjustLeftPanelWidthForFileNames();
+void LoadCornerTextures();
+void UnloadCornerTextures();
+
+void UpdateCursorPanelFlags();
+
+
 
 typedef enum {
     LAYOUT_MASTER_STACK,
@@ -59,27 +90,6 @@ typedef struct {
     Rectangle prevState;             // To store the previous position and size of the frame before it started floating
 } Frame;
 
-
-extern Panel panel;
-
-extern bool showTopRightCorner;
-extern bool showTopLeftCorner;
-extern bool showBottomRightCorner;
-extern bool showBottomLeftCorner;
-
-
-void DrawPanels();
-void UpdatePanelsDimensions();
-void DrawPanel(char panelSide, float dimension);
-void ClosePanel(char panelSide);
-void UpdatePanelDimensions(char panelSide);
-void PanelsReset();
-void OpenFlexiblePanel(FlexPanelSize size, FlexPanelPosition position);
-void CloseFlexiblePanel();
-
-void AdjustLeftPanelWidthForFileNames();
-void LoadCornerTextures();
-void UnloadCornerTextures();
 
 // FRAMES
 void ArrangeFrames();

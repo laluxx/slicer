@@ -237,6 +237,7 @@ bool fileManagerVisible = 1;
 
 void HandleFileManager(){
     if (fileManagerVisible){
+        HandleFileManagerMouse();
         HandleFileManagerKeys();
         DrawFileManager();
     }
@@ -396,6 +397,7 @@ float navigationDelay = 0.07f; // 200 milliseconds delay
 float timeSinceLastNavigation = 0.0f;
 
 void HandleFileManagerKeys() {
+
     timeSinceLastNavigation += GetFrameTime();
 
     if (!leaderKeyActive) {
@@ -419,6 +421,18 @@ void HandleFileManagerKeys() {
                 timeSinceLastNavigation = 0.0f; // Reset timer after navigation
               }
             }
+        }
+    }
+}
+
+
+void HandleFileManagerMouse() {
+    if (isCursorInsideLeftPanel) {
+        float scroll = GetMouseWheelMove();
+        if (scroll > 0) {
+            NavigateUp();
+        } else if (scroll < 0) {
+            NavigateDown();
         }
     }
 }

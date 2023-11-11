@@ -4,6 +4,7 @@
 #include "ui.h"
 #include <raylib.h>
 #include <stdio.h>
+#include "functions.h"
 /* #include <cstddef> */
 
 
@@ -51,6 +52,24 @@ void UnloadCornerTextures() {
 
 
 
+bool isCursorInsideTopPanel = 0;
+bool isCursorInsideBottomPanel = 0;
+bool isCursorInsideLeftPanel = 0;
+bool isCursorInsideRightPanel = 0;
+
+
+void UpdateCursorPanelFlags() {
+    if (IsMouseMoving()) {
+        Vector2 mousePos = GetMousePosition();
+
+        isCursorInsideTopPanel = (mousePos.y >= 0 && mousePos.y <= panel.topHeight);
+        isCursorInsideBottomPanel = (mousePos.y >= SCREEN_HEIGHT - panel.bottomHeight && mousePos.y <= SCREEN_HEIGHT);
+        isCursorInsideLeftPanel = (mousePos.x >= 0 && mousePos.x <= panel.leftWidth);
+        isCursorInsideRightPanel = (mousePos.x >= SCREEN_WIDTH - panel.rightWidth && mousePos.x <= SCREEN_WIDTH);
+    }
+}
+
+
 
 
 
@@ -76,6 +95,8 @@ void DrawPanels() {
     DrawRectangle(0, panel.topHeight, panel.leftWidth, SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight, CURRENT_THEME.panel_left);
     DrawRectangle(SCREEN_WIDTH - panel.rightWidth, panel.topHeight, panel.rightWidth, SCREEN_HEIGHT - panel.topHeight - panel.bottomHeight, CURRENT_THEME.panel_right);
 
+    UpdateCursorPanelFlags();
+
 
     // Drawing the center panel
     if (panel.centerPanelVisible) {
@@ -89,8 +110,6 @@ void DrawPanels() {
     if (panel.flexPanelVisible) {
         DrawRectangleRec(panel.flexPanel, CURRENT_THEME.panel_center);
     }
-
-
 
     // Draw the corner images at the adjusted positions
     if (showTopLeftCorner){
@@ -107,11 +126,6 @@ void DrawPanels() {
     if (showBottomRightCorner){
         DrawTexture(bottomRightCornerTexture, SCREEN_WIDTH - panel.rightWidth - bottomRightCornerTexture.width, SCREEN_HEIGHT - panel.bottomHeight - bottomRightCornerTexture.height, CURRENT_THEME.panel_corners);
     }
-
-
-
-
-
 }
 
 void UpdatePanelsDimensions() {
@@ -240,6 +254,9 @@ void CloseFlexiblePanel() {
     panel.flexPanelVisible = false;
 }
 
+
+
+
 // FRAMES
 #define MAX_FRAMES 100
 int FRAME_GAP = 2;
@@ -348,8 +365,7 @@ void UpdateFrameFocusWithMouse() {
     static Vector2 lastMousePos = {0, 0};  // Store the last mouse position
     Vector2 mousePos = GetMousePosition();
 
-    // Check if mouse has moved
-    if (mousePos.x != lastMousePos.x || mousePos.y != lastMousePos.y) {
+    if (IsMouseMoving()) {
         // Iterate through all frames
         for (int i = 0; i < frameCount; i++) {
             // Check if mouse position is within frame rectangle

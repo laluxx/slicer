@@ -1,48 +1,15 @@
 #include "raylib.h"
-#include "functions.h"
-// Where i extend raylib
 
-// TODO
-#define MAX_KEYS 512  // Total number of keys to track
-KeyState keyStates[MAX_KEYS];
+// Function to check if the mouse has moved since the last frame
+bool IsMouseMoving() {
+    static Vector2 lastMousePos = {0, 0};  // Store the last mouse position
+    Vector2 currentMousePos = GetMousePosition();
 
-// Initialize all key states
-void InitKeyStates(float initialDelay, float repeatRate) {
-    for (int i = 0; i < MAX_KEYS; i++) {
-        keyStates[i].isPressed = false;
-        keyStates[i].initialDelay = initialDelay;
-        keyStates[i].repeatRate = repeatRate;
-        keyStates[i].timer = 0.0f;
-        keyStates[i].repeatTimer = 0.0f;
+    // Check if the current mouse position is different from the last frame
+    if (currentMousePos.x != lastMousePos.x || currentMousePos.y != lastMousePos.y) {
+        lastMousePos = currentMousePos;  // Update the last mouse position
+        return true;  // Mouse has moved
     }
-}
 
-// Update the state of a specific key
-void UpdateKeyState(int key) {
-    if (IsKeyDown(key)) {
-        if (!keyStates[key].isPressed) {
-            keyStates[key].isPressed = true;
-            keyStates[key].timer = 0.0f;
-            keyStates[key].repeatTimer = 0.0f;
-        } else {
-            keyStates[key].timer += GetFrameTime();
-            keyStates[key].repeatTimer += GetFrameTime();
-        }
-    } else {
-        keyStates[key].isPressed = false;
-    }
+    return false;  // Mouse has not moved
 }
-
-// Check if the key should be considered "down" based on custom logic
-bool IsCustomKeyDown(int key) {
-    if (keyStates[key].isPressed) {
-        if (keyStates[key].timer < keyStates[key].initialDelay) {
-            return true;  // Key is freshly pressed
-        } else if (keyStates[key].repeatTimer >= keyStates[key].repeatRate) {
-            keyStates[key].repeatTimer = 0.0f;  // Reset repeat timer
-            return true;  // Key is repeating
-        }
-    }
-    return false;
-}
-
